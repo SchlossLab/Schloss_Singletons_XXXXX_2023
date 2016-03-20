@@ -53,7 +53,6 @@ $(REFS)HMP_MOCK.fasta :
 	wget -N -P $(REFS) http://www.mothur.org/MiSeqDevelopmentData/HMP_MOCK.fasta
 
 
-
 ################################################################################
 #
 #	Part 2: Get the raw sequence data from Kozich et al and process

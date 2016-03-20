@@ -39,3 +39,13 @@ chimera.uchime(fasta=current, count=current, dereplicate=t);
 remove.seqs(fasta=current, accnos=current);
 classify.seqs(fasta=current, count=current, reference=${REFS}/trainset9_032012.pds.fasta, taxonomy=${REFS}/trainset9_032012.pds.tax, cutoff=80);
 remove.lineage(fasta=current, count=current, taxonomy=current, taxon=Chloroplast-Mitochondria-unknown-Archaea-Eukaryota);"
+
+STUB=${PROCESS}/${SAMPLE}_${DELTAQ}
+#rename...
+mv ${STUB}.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.count_table ${STUB}.count_table
+mv ${STUB}.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.fasta ${STUB}.fasta
+mv ${STUB}.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.pick.taxonomy ${STUB}.taxonomy
+
+rm ${STUB}.*contigs*
+rm ${STUB}.filter
+rm ${STUB}.files
