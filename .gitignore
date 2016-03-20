@@ -13,3 +13,7 @@ mothur*logfile
 *.docx
 
 scratch
+
+head.batch
+tail.batch
+
