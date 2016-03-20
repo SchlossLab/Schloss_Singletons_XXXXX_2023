@@ -92,7 +92,7 @@ FASTQS = Mock1_S1_L001_R1_001.fastq.gz Mock2_S2_L001_R1_001.fastq.gz \
 RAW_RUNSPATH = $(addprefix data/raw/,$(RUNS))
 
 # Location of processed runs' data on local machine
-PROC_RUNSPATH = $(addprefix data/process/,$(RUNS))
+PROC_RUNSPATH = $(addprefix data/mothur/,$(RUNS))
 
 ALL_FASTQ = $(foreach R,$(RAW_RUNSPATH),$(foreach F,$(FASTQS),$(R)/$(F)))
 
@@ -119,7 +119,7 @@ $(KOZICH_FASTA) $(KOZICH_COUNT) $(KOZICH_TAXONOMY) : $(ALL_FASTQ) $(FILES_FILES)
 	$(eval PARSE=$(subst _, ,$(basename $(notdir $@))))
 	$(eval S=$(word 1,$(PARSE)))
 	$(eval DQ=$(word 2,$(PARSE)))
-	$(eval R=$(patsubst data/process/%/,%,$(dir $@)))
+	$(eval R=$(patsubst data/mothur/%/,%,$(dir $@)))
 	bash code/bash/run_mothur_to_remove_lineage.sh $(R) $(S) $(DQ)
 
 .SECONDEXPANSION:

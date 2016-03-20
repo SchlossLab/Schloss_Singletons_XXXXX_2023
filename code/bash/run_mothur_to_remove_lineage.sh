@@ -21,7 +21,7 @@ DELTAQ=$3
 
 REFS=data/references
 RAW=data/raw/${RUN}
-PROCESS=data/process/${RUN}
+PROCESS=data/mothur/${RUN}
 
 mkdir -p ${PROCESS}
 cp "data/references/${SAMPLE}.files" "${PROCESS}/${SAMPLE}_${DELTAQ}.files"
