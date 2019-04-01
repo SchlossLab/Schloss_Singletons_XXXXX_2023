@@ -149,9 +149,9 @@ $(KOZICH_ERROR) : $$(subst error_summary,fasta,$$@) $$(subst error_summary,count
 
 # Download Baxter et al's CRC shared file...
 data/raw/crc.shared :
-	wget --no-check-certificate https://github.com/SchlossLab/Baxter_glne007Modeling_2015/blob/master/data/glne007.final.an.unique_list.shared?raw=true -O $@
+	wget --no-check-certificate https://raw.githubusercontent.com/SchlossLab/Baxter_glne007Modeling_GenomeMed_2015/master/data/glne007.final.an.unique_list.shared -O $@
 
 
 # Download Kozich et al's mouse_time shared file...
 data/raw/mouse_time.shared :
-	wget --no-check-certificate https://github.com/SchlossLab/Kozich_MiSeqSOP_AEM_2013/blob/master/data/process/no_metag/no_metag.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.an.unique_list.shared?raw=true -O $@
+	wget --no-check-certificate https://raw.githubusercontent.com/SchlossLab/Kozich_MiSeqSOP_AEM_2013/master/data/process/no_metag/no_metag.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.an.unique_list.shared -O $@
