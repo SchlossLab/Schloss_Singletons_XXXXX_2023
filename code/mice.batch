@@ -1,0 +1,86 @@
+#!/bin/bash
+
+################################################################################
+#
+# mice.batch
+#
+# Here we run the data/mice/*metag/*.files through mothur like we would in a
+# normal study to the point of generating the final reads that go into
+# cluster.split
+#
+# Dependencies...
+# * data/references/silva.v4.align
+# * data/references/trainset14_032015.pds.fasta
+# * data/references/trainset14_032015.pds.tax
+#
+# Produces...
+# * *.precluster.pick.pick.fasta
+# * *.precluster.uchime.pick.pick.count_table
+# * *.precluster.pick.pds.wang.pick.taxonomy
+#
+################################################################################
+
+MICE_PATH=data/mice
+
+wget -N -P $MICE_PATH http://www.mothur.org/MiSeqDevelopmentData/StabilityNoMetaG.tar
+tar xvf $MICE_PATH/StabilityNoMetaG.tar -C $MICE_PATH/
+rm $MICE_PATH/StabilityNoMetaG.tar
+
+R -e 'source("code/mice.R");get_contigsfile("data/mice")'
+
+mothur "#set.dir(output=$MICE_PATH);
+	make.contigs(inputdir=$MICE_PATH, file=mice.files, processors=12);
+	screen.seqs(fasta=current, group=current, maxambig=0, maxlength=275, maxhomop=8);
+	unique.seqs();
+	count.seqs(name=current, group=current);
+	align.seqs(fasta=current, reference=data/references/silva.v4.align, processors=2);
+	screen.seqs(fasta=current, count=current, start=5, end=860);
+	filter.seqs(fasta=current, vertical=T, trump=.);
+	unique.seqs(fasta=current, count=current);
+	pre.cluster(fasta=current, count=current, diffs=2);
+	chimera.uchime(fasta=current, count=current, dereplicate=T);
+	remove.seqs(fasta=current, accnos=current);
+	classify.seqs(fasta=current, count=current, reference=data/references/trainset14_032015.pds.fasta, taxonomy=data/references/trainset14_032015.pds.tax, cutoff=80);
+	remove.lineage(fasta=current, count=current, taxonomy=current, taxon=Chloroplast-Mitochondria-unknown-Archaea-Eukaryota);"
+
+
+
+# Garbage collection
+rm $MICE_PATH/*fastq.gz
+rm $MICE_PATH/*.contigs.good.groups
+rm $MICE_PATH/*.contigs.groups
+rm $MICE_PATH/*.contigs.report
+rm $MICE_PATH/*.trim.contigs.qual
+rm $MICE_PATH/*.scrap.contigs.qual
+rm $MICE_PATH/*.scrap.contigs.fasta
+rm $MICE_PATH/*.trim.contigs.bad.accnos
+rm $MICE_PATH/*.trim.contigs.fasta
+rm $MICE_PATH/*.trim.contigs.good.count_table
+rm $MICE_PATH/*.trim.contigs.good.fasta
+rm $MICE_PATH/*.trim.contigs.good.good.count_table
+rm $MICE_PATH/*.trim.contigs.good.names
+rm $MICE_PATH/*.trim.contigs.good.unique.align
+rm $MICE_PATH/*.trim.contigs.good.unique.align.report
+rm $MICE_PATH/*.trim.contigs.good.unique.bad.accnos
+rm $MICE_PATH/*.trim.contigs.good.unique.fasta
+rm $MICE_PATH/*.trim.contigs.good.unique.flip.accnos
+rm $MICE_PATH/*.trim.contigs.good.unique.good.align
+rm $MICE_PATH/*.trim.contigs.good.unique.good.filter.count_table
+rm $MICE_PATH/*.trim.contigs.good.unique.good.filter.fasta
+rm $MICE_PATH/*.trim.contigs.good.unique.good.filter.unique.fasta
+rm $MICE_PATH/*.trim.contigs.good.unique.good.filter.unique.precluster.count_table
+rm $MICE_PATH/*.trim.contigs.good.unique.good.filter.unique.precluster.fasta
+rm $MICE_PATH/*.trim.contigs.good.unique.good.filter.unique*map
+rm $MICE_PATH/*.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.count_table
+rm $MICE_PATH/*.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.chimeras
+rm $MICE_PATH/*.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.accnos
+rm $MICE_PATH/*.trim.contigs.good.unique.good.filter.unique.precluster.pick.fasta
+rm $MICE_PATH/*.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.tax.summary
+rm $MICE_PATH/*.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.taxonomy
+rm $MICE_PATH/*.filter
+rm $MICE_PATH/*files
+
+#keeping...
+mv $MICE_PATH/*.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.fasta $MICE_PATH/mice.fasta
+mv $MICE_PATH/*.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.count_table $MICE_PATH/mice.count_table
+mv $MICE_PATH/*.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.pick.taxonomy $MICE_PATH/mice.taxonomy
