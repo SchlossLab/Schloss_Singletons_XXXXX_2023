@@ -30,4 +30,4 @@ rm ${STUB}.error.chimera
 rm ${STUB}.error.seq
 
 #keep:
-#	mock_1.error.summary
+mv ${STUB}.error.summary ${STUB}.error_summary
