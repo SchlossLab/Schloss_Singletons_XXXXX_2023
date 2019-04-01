@@ -1,25 +1,27 @@
 library("testthat")
+source("../src/simulate_shared.R")
 
 context("manipulating shared data")
+
 
 shared_file_name <- "test.shared"
 
 test_that("read_shared", {
 	shared <- read_shared(shared_file_name)
 	expect_equal(nrow(shared), 5)
-	expect_equal(ncol(shared), 10)
+	expect_equal(ncol(shared), 11)
 })
 
 test_that("pool_samples", {
+	shared <- read_shared(shared_file_name)
 	otu_counts <- pool_samples(shared)
 	expect_equal(otu_counts, c(86, 46, 11, 22, 4, 1, 1, 1, 1, 1))
-	expect_equal(pool_samples(matrix(c(1,2,3,4,5,6), nrow=2)), c(3,7,11))
 })
 
 test_that("get_sample_frequencies", {
+	shared <- read_shared(shared_file_name)
 	sample_counts <- get_sample_frequencies(shared)
 	expect_equal(sample_counts, c(23, 45, 34, 38, 34))
-	expect_equal(get_sample_frequencies(matrix(c(1,2,3,4,5,6), nrow=2)), c(9,12))
 })
 
 test_that("shuffle_seqs", {
@@ -31,6 +33,7 @@ test_that("shuffle_seqs", {
 })
 
 test_that("shuffle_seqs_samples", {
+	shared <- read_shared(shared_file_name)
 	otu_counts <- pool_samples(shared)
 	sample_counts <- get_sample_frequencies(shared)
 	new_shared <- shuffle_seqs_samples(otu_counts, sample_counts)[[1]]

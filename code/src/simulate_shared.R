@@ -1,25 +1,27 @@
+library("tidyverse")
 
 # read in a mothur shared file and convert it to a data frame
 # where the rows are the samples and the columns are the otus.
 # the values are the number of times each otu was seen in a
 # sample
 read_shared <- function(shared_file_name){
-	raw_shared <- read.table(file=shared_file_name, header=T, row.names=2)
-	raw_shared[,-c(1,2)]
+
+	read_tsv(file=shared_file_name) %>%
+								select(-label, -numOtus)
 }
 
 
 # get a vector of counts that indicates the number of times each
 # otu was seen across all samples
 pool_samples <- function(shared_data){
-	unname(apply(shared_data, 2, sum))
+	unname(shared_data %>% select(-Group) %>% apply(., 2, sum))
 }
 
 
 # get a vector that indicates the number of observations that
 # were generated for each sample
 get_sample_frequencies <- function(shared_data){
-	unname(apply(shared_data, 1, sum))
+	unname(shared_data %>% select(-Group) %>% apply(., 1, sum))
 }
 
 
