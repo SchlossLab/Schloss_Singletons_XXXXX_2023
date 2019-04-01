@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Taken from https://github.com/SchlossLab/Westcott_OptiClust_mSphere_2017/tree/master/code
+
+module load sratoolkit/2.8.2-1
+
+RICE=data/rice
+
+mkdir -p $RICE/
+
+SRRS=`cut -f 18 $RICE/SRP044745_info.csv | grep "SRR"` #csv taken from run selector and committed
+for sample in $SRRS
+do
+  echo $sample
+	prefetch $sample
+  fastq-dump --split-files $sample -O $RICE
+
+	gzip -f $RICE/${sample}_1.fastq
+	gzip -f $RICE/${sample}_2.fastq
+done

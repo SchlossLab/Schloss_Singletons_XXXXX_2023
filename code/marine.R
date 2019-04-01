@@ -1,3 +1,6 @@
+# Taken from https://github.com/SchlossLab/Westcott_OptiClust_mSphere_2017/tree/master/code
+
+
 make_files_file <- function(){
 	sample_map <- c("SRR3085688" = "JLB",
 									"SRR3085689" = "ARD",

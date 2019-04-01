@@ -1,3 +1,5 @@
+# Taken from https://github.com/SchlossLab/Westcott_OptiClust_mSphere_2017/tree/master/code
+
 make_files_file <- function(){
 
 	metadata <- read.table(file="data/human/human.metadata", sep='\t', header=T,
@@ -9,10 +11,10 @@ make_files_file <- function(){
 	sample_map <- metadata$Sample_Name_s
 	names(sample_map) <- metadata$Run_s
 
-	R1 <- list.files(path="data/human", pattern="*_1.fastq.gz")
+	R1 <- list.files(path="data/human", pattern="*_1.fastq")
 	R2 <- gsub("1.fastq", "2.fastq", R1)
 
-	file_stubs <- gsub("_1.fastq.gz", "", R1)
+	file_stubs <- gsub("_1.fastq", "", R1)
 	sample_ids <- sample_map[file_stubs]
 
 	no_mock_sample_ids <- sample_ids[!is.na(sample_ids)]

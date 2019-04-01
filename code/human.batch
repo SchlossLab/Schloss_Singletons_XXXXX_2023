@@ -1,46 +1,54 @@
+#!/bin/bash
+
+# Taken from https://github.com/SchlossLab/Westcott_OptiClust_mSphere_2017/tree/master/code
+
+module load sratoolkit/2.8.2-1
+
 HUMAN=data/human
 mkdir -p $HUMAN
 
-wget -r -q -np -nd -k -P $HUMAN ftp://ftp-trace.ncbi.nih.gov/sra/sra-instant/reads/ByStudy/sra/SRP/SRP062/SRP062005/
+#Get list of files to download
+wget -O $HUMAN/SRP062005_info.csv 'http://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?save=efetch&db=sra&rettype=runinfo&term=SRP062005'
 
-for SRA in $HUMAN/*.sra
+URLS=`cut -f 10 -d , $HUMAN/SRP062005_info.csv | grep "http"`
+for sample in $URLS
 do
-	fastq-dump --split-files $SRA -O $HUMAN
-	R1=`echo $SRA | sed -e "s/.sra/_1.fastq/"`
-	R2=`echo $SRA | sed -e "s/.sra/_2.fastq/"`
-	gzip "$R1"
-	gzip "$R2"
+  echo $sample
+  SRR=`echo $sample | sed -e "s_.*/__"`
+  wget -O $HUMAN/$SRR $sample
+  fastq-dump --split-files $HUMAN/$SRR -O $HUMAN
+  rm $HUMAN/$SRR
 done
 
-rm -f $HUMAN/*.sra
+# rm -f $HUMAN/*.sra
 
 R -e "source('code/human.R'); make_files_file()"
 
 
 mothur "#set.dir(output=$HUMAN);
-	make.contigs(inputdir=$HUMAN, file=human.files, processors=12);
+	make.contigs(inputdir=$HUMAN, file=human.files, processors=6);
 	screen.seqs(fasta=current, group=current, maxambig=0, maxlength=275, maxhomop=8);
 	unique.seqs();
 	count.seqs(name=current, group=current);
-	align.seqs(fasta=current, reference=data/references/silva.v4.align, processors=2);
-	screen.seqs(fasta=current, count=current, start=5, end=860);
+	align.seqs(fasta=current, reference=data/references/silva.v4.align);
+	screen.seqs(fasta=current, count=current, start=10, end=9589);
 	filter.seqs(fasta=current, vertical=T, trump=.);
 	unique.seqs(fasta=current, count=current);
 	pre.cluster(fasta=current, count=current, diffs=2);
-	chimera.uchime(fasta=current, count=current, dereplicate=T);
+	chimera.vsearch(fasta=current, count=current, dereplicate=T);
 	remove.seqs(fasta=current, accnos=current);
-	classify.seqs(fasta=current, count=current, reference=data/references/trainset14_032015.pds.fasta, taxonomy=data/references/trainset14_032015.pds.tax, cutoff=80);
+	classify.seqs(fasta=current, count=current, reference=data/references/trainset16_022016.pds.fasta, taxonomy=data/references/trainset16_022016.pds.tax, cutoff=80);
 	remove.lineage(fasta=current, count=current, taxonomy=current, taxon=Chloroplast-Mitochondria-unknown-Archaea-Eukaryota);"
 
 
 #keeping...
 mv $HUMAN/*.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.fasta $HUMAN/human.fasta
-mv $HUMAN/*.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.count_table $HUMAN/human.count_table
+mv $HUMAN/*.trim.contigs.good.unique.good.filter.unique.precluster.denovo.vsearch.pick.pick.count_table $HUMAN/human.count_table
 mv $HUMAN/*.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.pick.taxonomy $HUMAN/human.taxonomy
 
 
-
-rm $HUMAN/*fastq.gz
+rm $HUMAN/SRP062005_info.csv
+rm $HUMAN/*fastq
 rm $HUMAN/*.contigs.good.groups
 rm $HUMAN/*.contigs.groups
 rm $HUMAN/*.contigs.report
@@ -65,9 +73,9 @@ rm $HUMAN/*.trim.contigs.good.unique.good.filter.unique.fasta
 rm $HUMAN/*.trim.contigs.good.unique.good.filter.unique.precluster.count_table
 rm $HUMAN/*.trim.contigs.good.unique.good.filter.unique.precluster.fasta
 rm $HUMAN/*.trim.contigs.good.unique.good.filter.unique*map
-rm $HUMAN/*.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.count_table
-rm $HUMAN/*.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.chimeras
-rm $HUMAN/*.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.accnos
+rm $HUMAN/*.trim.contigs.good.unique.good.filter.unique.precluster.denovo.vsearch.pick.count_table
+rm $HUMAN/*.trim.contigs.good.unique.good.filter.unique.precluster.denovo.vsearch.chimeras
+rm $HUMAN/*.trim.contigs.good.unique.good.filter.unique.precluster.denovo.vsearch.accnos
 rm $HUMAN/*.trim.contigs.good.unique.good.filter.unique.precluster.pick.fasta
 rm $HUMAN/*.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.tax.summary
 rm $HUMAN/*.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.taxonomy
