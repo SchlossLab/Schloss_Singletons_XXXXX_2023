@@ -33,3 +33,23 @@ Overview
     |- study.Rmd       # executable Rmarkdown for this study, if applicable
     |
     +- Makefile        # executable Makefile for this study, if applicable
+
+
+Eisen Rice root microbiome study
+https://www.pnas.org/content/112/8/E911.long
+https://www.ncbi.nlm.nih.gov/bioproject/PRJNA255789
+
+Seagrass/marine sediment???
+https://www.ncbi.nlm.nih.gov/pubmed/28828269
+https://www.ncbi.nlm.nih.gov/bioproject/PRJNA350672
+
+Temporal and spatial dynamics in microbial community composition within a temperate stream network
+https://onlinelibrary.wiley.com/doi/full/10.1111/1462-2920.14311
+https://www.ncbi.nlm.nih.gov/bioproject/PRJNA323602
+
+
+
+
+Freshwater and sediment microbial communities from dead zone in Lake Erie, Canada - itags
+https://www.ncbi.nlm.nih.gov//bioproject/PRJNA255432
+https://gold.jgi.doe.gov/biosamples?id=Gb0056776
