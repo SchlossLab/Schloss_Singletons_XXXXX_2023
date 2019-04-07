@@ -7,6 +7,7 @@ module load sratoolkit/2.8.2-1
 RICE=data/rice
 
 mkdir -p $RICE/
+rm -f $RICE/*fastq*
 
 SRRS=`cut -f 18 $RICE/SRP044745_info.csv | grep "SRR"` #csv taken from run selector and committed
 for sample in $SRRS
@@ -31,11 +32,11 @@ mothur "#set.dir(output=$RICE);
 	unique.seqs();
 	count.seqs(name=current, group=current);
 	align.seqs(fasta=current, reference=data/references/silva.v4.align);
-	screen.seqs(fasta=current, count=current, start=10, end=9589);
+	screen.seqs(fasta=current, count=current, start=8, end=9582);
 	filter.seqs(fasta=current, vertical=T, trump=.);
 	unique.seqs(fasta=current, count=current);
 	pre.cluster(fasta=current, count=current, diffs=2);
-	chimera.vsearch(fasta=current, count=current, dereplicate=T);
+	chimera.uchime(fasta=current, count=current, dereplicate=T);
 	remove.seqs(fasta=current, accnos=current);
 	classify.seqs(fasta=current, count=current, reference=data/references/trainset16_022016.pds.fasta, taxonomy=data/references/trainset16_022016.pds.tax, cutoff=80);
 	remove.lineage(fasta=current, count=current, taxonomy=current, taxon=Chloroplast-Mitochondria-unknown-Archaea-Eukaryota);"
@@ -44,7 +45,7 @@ mothur "#set.dir(output=$RICE);
 
 #keeping...
 mv $RICE/*.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.fasta $RICE/rice.fasta
-mv $RICE/*.trim.contigs.good.unique.good.filter.unique.precluster.denovo.vsearch.pick.pick.count_table $RICE/rice.count_table
+mv $RICE/*.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.count_table $RICE/rice.count_table
 mv $RICE/*.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.pick.taxonomy $RICE/rice.taxonomy
 
 

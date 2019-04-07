@@ -5,8 +5,7 @@
 module load sratoolkit/2.8.2-1
 
 STREAM=data/stream
-
-mkdir -p $STREAM/
+rm -f $STREAM/*fastq*
 
 SRRS=`cut -f 7 $STREAM/SRP075852_info.csv | grep "SRR"` #csv taken from run selector and committed
 for sample in $SRRS
@@ -31,11 +30,11 @@ mothur "#set.dir(output=$STREAM);
 	unique.seqs();
 	count.seqs(name=current, group=current);
 	align.seqs(fasta=current, reference=data/references/silva.v4.align);
-	screen.seqs(fasta=current, count=current, start=10, end=9589);
+	screen.seqs(fasta=current, count=current, start=8, end=9582);
 	filter.seqs(fasta=current, vertical=T, trump=.);
 	unique.seqs(fasta=current, count=current);
 	pre.cluster(fasta=current, count=current, diffs=2);
-	chimera.vsearch(fasta=current, count=current, dereplicate=T);
+	chimera.uchime(fasta=current, count=current, dereplicate=T);
 	remove.seqs(fasta=current, accnos=current);
 	classify.seqs(fasta=current, count=current, reference=data/references/trainset16_022016.pds.fasta, taxonomy=data/references/trainset16_022016.pds.tax, cutoff=80);
 	remove.lineage(fasta=current, count=current, taxonomy=current, taxon=Chloroplast-Mitochondria-unknown-Archaea-Eukaryota);"
@@ -44,7 +43,7 @@ mothur "#set.dir(output=$STREAM);
 
 #keeping...
 mv $STREAM/*.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.fasta $STREAM/stream.fasta
-mv $STREAM/*.trim.contigs.good.unique.good.filter.unique.precluster.denovo.vsearch.pick.pick.count_table $STREAM/stream.count_table
+mv $STREAM/*.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.count_table $STREAM/stream.count_table
 mv $STREAM/*.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.pick.taxonomy $STREAM/stream.taxonomy
 
 
