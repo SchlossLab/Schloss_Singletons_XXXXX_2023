@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Taken from https://github.com/SchlossLab/Westcott_OptiClust_mSphere_2017/tree/master/code
-
 module load sratoolkit/2.8.2-1
 
 LAKE=data/lake

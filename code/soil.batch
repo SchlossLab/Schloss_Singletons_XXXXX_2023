@@ -1,10 +1,9 @@
-
 #!/bin/bash
 
 # Taken from https://github.com/SchlossLab/Westcott_OptiClust_mSphere_2017/tree/master/code
 module load sratoolkit/2.8.2-1
 
-SOIL=data/seagrass
+SOIL=data/soil
 rm -f $SOIL/*fastq*
 
 SRRS=`cut -f 18 $SOIL/ERP012016_info.tsv | grep "ERR"` #csv taken from run selector and committed

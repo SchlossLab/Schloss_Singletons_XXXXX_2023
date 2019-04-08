@@ -16,23 +16,23 @@
 # * data/references/trainset16_022016.pds.tax
 #
 # Produces...
-# * $MICE_PATH/mice.fasta
-# * $MICE_PATH/mice.count_table
-# * $MICE_PATH/mice.taxonomy
+# * $MICE/mice.fasta
+# * $MICE/mice.count_table
+# * $MICE/mice.taxonomy
 #
 ################################################################################
 
-MICE_PATH=data/mice
-rm -f $MICE_PATH/*fastq*
+MICE=data/mice
+rm -f $MICE/*fastq*
 
-wget -N -P $MICE_PATH http://www.mothur.org/MiSeqDevelopmentData/StabilityNoMetaG.tar
-tar xvf $MICE_PATH/StabilityNoMetaG.tar -C $MICE_PATH/
-rm $MICE_PATH/StabilityNoMetaG.tar
+wget -N -P $MICE http://www.mothur.org/MiSeqDevelopmentData/StabilityNoMetaG.tar
+tar xvf $MICE/StabilityNoMetaG.tar -C $MICE/
+rm $MICE/StabilityNoMetaG.tar
 
 R -e 'source("code/mice.R");get_contigsfile("data/mice")'
 
-mothur "#set.dir(output=$MICE_PATH);
-	make.contigs(inputdir=$MICE_PATH, file=mice.files, processors=6);
+mothur "#set.dir(output=$MICE);
+	make.contigs(inputdir=$MICE, file=mice.files, processors=6);
 	screen.seqs(fasta=current, group=current, maxambig=0, maxlength=275, maxhomop=8);
 	unique.seqs();
 	count.seqs(name=current, group=current);
@@ -49,9 +49,9 @@ mothur "#set.dir(output=$MICE_PATH);
 
 
 #keeping...
-mv $MICE_PATH/*.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.fasta $MICE_PATH/mice.fasta
-mv $MICE_PATH/*.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.count_table $MICE_PATH/mice.count_table
-mv $MICE_PATH/*.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.pick.taxonomy $MICE_PATH/mice.taxonomy
+mv $MICE/*.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.fasta $MICE/mice.fasta
+mv $MICE/*.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.count_table $MICE/mice.count_table
+mv $MICE/*.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.pick.taxonomy $MICE/mice.taxonomy
 
 # Garbage collection
 rm $MICE/*fastq*
