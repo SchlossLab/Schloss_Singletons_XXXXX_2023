@@ -41,21 +41,21 @@ Schloss_Singletons_XXXXX_2016
 * https://link.springer.com/article/10.1007%2Fs00248-015-0673-9
 * https://trace.ncbi.nlm.nih.gov/Traces/study/?acc=SRP055545
 
-### human:
-*
-*
+### human: Microbiota-based model improves the sensitivity of fecal immunochemical test for detecting colonic lesions
+* https://www.ncbi.nlm.nih.gov/pubmed/27056827
+* https://trace.ncbi.nlm.nih.gov/Traces/study/?acc=SRP062005
 
 ### lake: Freshwater and sediment microbial communities from dead zone in Lake Erie, Canada - itags
 * https://www.ncbi.nlm.nih.gov//bioproject/PRJNA255432
 * https://gold.jgi.doe.gov/biosamples?id=Gb0056776
 
-### marine (possibly remove):
-*
-*
+### marine (possibly remove): Artificial seawater media facilitate cultivating members of the microbial majority from the Gulf of Mexico
+* https://msphere.asm.org/content/1/2/e00028-16
+* https://trace.ncbi.nlm.nih.gov/Traces/study/?acc=SRP068101
 
-### mice:
-*
-*
+### mice: Development of a dual-index sequencing strategy and curation pipeline for analyzing amplicon sequence data on the MiSeq Illumina sequencing platform
+* https://www.ncbi.nlm.nih.gov/pubmed/23793624
+* https://www.mothur.org/MiSeqDevelopmentData.html
 
 ### rainforest: Seasonal and ecohydrological regulation of active microbial populations involved in DOC, CO2, and CH4 fluxes in temperate rainforest soil
 * https://www.nature.com/articles/s41396-018-0334-3
@@ -73,9 +73,9 @@ Schloss_Singletons_XXXXX_2016
 * https://www.frontiersin.org/articles/10.3389/fmicb.2018.00729/full
 * https://trace.ncbi.nlm.nih.gov/Traces/study/?acc=SRP097192
 
-### soil (possibly remove):
-*
-*
+### soil (possibly remove): Metagenomics reveals pervasive bacterial populations and reduced community diversity across the Alaska tundra ecosystem
+* https://www.frontiersin.org/articles/10.3389/fmicb.2016.00579
+* https://trace.ncbi.nlm.nih.gov/Traces/study/?acc=ERP012016
 
 ### stream: Temporal and spatial dynamics in microbial community composition within a temperate stream network
 * https://onlinelibrary.wiley.com/doi/full/10.1111/1462-2920.14311

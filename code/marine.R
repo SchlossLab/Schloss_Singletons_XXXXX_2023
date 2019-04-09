@@ -3,7 +3,7 @@
 
 make_files_file <- function(){
 
-	mimarks <- read.table(file="data/marine/SRP062005_info.tsv", header=T,
+	mimarks <- read.table(file="data/marine/SRP068101_info.tsv", header=T,
 	 											stringsAsFactors=FALSE, sep='\t')
 
 	sample_map <- mimarks$Sample_Name

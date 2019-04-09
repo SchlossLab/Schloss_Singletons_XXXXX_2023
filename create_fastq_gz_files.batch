@@ -15,7 +15,7 @@ touch $SAMPLE/${tag}_2.fastq.gz
 done
 
 SAMPLE=data/marine
-SRR=`cut -f 12 $SAMPLE/SRP062005_info.tsv | grep "SRR"`
+SRR=`cut -f 12 $SAMPLE/SRP068101_info.tsv | grep "SRR"`
 for tag in $SRR
 do
 touch $SAMPLE/${tag}_1.fastq.gz
@@ -64,6 +64,22 @@ done
 
 SAMPLE=data/stream
 SRR=`cut -f 7 $SAMPLE/SRP075852_info.csv | grep "SRR"`
+for tag in $SRR
+do
+touch $SAMPLE/${tag}_1.fastq.gz
+touch $SAMPLE/${tag}_2.fastq.gz
+done
+
+SAMPLE=data/bioethanol
+SRR=`cut -f 7 $SAMPLE/SRP055545_info.tsv | grep "SRR"`
+for tag in $SRR
+do
+touch $SAMPLE/${tag}_1.fastq.gz
+touch $SAMPLE/${tag}_2.fastq.gz
+done
+
+SAMPLE=data/sediment
+SRR=`cut -f 8 $SAMPLE/SRP097192_info.tsv | grep "SRR"`
 for tag in $SRR
 do
 touch $SAMPLE/${tag}_1.fastq.gz

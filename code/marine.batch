@@ -6,7 +6,7 @@
 MARINE=data/marine
 rm -f $MARINE/*fastq*
 
-SRRS=`cut -f 12 $MARINE/SRP062005_info.tsv | grep "SRR"`
+SRRS=`cut -f 12 $MARINE/SRP068101_info.tsv | grep "SRR"`
 
 for sample in $SRRS
 do
