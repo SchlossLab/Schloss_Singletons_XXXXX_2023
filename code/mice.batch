@@ -2,26 +2,6 @@
 
 # Taken from https://github.com/SchlossLab/Westcott_OptiClust_mSphere_2017/tree/master/code
 
-################################################################################
-#
-# mice.batch
-#
-# Here we run the data/mice/*metag/*.files through mothur like we would in a
-# normal study to the point of generating the final reads that go into
-# cluster.split
-#
-# Dependencies...
-# * data/references/silva.v4.align
-# * data/references/trainset16_022016.pds.fasta
-# * data/references/trainset16_022016.pds.tax
-#
-# Produces...
-# * $MICE/mice.fasta
-# * $MICE/mice.count_table
-# * $MICE/mice.taxonomy
-#
-################################################################################
-
 MICE=data/mice
 rm -f $MICE/*fastq*
 

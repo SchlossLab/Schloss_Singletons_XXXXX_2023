@@ -2,11 +2,11 @@
 
 make_files_file <- function(){
 
-	mimarks <- read.table(file="data/soil/soil.metadata", header=T,
+	mimarks <- read.table(file="data/soil/ERP012016_info.tsv", header=T,
 	 											stringsAsFactors=FALSE, sep='\t')
 
-	sample_map <- mimarks$Sample_Name_s
-	names(sample_map) <- mimarks$Run_s
+	sample_map <- mimarks$Alias
+	names(sample_map) <- mimarks$Run
 
 	read_1 <- list.files(path="data/soil/", pattern="*1.fastq.gz")
 	read_2 <- gsub("_1", "_2", read_1)

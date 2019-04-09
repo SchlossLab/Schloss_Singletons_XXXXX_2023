@@ -5,11 +5,8 @@ make_files_file <- function(){
 	metadata <- read.table(file="data/human/SRP062005_info.tsv", sep='\t', header=T,
 													stringsAsFactors=FALSE)
 
-	mocks <- grepl("mock", metadata$Sample_Name)
-	metadata <- metadata[!mocks,]
-
-	sample_map <- metadata$Sample_Name_s
-	names(sample_map) <- metadata$Run_s
+	sample_map <- metadata$Sample_Name
+	names(sample_map) <- metadata$Run
 
 	R1 <- list.files(path="data/human", pattern="*_1.fastq.gz")
 	R2 <- gsub("1.fastq", "2.fastq", R1)
