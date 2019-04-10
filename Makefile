@@ -25,13 +25,15 @@ $(REFS)/trainset16_022016.pds.% :
 	rm -rf $(REFS)/rdp $(REFS)/Trainset*
 
 
-# Run four datasets { mice human soil marine } through mothur pipeline through remove.lineage
+# Run datasets { mice human soil marine } through mothur pipeline through remove.lineage
 .SECONDEXPANSION:
-data/%.fasta data/%.count_table data/%.taxonomy : code/$$(notdir $$*).batch code/$$(notdir $$*).R\
+%/data.fasta %/data.count_table %/data.taxonomy : code/datasets_process.sh\
+			code/datasets_download.sh\
+			code/datasets_make_files.R\
 			$(REFS)/silva.v4.align\
 			$(REFS)/trainset16_022016.pds.fasta\
 			$(REFS)/trainset16_022016.pds.tax
-	bash $<
+	bash $< $*
 
 
 
