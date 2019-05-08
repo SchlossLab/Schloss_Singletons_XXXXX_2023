@@ -55,7 +55,7 @@ Schloss_Singletons_XXXXX_2016
 
 ### mice: Development of a dual-index sequencing strategy and curation pipeline for analyzing amplicon sequence data on the MiSeq Illumina sequencing platform
 * https://www.ncbi.nlm.nih.gov/pubmed/23793624
-* https://www.mothur.org/MiSeqDevelopmentData.html
+* https://trace.ncbi.nlm.nih.gov/Traces/study/?acc=SRP192323
 
 ### rainforest: Seasonal and ecohydrological regulation of active microbial populations involved in DOC, CO2, and CH4 fluxes in temperate rainforest soil
 * https://www.nature.com/articles/s41396-018-0334-3
