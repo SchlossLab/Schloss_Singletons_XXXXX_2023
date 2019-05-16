@@ -14,7 +14,8 @@ Rscript code/datasets_make_files.R $DATA
 
 
 # Run data through standard mothur pipeline through the steps prior to clustering
-mothur "#set.dir(output=$DATA);
+mothur "#set.seed(seed=19760620);
+	set.dir(output=$DATA);
 	make.contigs(inputdir=$DATA, file=data.files, processors=6);
 	screen.seqs(fasta=current, group=current, maxambig=0, maxlength=275, maxhomop=8);
 	unique.seqs();
@@ -42,4 +43,3 @@ rm $DATA/*fastq*
 rm $DATA/*.contigs.*
 rm $DATA/*.filter
 rm $DATA/*files
-

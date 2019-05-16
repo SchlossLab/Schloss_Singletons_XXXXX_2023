@@ -1,5 +1,5 @@
 local({
   r <- getOption("repos")
-  r["CRAN"] <- "http://cran.cnr.berkeley.edu/"
+  r["CRAN"] <- "https://cran.mtu.edu/"
   options(repos = r)
 })
