@@ -1,0 +1,130 @@
+---
+bibliography: references.bib
+output:
+  pdf_document:
+    keep_tex: true
+    includes:
+      in_header: header.tex
+csl: mbio.csl
+fontsize: 11pt
+geometry: margin=1.0in
+---
+
+```{r knitr_settings, tidy=TRUE, eval=TRUE, echo=FALSE, cache=FALSE}
+options(tidyverse.quiet = TRUE)
+
+library(tidyverse)
+library(knitr)
+
+opts_chunk$set("tidy" = TRUE)
+opts_chunk$set("echo" = FALSE)
+opts_chunk$set("eval" = TRUE)
+opts_chunk$set("warning" = FALSE)
+opts_chunk$set("message" = FALSE)
+opts_chunk$set("cache" = FALSE)
+
+inline_hook <- function(x){
+  print(x)
+  if(is.list(x)){
+    x <- unlist(x)
+  }
+  if(is.numeric(x)){
+    if(abs(x - round(x)) < .Machine$double.eps^0.5){
+      paste(format(x,big.mark=',', digits=0, scientific=FALSE))
+    } else {
+      paste(format(x,big.mark=',', digits=2, nsmall=2, scientific=FALSE))
+    }
+  } else {
+      paste(x)
+  }
+}
+knitr::knit_hooks$set(inline=inline_hook)
+```
+
+
+\vspace*{10mm}
+
+# Removal of rare sequences from 16S rRNA gene sequence surveys biases the interpretation of community structure data
+
+\vspace{35mm}
+
+Patrick D. Schloss${^1}$${^\dagger}$
+
+\vspace{40mm}
+
+$\dagger$ To whom correspondence should be addressed: \href{mailto:pschloss@umich.edu}{pschloss@umich.edu}
+
+$1$ Department of Microbiology and Immunology, University of Michigan, Ann Arbor, MI 48109
+
+\vspace{35mm}
+
+## Observation format
+
+\newpage
+\linenumbers
+
+## Abstract
+250 words
+
+\newpage
+
+## Importance
+150 words
+
+\newpage
+
+Two elements that are held in tension in the analysis of 16S rRNA gene sequence data is how to adequately remove PCR and sequencing artifacts and decrease the granularity of the taxonomic level that is used in the analysis. Previous attempts have included screening for sequencing quality based on quality scores [Kozich/Edgar] followed by a polishing step based on the frequency of the sequences relative to similar sequences [Kozich/Edgar/DeBlur]. Other pipelines model the quality scores and types of errors to cluster sequences directly [Dada2]. As a final step, many pipelines advocate for removing rare sequences from each dataset prior to further clustering of sequences into an operational taxonomic unit (OTU) or phylogenetic group [Knight/Edgar/DeBlur/Dada2]. The assumption of this abundance-based screening approach is that rare sequences are more likely to be artifacts than more abundant sequences. Some pipelines remove all sequences that appear once (i.e. singletons) [XXXX], XXXXXX [XXXXXX], XXXXX [XXXXXXX], or XXXXXX [XXXXXX] times; only the mothur-based pipeline discourages the practice of removing rare sequences. Proponents of this approach point to the ability to reach the desired number of OTUs with data generated from sequencing mock communities when rare sequences are removed. This approach effectively fits the sequence curation approach to data generated from a phylogenetically simple community with an atypical community distribution.
+
+Sequencing of mock communities confirms that artifacts tend to be rare; however, artifacts can also be more abundant and replicate across samples. Furthermore, sequencing of real samples suggests that there are also good sequences that are rare. Ignored in the suggestion that researchers should remove rare sequences from each sample is the common result that the number of sequences generated from each sample may vary by two or three orders of magnitude. Thus a sequence that appears once in a sample with 2,000 sequences is more trustworthy than a sequence that appears once in a sample with 100,000 sequences. Removing such sequences potentially biases the community structure of the sample with fewer sequences. In the current study, I use published sequence data to investigate the effects of removing singletons and other rare sequences on downstream analysis of microbial communities.
+
+
+***Results.*** 600 words
+Sample description
+* Logic for selecting studies (Table S1)
+* Distribution of sequence counts across samples in each study (Figure S1)
+
+Change in intra-sample variation with removal of rare sequences
+* Lose information within each sample as you remove sequences
+* Repeat when sequences are randomized across samples to maintain marginal sums
+
+Change in inter-sample variation with removal of rare sequences
+* Increased variation between samples as you remove sequences
+* Repeat when sequences are randomized across samples to maintain marginal sums
+
+
+
+
+***Conclusion.*** Removing rare sequences decreases the diversity represented by 16S rRNA gene sequence data and increases the variation between samples. Such impacts will hinder the statistical power to differentiate between treatment groups. Instead of removing rare sequences, researchers should focus on optimizing their sequence generation to minimize the amount of PCR and sequencing errors. In addition, samples should be rarefied to a common number of sequences across samples without prior culling of rare sequences. The number of artifacts is correlated to the number of sequences being considered. With this in mind, rarefaction allows one to control for uneven sampling effort and to control for the number of artifacts in the analysis.
+
+Need to treat rare sequences with a grain of salt
+
+
+\newpage
+
+## Acknowledgements
+
+
+\newpage
+
+## Materials and Methods
+
+
+
+\newpage
+
+## References
+25 references
+
+<div id="refs"></div>
+
+\newpage
+
+<!--- \includegraphics{figure_1.png} -->
+
+**Figure 1.**
+
+\newpage
+
+<!--- \includegraphics{figure_2.png} -->
+
+**Figure 2.**

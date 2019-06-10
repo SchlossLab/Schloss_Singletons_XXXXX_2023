@@ -187,19 +187,25 @@ $(REFS)/trainset16_022016.pds.% :
 #
 ####################################################################################################
 
-write.paper : submission/msphere.csl\
-							submission/header.tex
-	R -e "render('submission/Schloss_Singletons_XXXXX_2019.Rmd', clean=FALSE)"
-	mv submission/Schloss_Singletons_XXXXX_2019.utf8.md submission/Schloss_Singletons_XXXXX_2019.md
-	rm submission/Schloss_Singletons_XXXXX_2019.knit.md
+submission/manuscript.pdf submission/manuscript.md submission/manuscript.tex : submission/mbio.csl\
+							submission/header.tex\
+							submission/manuscript.Rmd
+	R -e "library('rmarkdown'); render('submission/manuscript.Rmd', clean=FALSE)"
+	mv submission/manuscript.utf8.md submission/manuscript.md
+	rm submission/manuscript.knit.md
 
 
+# module load perl-modules latexdiff/1.2.0
 # submission/track_changes.pdf: submission/Schloss_Singletons_XXXXX_2019.tex\
 # 															submission/Schloss_Singletons_XXXXX_2019.tex
-# 	latexdiff submission/Schloss_Singletons_XXXXX_2019.tex submission/Schloss_Singletons_XXXXX_2019.tex > diff.tex
-# 	pdflatex diff.tex
-# 	mv diff.pdf submission/track_changes.pdf
-# 	rm diff.*
+	# git cat-file -p 6adb4c388158ab59:submission/manuscript.tex > submission/manuscript_old.tex
+	# latexdiff submission/manuscript_old.tex submission/manuscript.tex > submission/marked_up.tex
+	# pdflatex -output-directory=submission submission/marked_up.tex
+	# rm submission/marked_up.aux
+	# rm submission/marked_up.log
+	# rm submission/marked_up.out
+	# rm submission/marked_up.tex
+	# rm submission/manuscript_old.tex
 
 # submission/response_to_reviewers.pdf : submission/response_to_reviewers.md submission/header.tex
 # 	pandoc $< -o $@ --include-in-header=submission/header.tex
