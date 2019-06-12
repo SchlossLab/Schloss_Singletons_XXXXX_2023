@@ -107,9 +107,7 @@ $(REFS)/trainset16_022016.pds.% :
 
 
 %otu.rshared : code/prune_rand_otu_shared.R %rand_pruned_groups $$(dir $$@)data.otu_seq.map
-		Rscript $^
-
-
+	Rscript $^
 
 
 ####################################################################################################
@@ -128,6 +126,11 @@ $(REFS)/trainset16_022016.pds.% :
 
 %beta_diversity : %shared code/get_beta_diversity_data.sh
 	bash code/get_beta_diversity_data.sh $<
+
+
+%beta_matrix : %shared code/get_beta_diversity_matrix.sh
+	bash code/get_beta_diversity_matrix.sh $<
+
 
 
 ####################################################################################################
@@ -170,6 +173,32 @@ $(REFS)/trainset16_022016.pds.% :
 %.rbeta_analysis : $$(addsuffix $$(suffix $$(basename $$@)).rbeta_diversity,$$(foreach S,$$(SEED),$$(foreach P,$$(PRUNE),$$(basename $$(basename $$@)).$$S.$$P)))\
 		code/get_beta_analysis.R
 	Rscript code/get_beta_analysis.R $@
+
+
+####################################################################################################
+#
+# Generate pruned versions of datasets based on random assignments of sequences to each sample with
+# varying effect sizes
+#
+####################################################################################################
+
+.SECONDEXPANSION:
+%.effect_pruned_groups %.design : code/effect_size.R\
+			$$(addsuffix .count_table,$$(basename $$(basename $$(basename $$@))))\
+			$$(addsuffix .remove_accnos,$$(basename $$(basename $$(basename $$@))))
+	$(eval DIR=$(dir $@))
+	$(eval SEED=$(subst .,,$(suffix $(basename $(basename $@)))))
+	$(eval MIN_SEQ_COUNT=$(subst .,,$(suffix $(basename $@))))
+	Rscript code/effect_size.R $(DIR) $(SEED) $(MIN_SEQ_COUNT) 0.9
+
+
+%.pc.eshared : code/prune_rand_pc_shared.R %.effect_pruned_groups
+	Rscript $^
+
+
+%otu.eshared : code/prune_rand_otu_shared.R %effect_pruned_groups $$(dir $$@)data.otu_seq.map
+	Rscript $^
+
 
 
 ####################################################################################################

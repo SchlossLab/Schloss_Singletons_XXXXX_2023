@@ -15,10 +15,10 @@
 library(tidyverse)
 
 input <- commandArgs(trailingOnly=TRUE)
-rand_pruned_file <- input[1] #e.g. rand_pruned_file <-'data/bioethanol/data.1.1.rand_pruned_groups'
+rand_pruned_file <- input[1] #e.g. rand_pruned_file <-'data/bioethanol/data.1.1.effect_pruned_groups'
 otu_mapping_file <- input[2] #e.g. otu_mapping_file <- 'data/bioethanol/data.otu_seq.map'
 
-shared_file <- str_replace(rand_pruned_file, "rand_pruned_groups", "otu.rshared")
+shared_file <- str_replace(rand_pruned_file, "([^.])[^.]*_pruned_groups", "otu.\\1shared")
 
 
 # load the mapping file that indicates the number of times each pre-clustered sequence showed up in
@@ -43,4 +43,3 @@ inner_join(group_seqs_count_mapping, otu_seq_otu_mapping, by="sequences") %>%
 	rename(Group=group) %>%
 	select(label, Group, numOtus, everything()) %>%
 	write_tsv(shared_file)
-
