@@ -1,0 +1,32 @@
+library(tidyverse)
+
+summarize_data <- function(environment) {
+
+	removed_samples <- paste0("data/", environment, "/data.remove_accnos") %>%
+		read_lines(.) %>%
+		str_split("-") %>%
+		unlist() %>%
+		enframe(., name=NULL, value="sample")
+
+	paste0("data/", environment, "/data.count.summary") %>%
+		read_tsv(col_names=c("sample", "n_seqs"), col_types=cols(sample=col_character(), n_seqs=col_integer())) %>%
+		anti_join(., removed_samples, by="sample") %>%
+		summarize(n_samples=n(), total_seqs=sum(n_seqs), mean=mean(n_seqs),
+			min=min(n_seqs), l_quartile = quantile(n_seqs, 0.25), median=median(n_seqs),
+			u_quartile = quantile(n_seqs, 0.75), max=max(n_seqs),
+			n_removed = removed_samples %>% filter(sample != "") %>% nrow(),
+			fold_difference = max/min)
+}
+
+
+tibble(directory=c("bioethanol", "human", "lake", "marine", "mice", "rainforest",
+									"rice", "seagrass", "sediment", "soil", "stream"),
+			nice_name=c("Bioethanol", "Human", "Lake", "Marine", "Mice", "Rainforest",
+									"Rice", "Seagrass", "Sediment", "Soil", "Stream"),
+			reference=rep("", 11)
+		) %>%
+		group_by(directory) %>%
+		mutate(summary_data = map(directory, summarize_data)) %>%
+		unnest(summary_data) %>%
+		ungroup() %>%
+		write_tsv("data/process/study_summary_statistics.tsv")

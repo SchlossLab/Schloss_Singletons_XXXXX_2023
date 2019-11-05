@@ -81,7 +81,13 @@ Sequencing of mock communities confirms that artifacts tend to be rare; however,
 ***Results.*** 600 words
 Sample description
 * Logic for selecting studies (Table S1)
+
+Description / N Samples / N Reads / Median / IQR/Range / Reference
+
 * Distribution of sequence counts across samples in each study (Figure S1)
+
+
+
 
 Change in intra-sample variation with removal of rare sequences
 * Lose information within each sample as you remove sequences
@@ -90,7 +96,7 @@ Change in intra-sample variation with removal of rare sequences
 Change in inter-sample variation with removal of rare sequences
 * Increased variation between samples as you remove sequences
 * Repeat when sequences are randomized across samples to maintain marginal sums
-
+* Loss of statistical power when rare sequences are removed/no impact on type 1 errors
 
 
 
