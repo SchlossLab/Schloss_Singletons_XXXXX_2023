@@ -27,7 +27,8 @@ set.seed(seed)	#	set the random number generator seed so multiple runs generate 
 
 #	Here we read in the count_table, clean it up a bit, gather it, and remove those sequence/samples
 # combinations that are zero.
-orig_count <- fread(paste0(path, "/data.count_table"), colClasses=c(Representative_Sequence="character")) %>%
+orig_count <- fread(paste0(path, "/data.count_table"),
+ 										colClasses=c(Representative_Sequence="character")) %>%
   as_tibble() %>%
   select(-total) %>%
 	rename(sequences=Representative_Sequence) %>%
@@ -56,3 +57,11 @@ randomize_prune_count <-
 	ungroup() %>%
 	filter(n_seqs >= min_class) %>%
 	write_tsv(paste0(path, "/data.", seed, ".", min_class, ".rand_pruned_groups"))
+
+
+# Output randomized design file
+orig_count %>%
+	select(group) %>%
+	unique() %>%
+	mutate(grouping = sample(rep(c("A", "B"), length.out=nrow(.)))) %>%
+	write_tsv(paste0(path, "/data.", seed, ".", min_class, ".rdesign"), col_names=F)

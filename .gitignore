@@ -15,5 +15,7 @@ mothur*logfile
 scratch
 
 *.batch
-
+*.slurm
 pbs_scripts
+
+*.tgz

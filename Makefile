@@ -10,6 +10,7 @@ print-%:
 SEED := $(shell seq 100)
 PRUNE := $(shell seq 11)
 
+samples = bioethanol human lake marine mice rainforest rice seagrass sediment soil stream
 
 ####################################################################################################
 #
@@ -93,7 +94,7 @@ $(REFS)/trainset16_022016.pds.% :
 ####################################################################################################
 
 .SECONDEXPANSION:
-%.rand_pruned_groups : code/randomize_prune.R\
+%.rand_pruned_groups %.rdesign : code/randomize_prune.R\
 			$$(addsuffix .count_table,$$(basename $$(basename $$(basename $$@))))\
 			$$(addsuffix .remove_accnos,$$(basename $$(basename $$(basename $$@))))
 	$(eval DIR=$(dir $@))
@@ -110,27 +111,118 @@ $(REFS)/trainset16_022016.pds.% :
 	Rscript $^
 
 
+%.ramova : code/run_amova.sh %.rbeta_matrix $$(addsuffix .rdesign,$$(basename $$(basename $$@)))
+	bash $^
+
+
+.SECONDEXPANSION:
+%/data.rffect.alpha_summary : code/run_wilcox.R $$(foreach S, $$(SEED), $$(foreach P, $$(PRUNE), $$(foreach M, otu pc, $$(dir $$@)data.$$S.$$P.$$M.ralpha_diversity)))
+	Rscript $^ $@
+
+
+.SECONDEXPANSION:
+%/data.rffect.beta_summary : code/amova_analysis.R $$(foreach S, $$(SEED), $$(foreach P, $$(PRUNE), $$(foreach M, otu pc, $$(dir $$@)data.$$S.$$P.$$M.ramova)))
+	Rscript $^ $@
+
+
+####################################################################################################
+#
+# Generate pruned versions of datasets based on random assignments of sequences to each sample with
+# effect size defined by removing 1% of the PC sequences
+#
+####################################################################################################
+
+.SECONDEXPANSION:
+%.effect_pruned_groups %.edesign : code/effect_prune.R\
+			$$(addsuffix .count_table,$$(basename $$(basename $$(basename $$@))))\
+			$$(addsuffix .remove_accnos,$$(basename $$(basename $$(basename $$@))))
+	$(eval DIR=$(dir $@))
+	$(eval SEED=$(subst .,,$(suffix $(basename $(basename $@)))))
+	$(eval MIN_SEQ_COUNT=$(subst .,,$(suffix $(basename $@))))
+	Rscript code/effect_prune.R $(DIR) $(SEED) $(MIN_SEQ_COUNT) 0.99
+
+
+%.pc.eshared : code/prune_rand_pc_shared.R %.effect_pruned_groups
+	Rscript $^
+
+
+%otu.eshared : code/prune_rand_otu_shared.R %effect_pruned_groups $$(dir $$@)data.otu_seq.map
+	Rscript $^
+
+
+%.eamova : code/run_amova.sh %.ebeta_matrix $$(addsuffix .edesign,$$(basename $$(basename $$@)))
+	bash $^
+
+
+.SECONDEXPANSION:
+%/data.effect.alpha_summary : code/run_wilcox.R $$(foreach S, $$(SEED), $$(foreach P, $$(PRUNE), $$(foreach M, otu pc, $$(dir $$@)data.$$S.$$P.$$M.ealpha_diversity)))
+	Rscript $^ $@
+
+
+.SECONDEXPANSION:
+%/data.effect.beta_summary : code/amova_analysis.R $$(foreach S, $$(SEED), $$(foreach P, $$(PRUNE), $$(foreach M, otu pc, $$(dir $$@)data.$$S.$$P.$$M.eamova)))
+	Rscript $^ $@
+
+
+####################################################################################################
+#
+# Generate pruned versions of datasets based on random assignments of sequences to each sample with
+# effect size defined by increasing the abundance of 5% of the OTUs by 10%
+#
+####################################################################################################
+
+.SECONDEXPANSION:
+%.bffect_pruned_groups %.bdesign : code/bffect_prune.R\
+			$$(addsuffix .count_table,$$(basename $$(basename $$(basename $$@))))\
+			$$(addsuffix .remove_accnos,$$(basename $$(basename $$(basename $$@))))
+	$(eval DIR=$(dir $@))
+	$(eval SEED=$(subst .,,$(suffix $(basename $(basename $@)))))
+	$(eval MIN_SEQ_COUNT=$(subst .,,$(suffix $(basename $@))))
+	Rscript code/bffect_prune.R $(DIR) $(SEED) $(MIN_SEQ_COUNT) 0.05 0.10
+
+
+%.pc.bshared : code/prune_rand_pc_shared.R %.bffect_pruned_groups
+	Rscript $^
+
+
+%otu.bshared : code/prune_rand_otu_shared.R %bffect_pruned_groups $$(dir $$@)data.otu_seq.map
+	Rscript $^
+
+
+%.bamova : code/run_amova.sh %.bbeta_matrix $$(addsuffix .bdesign,$$(basename $$(basename $$@)))
+	bash $^
+
+
+.SECONDEXPANSION:
+%/data.bffect.alpha_summary : code/run_wilcox.R $$(foreach S, $$(SEED), $$(foreach P, $$(PRUNE), $$(foreach M, otu pc, $$(dir $$@)data.$$S.$$P.$$M.balpha_diversity)))
+	Rscript $^ $@
+
+
+.SECONDEXPANSION:
+%/data.bffect.beta_summary : code/amova_analysis.R $$(foreach S, $$(SEED), $$(foreach P, $$(PRUNE), $$(foreach M, otu pc, $$(dir $$@)data.$$S.$$P.$$M.bamova)))
+	Rscript $^ $@
+
+
 ####################################################################################################
 #
 # Generate diversity files
 #
 ####################################################################################################
 
-%n_seqs : %shared code/get_nseqs.sh
-	bash code/get_nseqs.sh $<
+%n_seqs : code/get_nseqs.sh %shared
+	bash $^
 
 
-%alpha_diversity : %shared code/get_alpha_diversity_data.sh
-	bash code/get_alpha_diversity_data.sh $<
+%alpha_diversity : code/get_alpha_diversity_data.sh %shared
+	bash $^
 
 
-%beta_diversity : %shared code/get_beta_diversity_data.sh
-	bash code/get_beta_diversity_data.sh $<
+%beta_matrix : code/get_beta_diversity_matrix.sh %shared
+	bash $^
 
 
-%beta_matrix : %shared code/get_beta_diversity_matrix.sh
-	bash code/get_beta_diversity_matrix.sh $<
-
+%beta_diversity : code/get_beta_diversity_data.R %beta_matrix
+	Rscript $^
 
 
 ####################################################################################################
@@ -177,37 +269,22 @@ $(REFS)/trainset16_022016.pds.% :
 
 ####################################################################################################
 #
-# Generate pruned versions of datasets based on random assignments of sequences to each sample with
-# varying effect sizes
+# Build figures and tables
 #
 ####################################################################################################
 
-.SECONDEXPANSION:
-%.effect_pruned_groups %.design : code/effect_size.R\
-			$$(addsuffix .count_table,$$(basename $$(basename $$(basename $$@))))\
-			$$(addsuffix .remove_accnos,$$(basename $$(basename $$(basename $$@))))
-	$(eval DIR=$(dir $@))
-	$(eval SEED=$(subst .,,$(suffix $(basename $(basename $@)))))
-	$(eval MIN_SEQ_COUNT=$(subst .,,$(suffix $(basename $@))))
-	Rscript code/effect_size.R $(DIR) $(SEED) $(MIN_SEQ_COUNT) 0.9
+# Table that contains summary statistics about each sample
+data/process/study_summary_statistics.tsv: code/get_sample_summary_statistics.R\
+		$(foreach S, $(samples), data/$S/data.remove_accnos)\
+		$(foreach S, $(samples), data/$S/data.count.summary)
+	Rscript $<
 
 
-%.pc.eshared : code/prune_rand_pc_shared.R %.effect_pruned_groups
-	Rscript $^
-
-
-%otu.eshared : code/prune_rand_otu_shared.R %effect_pruned_groups $$(dir $$@)data.otu_seq.map
-	Rscript $^
-
-
-
-####################################################################################################
-#
-# Build figures
-#
-####################################################################################################
-
-
+# Plot strip chart showing the number of sequences per sample for each study
+results/figures/seqs_per_sample.pdf: code/plot_seqs_per_sample.R\
+		$(foreach S, $(samples), data/$S/data.remove_accnos)\
+		$(foreach S, $(samples), data/$S/data.count.summary)
+	Rscript $<
 
 
 ####################################################################################################
