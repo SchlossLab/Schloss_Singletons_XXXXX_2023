@@ -16,14 +16,20 @@ library(tidyverse)
 library(data.table)
 
 input <- commandArgs(trailingOnly=TRUE)
-path <- input[1] # e.g. path <- 'data/mice/'
+path <- input[1] # e.g. path <- 'data/bioethanol/'
 seed <- as.numeric(input[2]) # e.g. seed <- 1
-min_class <- as.numeric(input[3]) # e.g. min_class <- 2
+min_class <- as.numeric(input[3]) # e.g. min_class <- 1
 
 
 set.seed(seed)	#	set the random number generator seed so multiple runs generate the same
 								#	randomization
 
+
+name_otus <- function(n_otus) {
+
+	paste0("Otu", str_pad(width=nchar(n_otus), 1:n_otus, pad=0))
+
+}
 
 #	Here we read in the count_table, clean it up a bit, gather it, and remove those sequence/samples
 # combinations that are zero.
@@ -32,7 +38,8 @@ orig_count <- fread(paste0(path, "/data.count_table"),
   as_tibble() %>%
   select(-total) %>%
 	rename(sequences=Representative_Sequence) %>%
-	gather(-sequences, key="group", value="n_seqs") %>%
+	mutate(otu=name_otus(nrow(.))) %>%
+	gather(-c(sequences, otu), key="group", value="n_seqs") %>%
 	filter(n_seqs != 0)
 
 
@@ -50,9 +57,10 @@ if(length(remove_groups) > 0){
 # a shared file
 randomize_prune_count <-
 	tibble(group = rep(orig_count$group, orig_count$n_seqs),
-		sequences = rep(orig_count$sequences, orig_count$n_seqs)) %>%
+		sequences = rep(orig_count$sequences, orig_count$n_seqs),
+		otu = rep(orig_count$otu, orig_count$n_seqs)) %>%
 	mutate(group = sample(group)) %>%
-	group_by(group, sequences) %>%
+	group_by(group, sequences, otu) %>%
 	summarize(n_seqs = n()) %>%
 	ungroup() %>%
 	filter(n_seqs >= min_class) %>%

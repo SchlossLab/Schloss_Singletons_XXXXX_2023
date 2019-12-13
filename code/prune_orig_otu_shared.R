@@ -25,7 +25,7 @@ otu_shared_file <- str_replace(pc_shared_file, "pc", "otu")
 
 if(str_detect(pc_shared_file, "data.1.pc")){
 
-	file.copy(str_replace("data.1.otu.oshared", "data.otu.shared"), otu_shared_file)
+	file.copy(str_replace(otu_shared_file, "data.1.otu.oshared", "data.otu.shared"), otu_shared_file, overwrite=TRUE)
 
 } else {
 	# load the shared file generated using output from pre.cluster and make it tidy
@@ -33,17 +33,17 @@ if(str_detect(pc_shared_file, "data.1.pc")){
 												as_tibble() %>% select(-label, -numOtus) %>%
 												gather(-Group, key="otus", value="counts") %>%
 												filter(counts != 0)
-	
+
 	# load the mapping file that indicates which sequence goes with each OTU from the pre.cluster output
 	pc_seq_otu_mapping <- read_tsv(pc_mapping_file,
 																col_names=c("sequences", "otus"),
 																col_types=cols(.default=col_character()))
-	
+
 	# load the mapping file that indicates which sequence goes with each OTU from cluster.split output
 	otu_seq_otu_mapping <- read_tsv(otu_mapping_file,
 																	col_types=cols(.default=col_character()))
-	
-	
+
+
 	# Here we do a series of joins to prune the cluster.split OTU assignments and generate a shared
 	# file. First we convert the pre.clustered OTU names back to their original sequence names. Second,
 	# we do an inner join to identify which OTUs the remaining sequence names belong to. Third, we

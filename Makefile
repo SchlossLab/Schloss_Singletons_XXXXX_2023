@@ -10,7 +10,7 @@ print-%:
 SEED := $(shell seq 100)
 PRUNE := $(shell seq 11)
 
-samples = bioethanol human lake marine mice rainforest rice seagrass sediment soil stream
+samples = bioethanol human lake marine mice peromyscus rainforest rice seagrass sediment soil stream
 
 ####################################################################################################
 #
@@ -39,6 +39,8 @@ $(REFS)/trainset16_022016.pds.% :
 	mv $(REFS)/rdp/trainset16_022016.pds/trainset16_022016.* $(REFS);\
 	rm -rf $(REFS)/rdp $(REFS)/Trainset*
 
+$(REFS)/HMP_MOCK.fasta :
+	wget -N -P $(REFS)/ https://raw.githubusercontent.com/SchlossLab/Kozich_MiSeqSOP_AEM_2013/master/data/references/HMP_MOCK.fasta
 
 ####################################################################################################
 #
@@ -50,6 +52,7 @@ $(REFS)/trainset16_022016.pds.% :
 %/data.fasta %/data.count_table %/data.taxonomy : code/datasets_process.sh\
 			code/datasets_download.sh\
 			code/datasets_make_files.R\
+			%/sra_info.tsv\
 			$(REFS)/silva.v4.align\
 			$(REFS)/trainset16_022016.pds.fasta\
 			$(REFS)/trainset16_022016.pds.tax
@@ -142,7 +145,7 @@ $(REFS)/trainset16_022016.pds.% :
 	Rscript code/effect_prune.R $(DIR) $(SEED) $(MIN_SEQ_COUNT) 0.99
 
 
-%.pc.eshared : code/prune_rand_pc_shared.R %.effect_pruned_groups
+%.pc.eshared : code/prune_effect_pc_shared.R %.effect_pruned_groups
 	Rscript $^
 
 
@@ -181,7 +184,7 @@ $(REFS)/trainset16_022016.pds.% :
 	Rscript code/bffect_prune.R $(DIR) $(SEED) $(MIN_SEQ_COUNT) 0.05 0.10
 
 
-%.pc.bshared : code/prune_rand_pc_shared.R %.bffect_pruned_groups
+%.pc.bshared : code/prune_effect_pc_shared.R %.bffect_pruned_groups
 	Rscript $^
 
 
@@ -236,7 +239,6 @@ $(REFS)/trainset16_022016.pds.% :
 		code/get_intra_analysis.R
 	Rscript code/get_intra_analysis.R $@
 
-
 .SECONDEXPANSION:
 %.rintra_analysis : $$(addsuffix $$(suffix $$(basename $$@)).rshared,$$(foreach S,$$(SEED),$$(foreach P,$$(PRUNE),$$(basename $$(basename $$@)).$$S.$$P)))\
 		code/get_intra_analysis.R
@@ -247,7 +249,6 @@ $(REFS)/trainset16_022016.pds.% :
 %.oalpha_analysis : $$(addsuffix $$(suffix $$(basename $$@)).oalpha_diversity,$$(foreach P,$$(PRUNE),$$(basename $$(basename $$@)).$$P))\
 		code/get_alpha_analysis.R
 	Rscript code/get_alpha_analysis.R $@
-
 
 .SECONDEXPANSION:
 %.ralpha_analysis : $$(addsuffix $$(suffix $$(basename $$@)).ralpha_diversity,$$(foreach S,$$(SEED),$$(foreach P,$$(PRUNE),$$(basename $$(basename $$@)).$$S.$$P)))\
@@ -260,11 +261,97 @@ $(REFS)/trainset16_022016.pds.% :
 		code/get_beta_analysis.R
 	Rscript code/get_beta_analysis.R $@
 
-
 .SECONDEXPANSION:
 %.rbeta_analysis : $$(addsuffix $$(suffix $$(basename $$@)).rbeta_diversity,$$(foreach S,$$(SEED),$$(foreach P,$$(PRUNE),$$(basename $$(basename $$@)).$$S.$$P)))\
 		code/get_beta_analysis.R
 	Rscript code/get_beta_analysis.R $@
+
+
+
+####################################################################################################
+#
+# Measure error rate of mock communities
+#
+####################################################################################################
+
+data/mock/data.fasta data/mock/data.count_table data/mock/data.taxonomy : code/mock_process.sh\
+			code/datasets_download.sh\
+			code/datasets_make_files.R\
+			data/mock/sra_info.tsv\
+			$(REFS)/silva.v4.align\
+			$(REFS)/trainset16_022016.pds.fasta\
+			$(REFS)/trainset16_022016.pds.tax
+	bash $< data/mock/
+
+
+data/mock/data.error.summary : data/mock/data.fasta data/mock/data.count_table\
+		$(REFS)/HMP_MOCK.fasta
+	mothur "#seq.error(fasta=data/mock/data.fasta, count=data/mock/data.count_table, reference=$(REFS)/HMP_MOCK.fasta, aligned=FALSE)"
+
+
+####################################################################################################
+#
+# Pool results from different environments
+#
+####################################################################################################
+
+data/process/ointra_analysis.tsv : code/pool_intra_analysis.R\
+		$(foreach S, $(samples), data/$S/data.pc.ointra_analysis)\
+		$(foreach S, $(samples), data/$S/data.otu.ointra_analysis)
+	Rscript $^ $@
+
+data/process/rintra_analysis.tsv : code/pool_intra_analysis.R\
+		$(foreach S, $(samples), data/$S/data.pc.rintra_analysis)\
+		$(foreach S, $(samples), data/$S/data.otu.rintra_analysis)
+	Rscript $^ $@
+
+
+data/process/oalpha_analysis.tsv : code/pool_analysis.R\
+		$(foreach S, $(samples), data/$S/data.pc.oalpha_analysis)\
+		$(foreach S, $(samples), data/$S/data.otu.oalpha_analysis)
+	Rscript $^ $@
+
+data/process/ralpha_analysis.tsv : code/pool_analysis.R\
+		$(foreach S, $(samples), data/$S/data.pc.ralpha_analysis)\
+		$(foreach S, $(samples), data/$S/data.otu.ralpha_analysis)
+	Rscript $^ $@
+
+
+data/process/obeta_analysis.tsv : code/pool_analysis.R\
+		$(foreach S, $(samples), data/$S/data.pc.obeta_analysis)\
+		$(foreach S, $(samples), data/$S/data.otu.obeta_analysis)
+	Rscript $^ $@
+
+data/process/rbeta_analysis.tsv : code/pool_analysis.R\
+		$(foreach S, $(samples), data/$S/data.pc.rbeta_analysis)\
+		$(foreach S, $(samples), data/$S/data.otu.rbeta_analysis)
+	Rscript $^ $@
+
+
+data/process/rffect_alpha_analysis.tsv : code/pool_ffect.R\
+		$(foreach S, $(samples), data/$S/data.rffect.alpha_summary)
+	Rscript $^ $@
+
+data/process/effect_alpha_analysis.tsv : code/pool_ffect.R\
+		$(foreach S, $(samples), data/$S/data.rffect.alpha_summary)
+	Rscript $^ $@
+
+data/process/bffect_alpha_analysis.tsv : code/pool_ffect.R\
+		$(foreach S, $(samples), data/$S/data.rffect.alpha_summary)
+	Rscript $^ $@
+
+
+data/process/rffect_beta_analysis.tsv : code/pool_ffect.R\
+		$(foreach S, $(samples), data/$S/data.rffect.beta_summary)
+	Rscript $^ $@
+
+data/process/effect_beta_analysis.tsv : code/pool_ffect.R\
+		$(foreach S, $(samples), data/$S/data.rffect.beta_summary)
+	Rscript $^ $@
+
+data/process/bffect_beta_analysis.tsv : code/pool_ffect.R\
+		$(foreach S, $(samples), data/$S/data.rffect.beta_summary)
+	Rscript $^ $@
 
 
 ####################################################################################################
@@ -272,6 +359,27 @@ $(REFS)/trainset16_022016.pds.% :
 # Build figures and tables
 #
 ####################################################################################################
+
+
+# Find the amount of sequence loss from pruning
+data/process/sequence_loss_table_raw.tsv : code/quantify_sequence_loss.R\
+			$(foreach S, $(samples), data/$S/data.count_table)
+	Rscript code/quantify_sequence_loss.R
+
+data/process/sequence_loss_table_cor.tsv : code/quantify_correlation_with_sample_size.R\
+		data/process/sequence_loss_table_raw.tsv
+	Rscript code/quantify_correlation_with_sample_size.R data/process/sequence_loss_table_raw.tsv
+
+# Find the amount of sequence coverage
+data/process/sequence_coverage_table_raw.tsv : code/quantify_sample_coverage.R\
+			$(foreach S, $(samples), data/$S/data.count_table)
+	Rscript code/quantify_sample_coverage.R
+
+data/process/sequence_coverage_table_cor.tsv : code/quantify_correlation_with_sample_size.R\
+		data/process/sequence_coverage_table_raw.tsv
+	Rscript code/quantify_correlation_with_sample_size.R data/process/sequence_coverage_table_raw.tsv
+
+
 
 # Table that contains summary statistics about each sample
 data/process/study_summary_statistics.tsv: code/get_sample_summary_statistics.R\
@@ -287,6 +395,8 @@ results/figures/seqs_per_sample.pdf: code/plot_seqs_per_sample.R\
 	Rscript $<
 
 
+
+
 ####################################################################################################
 #
 #	Build manuscript
@@ -298,7 +408,7 @@ submission/manuscript.pdf submission/manuscript.md submission/manuscript.tex : s
 							submission/manuscript.Rmd
 	R -e "library('rmarkdown'); render('submission/manuscript.Rmd', clean=FALSE)"
 	mv submission/manuscript.utf8.md submission/manuscript.md
-	rm submission/manuscript.knit.md
+	rm submission/manuscript.knit.md submission/manuscript.log
 
 
 # module load perl-modules latexdiff/1.2.0

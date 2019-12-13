@@ -49,6 +49,16 @@ get_shannon <- function(x) {
 	-sum(non_zero * log(non_zero))
 }
 
+# Calculate the richness
+get_sobs <- function(x) {
+	sum(x > 0)
+}
+
+# Calculate the evenness
+get_even <- function(h, sobs) {
+	print(sobs)
+	h/log(sobs)
+}
 
 # This is the driver function, which takes in a file name for a pruned and non-pruned data frame,
 # which was generated from a mothur-formatted shared file. This function outputs a tibble that
@@ -69,15 +79,23 @@ compare_pruning <- function(no_pruned_shared_tbl, pruned_shared_file){
   	nest() %>%
   	mutate(n_seqs.no = map(data, ~sum(.x$count.no)),
   	      n_seqs.yes = map(data, ~sum(.x$count.yes)),
+					sobs.no = map(data, ~get_sobs(.x$rel_abund.no)),
+  				sobs.yes = map(data, ~get_sobs(.x$rel_abund.yes)),
   				h.no = map(data, ~get_shannon(.x$rel_abund.no)),
   				h.yes = map(data, ~get_shannon(.x$rel_abund.yes)),
   				d_kl = map(data, ~get_kl_divergence(.x$rel_abund.yes, .x$rel_abund.no)),
   				spearman = map(data, ~cor(.x$rel_abund.no, .x$rel_abund.yes, method="spearman"))) %>%
   	select(-data) %>%
-    unnest() %>%
-    mutate(count_diff = n_seqs.no - n_seqs.yes,
-           min_class = str_replace(pruned_shared_file, ".*\\.(\\d{1,2})\\.\\D*", "\\1"),
-           seed = ifelse(str_detect(pruned_shared_file, "oshared"), NA, str_replace(pruned_shared_file, "\\D*\\.(\\d{1,2})\\..*", "\\1"))) %>%
+    unnest(cols = c(n_seqs.no, n_seqs.yes,
+										sobs.no, sobs.yes,
+										h.no, h.yes,
+										d_kl, spearman)) %>%
+    mutate(
+			even.no = h.no/log(sobs.no),
+			even.yes = h.yes/log(sobs.yes),
+			count_diff = n_seqs.no - n_seqs.yes,
+			min_class = str_replace(pruned_shared_file, ".*\\.(\\d{1,2})\\.\\D*", "\\1"),
+			seed = ifelse(str_detect(pruned_shared_file, "oshared"), NA, str_replace(pruned_shared_file, "\\D*\\.(\\d{1,3})\\..*", "\\1"))) %>%
     select(group, seed, min_class, everything())
 }
 
@@ -113,6 +131,7 @@ tibble(pruned=str_subset(shared_files, ".*\\.1\\.\\D+", negate=T),
   group_by(index) %>%
   nest() %>%
   mutate(consolidated = map(data, ~compare_pruning(no_pruned_tbl[[.x$no_pruned_index]], .x$pruned))) %>%
-  select(consolidated) %>%
-  unnest() %>%
+	ungroup() %>%
+	select(consolidated) %>%
+  unnest(consolidated) %>%
   write_tsv(output)
