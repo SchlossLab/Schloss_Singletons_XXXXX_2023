@@ -333,11 +333,11 @@ data/process/rffect_alpha_analysis.tsv : code/pool_ffect.R\
 	Rscript $^ $@
 
 data/process/effect_alpha_analysis.tsv : code/pool_ffect.R\
-		$(foreach S, $(samples), data/$S/data.rffect.alpha_summary)
+		$(foreach S, $(samples), data/$S/data.effect.alpha_summary)
 	Rscript $^ $@
 
 data/process/bffect_alpha_analysis.tsv : code/pool_ffect.R\
-		$(foreach S, $(samples), data/$S/data.rffect.alpha_summary)
+		$(foreach S, $(samples), data/$S/data.bffect.alpha_summary)
 	Rscript $^ $@
 
 
@@ -346,11 +346,11 @@ data/process/rffect_beta_analysis.tsv : code/pool_ffect.R\
 	Rscript $^ $@
 
 data/process/effect_beta_analysis.tsv : code/pool_ffect.R\
-		$(foreach S, $(samples), data/$S/data.rffect.beta_summary)
+		$(foreach S, $(samples), data/$S/data.effect.beta_summary)
 	Rscript $^ $@
 
 data/process/bffect_beta_analysis.tsv : code/pool_ffect.R\
-		$(foreach S, $(samples), data/$S/data.rffect.beta_summary)
+		$(foreach S, $(samples), data/$S/data.bffect.beta_summary)
 	Rscript $^ $@
 
 
@@ -408,7 +408,7 @@ submission/manuscript.pdf submission/manuscript.md submission/manuscript.tex : s
 							submission/manuscript.Rmd
 	R -e "library('rmarkdown'); render('submission/manuscript.Rmd', clean=FALSE)"
 	mv submission/manuscript.utf8.md submission/manuscript.md
-	rm submission/manuscript.knit.md submission/manuscript.log
+	rm submission/manuscript.knit.md
 
 
 # module load perl-modules latexdiff/1.2.0
