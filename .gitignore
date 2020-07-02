@@ -3,8 +3,7 @@
 .RData
 .DS_Store
 
-data/*/*
-!data/process/*
+data/
 !README.md
 
 *.pbs*
