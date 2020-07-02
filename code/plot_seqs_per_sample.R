@@ -14,11 +14,11 @@ get_removed_samples <- function(environment) {
 }
 
 
-studies <- c("bioethanol", "human", "lake", "marine", "mice", "rainforest",
-									"rice", "seagrass", "sediment", "soil", "stream")
+studies <- c("bioethanol", "human", "lake", "marine", "mice", "peromyscus",
+							"rainforest", "rice", "seagrass", "sediment", "soil", "stream")
 
-nice_studies <- c("Bioethanol", "Human", "Lake", "Marine", "Mice", "Rainforest",
-						"Rice", "Seagrass", "Sediment", "Soil", "Stream")
+nice_studies <- c("Bioethanol", "Human", "Lake", "Marine", "Mice", "Peromyscus",
+									"Rainforest", "Rice", "Seagrass", "Sediment", "Soil", "Stream")
 names(nice_studies) <- studies
 
 removed_samples <- studies %>%
@@ -40,7 +40,7 @@ counts_data <- tibble(study=studies,
 	mutate(study = factor(study, sort(studies, decreasing=T)))
 
 ggplot(counts_data, aes(y=n_seqs, x=study)) +
-	geom_vline(xintercept=seq(1:11), col="gray") +
+	geom_vline(xintercept=seq(1:12), col="gray") +
 	geom_jitter(width=0.2, pch=19, alpha=0.33, aes(color=status)) +
 	scale_y_log10(limits=c(0.9, 1e6), breaks=c(1, 10, 100, 1000, 10000, 100000, 1e6), labels=c("1", "10", "100", "1,000", "10,000", "100,000", "1,000,000")) +
 	scale_x_discrete(breaks=studies, labels=nice_studies[studies]) +

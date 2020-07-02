@@ -6,7 +6,8 @@ summarize_data <- function(environment) {
 		read_lines(.) %>%
 		str_split("-") %>%
 		unlist() %>%
-		enframe(., name=NULL, value="sample")
+		enframe(., name=NULL, value="sample") %>%
+		mutate(sample = as.character(sample))
 
 	paste0("data/", environment, "/data.count.summary") %>%
 		read_tsv(col_names=c("sample", "n_seqs"), col_types=cols(sample=col_character(), n_seqs=col_integer())) %>%
@@ -19,11 +20,11 @@ summarize_data <- function(environment) {
 }
 
 
-tibble(directory=c("bioethanol", "human", "lake", "marine", "mice", "rainforest",
-									"rice", "seagrass", "sediment", "soil", "stream"),
-			nice_name=c("Bioethanol", "Human", "Lake", "Marine", "Mice", "Rainforest",
-									"Rice", "Seagrass", "Sediment", "Soil", "Stream"),
-			reference=rep("", 11)
+tibble(directory=c("bioethanol", "human", "lake", "marine", "mice", "peromyscus",
+									"rainforest",	"rice", "seagrass", "sediment", "soil", "stream"),
+			nice_name=c("Bioethanol", "Human", "Lake", "Marine", "Mice", "Peromyscus",
+									"Rainforest", "Rice", "Seagrass", "Sediment", "Soil", "Stream"),
+			reference=rep("", 12)
 		) %>%
 		group_by(directory) %>%
 		mutate(summary_data = map(directory, summarize_data)) %>%
