@@ -208,6 +208,40 @@ $(REFS)/HMP_MOCK.fasta :
 
 ####################################################################################################
 #
+# Generate skewed versions of datasets on assignments of samples to different treatment groups
+# depending on whether the number of sequences in the sample is below or above the median
+#
+####################################################################################################
+
+.SECONDEXPANSION:
+%.sdesign : code/get_skew_design.R\
+			$$(addsuffix .rand_pruned_groups,$$(basename $$@))
+	Rscript $^
+
+%.sbeta_matrix : %.rbeta_matrix
+	cp $^ $@
+
+.SECONDEXPANSION:
+%.samova : code/run_amova.sh %.sbeta_matrix $$(addsuffix .sdesign,$$(basename $$(basename $$@)))
+	bash $^
+
+%.salpha_diversity : %.ralpha_diversity
+	cp $^ $@
+
+%.sbeta_diversity : %.rbeta_diversity
+	cp $^ $@
+
+.SECONDEXPANSION:
+%/data.sffect.alpha_summary : code/run_wilcox.R $$(foreach S, $$(SEED), $$(foreach P, $$(PRUNE), $$(foreach M, otu pc, $$(dir $$@)data.$$S.$$P.$$M.salpha_diversity)))
+	Rscript $^ $@
+
+.SECONDEXPANSION:
+%/data.sffect.beta_summary : code/amova_analysis.R $$(foreach S, $$(SEED), $$(foreach P, $$(PRUNE), $$(foreach M, otu pc, $$(dir $$@)data.$$S.$$P.$$M.samova)))
+	Rscript $^ $@
+
+
+####################################################################################################
+#
 # Generate diversity files
 #
 ####################################################################################################
@@ -270,27 +304,6 @@ $(REFS)/HMP_MOCK.fasta :
 
 ####################################################################################################
 #
-# Measure error rate of mock communities
-#
-####################################################################################################
-
-data/mock/data.fasta data/mock/data.count_table data/mock/data.taxonomy : code/mock_process.sh\
-			code/datasets_download.sh\
-			code/datasets_make_files.R\
-			data/mock/sra_info.tsv\
-			$(REFS)/silva.v4.align\
-			$(REFS)/trainset16_022016.pds.fasta\
-			$(REFS)/trainset16_022016.pds.tax
-	bash $< data/mock/
-
-
-data/mock/data.error.summary : data/mock/data.fasta data/mock/data.count_table\
-		$(REFS)/HMP_MOCK.fasta
-	mothur "#seq.error(fasta=data/mock/data.fasta, count=data/mock/data.count_table, reference=$(REFS)/HMP_MOCK.fasta, aligned=FALSE)"
-
-
-####################################################################################################
-#
 # Pool results from different environments
 #
 ####################################################################################################
@@ -340,6 +353,11 @@ data/process/bffect_alpha_analysis.tsv : code/pool_ffect.R\
 		$(foreach S, $(samples), data/$S/data.bffect.alpha_summary)
 	Rscript $^ $@
 
+data/process/sffect_alpha_analysis.tsv : code/pool_ffect.R\
+		$(foreach S, $(samples), data/$S/data.sffect.alpha_summary)
+	Rscript $^ $@
+
+
 
 data/process/rffect_beta_analysis.tsv : code/pool_ffect.R\
 		$(foreach S, $(samples), data/$S/data.rffect.beta_summary)
@@ -351,6 +369,10 @@ data/process/effect_beta_analysis.tsv : code/pool_ffect.R\
 
 data/process/bffect_beta_analysis.tsv : code/pool_ffect.R\
 		$(foreach S, $(samples), data/$S/data.bffect.beta_summary)
+	Rscript $^ $@
+
+data/process/sffect_beta_analysis.tsv : code/pool_ffect.R\
+		$(foreach S, $(samples), data/$S/data.sffect.beta_summary)
 	Rscript $^ $@
 
 
