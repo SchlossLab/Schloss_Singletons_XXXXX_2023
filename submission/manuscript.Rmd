@@ -6,15 +6,18 @@ output:
     includes:
       in_header: header.tex
 csl: mbio.csl
-fontsize: 11pt
 geometry: margin=1.0in
 ---
+
+## word choice: sample vs. community
+
 
 ```{r knitr_settings, tidy=TRUE, eval=TRUE, echo=FALSE, cache=FALSE}
 options(tidyverse.quiet = TRUE)
 
 library(tidyverse)
 library(knitr)
+suppressPackageStartupMessages(library(here))
 
 opts_chunk$set("tidy" = TRUE)
 opts_chunk$set("echo" = FALSE)
@@ -23,42 +26,54 @@ opts_chunk$set("warning" = FALSE)
 opts_chunk$set("message" = FALSE)
 opts_chunk$set("cache" = FALSE)
 
-inline_hook <- function(x){
-  print(x)
+inline_hook <- function(x, digits=2){
+
   if(is.list(x)){
     x <- unlist(x)
   }
   if(is.numeric(x)){
-    if(abs(x - round(x)) < .Machine$double.eps^0.5){
-      paste(format(x,big.mark=',', digits=0, scientific=FALSE))
-    } else {
-      paste(format(x,big.mark=',', digits=2, nsmall=2, scientific=FALSE))
-    }
+      paste(format(x,big.mark=',', digits=digits, nsmall=digits, scientific=FALSE))
   } else {
       paste(x)
   }
 }
 knitr::knit_hooks$set(inline=inline_hook)
+
+
+oxford_comma <- function(x, digits=2) {
+
+	x <- map_chr(x, inline_hook, digits=digits)
+
+	if(length(x) < 2){
+		x
+	} else if(length(x) == 2){
+		paste(x, collapse = " and ")
+	} else {
+		paste(paste(x[-length(x)], collapse=", "), x[length(x)], sep=", and ")
+	}
+}
+
 ```
-
-
-\vspace*{10mm}
 
 # Removal of rare sequences from 16S rRNA gene sequence surveys biases the interpretation of community structure data
 
 \vspace{35mm}
 
-Patrick D. Schloss${^1}$${^\dagger}$
+Patrick D. Schloss${^\dagger}$
 
 \vspace{40mm}
 
-$\dagger$ To whom correspondence should be addressed: \href{mailto:pschloss@umich.edu}{pschloss@umich.edu}
+$\dagger$ To whom correspondence should be addressed:
 
-$1$ Department of Microbiology and Immunology, University of Michigan, Ann Arbor, MI 48109
+\href{mailto:pschloss@umich.edu}{pschloss@umich.edu}
+
+Department of Microbiology and Immunology
+University of Michigan
+Ann Arbor, MI 48109
 
 \vspace{35mm}
 
-## Observation format
+## Research article format
 
 \newpage
 \linenumbers
@@ -73,30 +88,263 @@ $1$ Department of Microbiology and Immunology, University of Michigan, Ann Arbor
 
 \newpage
 
-Two elements that are held in tension in the analysis of 16S rRNA gene sequence data is how to adequately remove PCR and sequencing artifacts and decrease the granularity of the taxonomic level that is used in the analysis. Previous attempts have included screening for sequencing quality based on quality scores [Kozich/Edgar] followed by a polishing step based on the frequency of the sequences relative to similar sequences [Kozich/Edgar/DeBlur]. Other pipelines model the quality scores and types of errors to cluster sequences directly [Dada2]. As a final step, many pipelines advocate for removing rare sequences from each dataset prior to further clustering of sequences into an operational taxonomic unit (OTU) or phylogenetic group [Knight/Edgar/DeBlur/Dada2]. The assumption of this abundance-based screening approach is that rare sequences are more likely to be artifacts than more abundant sequences. Some pipelines remove all sequences that appear once (i.e. singletons) [XXXX], XXXXXX [XXXXXX], XXXXX [XXXXXXX], or XXXXXX [XXXXXX] times; only the mothur-based pipeline discourages the practice of removing rare sequences. Proponents of this approach point to the ability to reach the desired number of OTUs with data generated from sequencing mock communities when rare sequences are removed. This approach effectively fits the sequence curation approach to data generated from a phylogenetically simple community with an atypical community distribution.
 
-Sequencing of mock communities confirms that artifacts tend to be rare; however, artifacts can also be more abundant and replicate across samples. Furthermore, sequencing of real samples suggests that there are also good sequences that are rare. Ignored in the suggestion that researchers should remove rare sequences from each sample is the common result that the number of sequences generated from each sample may vary by two or three orders of magnitude. Thus a sequence that appears once in a sample with 2,000 sequences is more trustworthy than a sequence that appears once in a sample with 100,000 sequences. Removing such sequences potentially biases the community structure of the sample with fewer sequences. In the current study, I use published sequence data to investigate the effects of removing singletons and other rare sequences on downstream analysis of microbial communities.
+```{r datasets}
+table_1 <- read_tsv(here('data/process/study_summary_statistics.tsv'))
+
+n_sample_range <- table_1 %>%
+	pull(n_samples) %>%
+	range()
+
+n_med_sequence_range <- table_1 %>%
+	pull(median) %>%
+	round() %>%
+	range()
+
+low_fold_samples <- table_1 %>%
+	filter(fold_difference < 2) %>%
+	pull(directory)
+
+high_fold_range <- table_1 %>%
+	filter(fold_difference >= 2) %>%
+	pull(fold_difference) %>%
+	range() %>%
+	round(digits=1)
+```
+
+**EDIT: Two elements that are held in tension in the analysis of 16S rRNA gene sequence data is how to adequately remove PCR and sequencing artifacts and decrease the granularity of the taxonomic level that is used in the analysis.** Previous attempts have included screening for sequencing quality based on quality scores [Kozich/Edgar] followed by a polishing step based on the frequency of the sequences relative to similar sequences [Kozich/Edgar/DeBlur]. Other pipelines model the quality scores and types of errors to cluster sequences directly [Dada2]. But, as a final step many pipelines advocate for removing rare sequences from each dataset prior to outputting the sequence data as amplicon sequence variants (ASVs) [Knight/Edgar/DeBlur/Dada2]. ASVs are often clustered further to generate operational taxonomic units or phylotypes. Some pipelines remove all ASVs that appear once (i.e. singletons) [XXXX], XXXXXX [XXXXXX], XXXXX [XXXXXXX], or XXXXXX [XXXXXX] times prior to further clustering or making ecological comparisions. Notably, the mothur-based pipeline discourages the practice of removing rare sequences.
+
+The abundance-based screening approach assumes that rare ASVs are more likely to be artifacts than more abundant ASVs. Sequencing of mock communities confirms that artifacts tend to be rare. Proponents of abundance-based screening point to their ability to obtain the correct number of ASVs, OTUs, or phylogypes with data generated from sequencing mock communities when rare ASVs are removed. However, this approach effectively overfits the curation pipeline to data generated from a phylogenetically simple community with an atypical community distribution that is often sequenced to a depth that is not achieved with biological samples. It is necessary to think more deeply about the practice of abundance-based screening.
+
+The minimum abundance thresholds that have been proscribed are developed and applied without regard for the total number of sequences generated from each sample. Ignored in their recommendations is the common experience that the number of sequences generated from each sample may vary by two or three orders of magnitude. An ASV that appears once in a sample with 2,000 sequences is more trustworthy than an ASV that appears once in a sample with 100,000 sequences since it has a 50-fold higher relative abundance. But, according to the pipeline recommendations, they are treated as being equally trustworthy. Rather than removing rare ASVs, the approach taken by the mothur pipeline applies the classical ecological approach of rarefaction. Each sample is rarefied to the same sequencing depth so that the number of artifacts that appears in each sample is controlled.
+
+Experience sequencing biological samples demonstrates that there are good ASVs that may have an abundance below the proscribed threshold. For example, the abundance of an ASV may be below the threshold in some samples or time points and above the threshold in others. However, rarity, both in terms of prevalence and incidence, is an important ecological concept. Removing rare ASVs likely hinders one's ability to ability to make inferences about the dynamics and nature of the populations that rare ASVs represent. Furthermore, removing ASVs whose abundances are below the proscribed threshold also potentially biases the community structure of the samples.
+
+In the current study, I use published sequence data from `r nrow(table_1)` studies to investigate the nature of rare ASVs (i.e. those that appear 10 or fewer times) and the effects of removing them on downstream analysis of microbial communities. The analysis was also performed using traditional operational taxonomic units, where ASVs subjected to abundance-based screening were clustered such that the ASVs within an OTU were no more than 3% different from each other. The results reject the assumptions built into abundance-based screening and highlight the problems inherent in removing rare ASVs.
 
 
-***Results.*** 600 words
-Sample description
-* Logic for selecting studies (Table S1)
 
-Description / N Samples / N Reads / Median / IQR/Range / Reference
+***Results.***
 
-* Distribution of sequence counts across samples in each study (Figure S1)
+**Datasets.** I collected `r nrow(table_1)` publicly available datasets that used the Illumina MiSeq platform to sequence the V4 region of the 16S rRNA gene from a variety of environments (Table 1). To insure the highest possible data quality, datasets were limited to those where the 500 cycle v2 MiSeq chemistry was used to sequence the amplicons. The paired 250 nt reads resulted in near complete 2-fold sequencing coverage of every nucleotide in the ca. 250 nt-long region. This region and sequencing platform were selected because previous work has shown that a standard data analysis pipeline in mothur results in a sequencing error rate below 0.02% [@Kozich2012]. All sequence data were obtained from the Sequence Read Archive and processed using a standard mothur-based sequencing pipeline that resulted in ASVs as generated by the pre.cluster algorithm [@Kozich2012; @Schloss2009]. After removing poor quality and chimeric ASVs and samples that had uncharacteristically low number of sequences for the dataset, these datasets included between `r oxford_comma(n_sample_range)` samples. The median number of sequences for each dataset ranged between `r oxford_comma(n_med_sequence_range)` (Table 1, Figure S1). Strikingly, aside from the relatively small `r oxford_comma(low_fold_samples)` datasets, the difference between the sample with the fewest sequences and the sample with the most sequences for each dataset varied between `r oxford_comma(high_fold_range, digits=1)`-fold (Table 1).
 
 
+```{r}
+
+frac_lost <- read_tsv(here('data/process/sequence_loss_table_raw.tsv')) %>%
+	filter(min_freq == 1) %>%
+	group_by(dataset) %>%
+	summarize(median=median(fraction_lost))
+
+fraction_singletons_range <- frac_lost %>% arrange(median) %>% slice(1, nrow(.))
+percent_singletons_range_vals <- fraction_singletons_range %>% pull(median) * 100
+percent_singletons_range_names <- fraction_singletons_range %>% pull(dataset)
 
 
-Change in intra-sample variation with removal of rare sequences
-* Lose information within each sample as you remove sequences
-* Repeat when sequences are randomized across samples to maintain marginal sums
 
-Change in inter-sample variation with removal of rare sequences
-* Increased variation between samples as you remove sequences
-* Repeat when sequences are randomized across samples to maintain marginal sums
-* Loss of statistical power when rare sequences are removed/no impact on type 1 errors
+cor_n <- read_tsv(here('data/process/sequence_loss_table_cor.tsv')) %>%
+ 	filter(min_freq == 1) %>%
+	select(dataset, cor_n_estimate, cor_n_p.value) %>%
+	mutate(sig = cor_n_p.value < 0.05)
+
+cor_n_nosig <- cor_n %>% filter(!sig) %>% pull(dataset)
+
+cor_n_sig <- cor_n %>%
+	filter(sig) %>%
+	select(dataset, cor_n_estimate) %>%
+	arrange(desc(cor_n_estimate)) %>%
+	slice(1, nrow(.))
+
+cor_n_sig_values <- cor_n_sig %>% pull(cor_n_estimate)
+cor_n_sig_names <- cor_n_sig %>% pull(dataset)
+
+
+
+
+frac_coverage <- read_tsv(here('data/process/sequence_coverage_table_raw.tsv')) %>%
+	filter(min_freq == 1) %>%
+	group_by(dataset) %>%
+	summarize(median=median(coverage))
+
+high_coverage <- frac_coverage %>% filter(median > 0.5) %>% pull(dataset)
+
+coverage_n <- read_tsv(here('data/process/sequence_coverage_table_cor.tsv')) %>%
+	filter(min_freq == 1) %>%
+	select(dataset, cor_n_estimate, cor_n_p.value) %>%
+	mutate(sig = cor_n_p.value < 0.05)
+
+coverage_n_nosig <- coverage_n %>% filter(!sig) %>% pull(dataset)
+
+coverage_n_sig <- coverage_n %>%
+	filter(sig) %>%
+	select(dataset, cor_n_estimate) %>%
+	arrange(desc(cor_n_estimate)) %>%
+	slice(1, nrow(.))
+
+coverage_n_sig_values <- coverage_n_sig %>% pull(cor_n_estimate)
+coverage_n_sig_names <- coverage_n_sig %>% pull(dataset)
+```
+
+**The nature of singletons.** Removal of rare ASVs is commonly justified as a method of removing ASVs that are artifacts. If such ASVs are artifacts, then one would expect the number of singleton ASVs to accumulate with sequencing depth. Contrary to this expectation, the median percentage of sequences that were discarded when singleton ASVs were removed from each dataset varied between `r oxford_comma(percent_singletons_range_vals)`% (`r oxford_comma(percent_singletons_range_names)`). In addition, with the exception of the samples from the `r oxford_comma(cor_n_nosig)` datasets (Spearman correlation, P>0.05), the fraction of singleton ASVs in the sample was negatively correlated with the number of sequences in each sample with a range between `r oxford_comma(cor_n_sig_values)` (`r oxford_comma(cor_n_sig_names)`). This showed that with additional sequencing, the probability of seeing rare ASVs multiple times was greater than the probability of generating an artifact. This suggests that the rare ASVs are not as likely to be artifacts as previously thought. Furthermore, if rare ASVs were artifacts, then one would not expect to find them in other samples from the same dataset. In fact, singleton ASVs from samples with fewer sequences were often found in samples with more sequences. At least 50% of the singleton ASVs found in the samples from the `r oxford_comma(high_coverage)` datasets were found in another sample from the same dataset. Considering the likelihood of finding an ASV duplicated in another sample is confounded by the number of samples and inter-sample diversity, the high coverage of singleton ASVs in these datasets was remarkable. The correlation between the number of sequences in a sample and the fraction of that sample's singleton ASVs that were covered by another sample in the dataset was significant and negative for `r nrow(coverage_n) - length(coverage_n_nosig)` of the datasets ranging between `r oxford_comma(coverage_n_sig_values)` for the `r oxford_comma(coverage_n_sig_names)` datasets, respectively. The negative correlation indicated that the singleton ASVs in the smaller samples were more likely to be covered by ASVs in the larger samples. Among the three datasets without a significant correlation (Spearman correlation, P>0.05), the marine and soil datasets had the fewest samples in our collection and the stream dataset already had a high level of coverage regardless of the number of sequences. Contrary to the common motivation for removing rare ASVs, these results indicate that this practice disproportionately impacts samples with fewer sequences and likely removes a large number of non-artifact ASVs.
+
+
+```{r}
+ointra <- read_tsv(here("data/process/ointra_analysis.tsv"),
+		col_types = cols(.default=col_double(),
+					dataset=col_character(), method=col_character(), group=col_character())
+	) %>%
+	group_by(dataset, method, min_class) %>%
+	summarize(mean_s_frac = 100*(1-mean(s_yes / s_no)),
+		mean_h_frac = 100*(1-mean(h_yes / h_no))) %>%
+	ungroup()
+
+asv_s_two <- ointra %>% filter(min_class == 2, method== "pc") %>% arrange(mean_s_frac)	%>% slice(1, nrow(.)) %>% pull(mean_s_frac)
+
+asv_s_eleven <- ointra %>% filter(min_class == 11, method== "pc") %>% arrange(mean_s_frac)	%>% slice(1, nrow(.)) %>% pull(mean_s_frac)
+
+asv_h_two <- ointra %>% filter(min_class == 2, method== "pc") %>% arrange(mean_h_frac)	%>% slice(1, nrow(.)) %>% pull(mean_h_frac)
+
+asv_h_eleven <- ointra %>% filter(min_class == 11, method== "pc") %>% arrange(mean_h_frac)	%>% slice(1, nrow(.)) %>% pull(mean_h_frac)
+```
+
+**How do communities change when rare ASVs are removed?** Removing rare ASVs will reduce the number of observed ASVs and proportionally increase the relative abundance of the remaining ASVs. The result was expected to be a loss of information contained within each sample. To quantify the effect of removing rare ASVs on the information contained within each sample, I varied the minimum abundance threshold to simulate removing ASVs of varying rarity from each sample. The number of ASVs in each sample decreased by between `r oxford_comma(asv_s_two, 1)`% when removing those ASVs that only appeared once and by between `r oxford_comma(asv_s_eleven, 1)`% when removing those that appeared ten or fewer times from each sample (Figure 1). Similarly, the Shannon diversity decreased by between `r oxford_comma(asv_h_two, 1)`% when removing ASVs that only appeared once and by between `r oxford_comma(asv_s_eleven, 1)`% when removing ASVs that appeared ten or fewer times from each sample (Figure 1). Next, I assigned the ASVs to OTUs to assess the impact of removing rare ASVs on higher level taxonomic groupings that are commonly used in microbial ecology studies. Although pooling similar ASVs into OTUs reduced the impact of removing the rare ASVs relative to the ASV-based analysis, the minimum abundance threshold still decreased the number of observed OTUs and the diversity decreased relative to the original community (**Figure 1**). In contrast to the number of ASVs or OTUs and their diversity, the Kullback–Leibler divergence compares the relative abundance of each ASV or OTU between representations of the community. I calculated the Kullback–Leibler divergence from the full to pruned communities when rare ASVs were removed. As the threshold for removing ASVs increased, the amount of information lost also increased for both ASVs and OTUs (Figure 1). The relative loss of information was generally lower for OTUs than than it was for ASVs. Removing rare ASVs, regardless of abundance threshold, had profound impacts on the representation of the communities.
+
+
+**Removing treatment group effects from community data.** Because treatment effects often affect a sample's diversity and inter-sample variation, I generated null distributions for each study by randomizing the number of times each ASV was observed in each sample such that the total number of sequences in each sample and the total number of times each ASV was observed across all samples in the study was the same as was originally observed. This effectively made every community in a study a statistical sample of the study-wide composite community distribution. For example, after this procedure, the 490 samples from the human dataset would be expected to have the same number of ASVs and diversity and one would not expect to find treatment-based effects between the samples. Because of the risk of bias if only one representation of the null distribution was generated, I generated 100 randomized datasets for each study. The same trends between removing rare ASVs and the number of ASVs, sample diversity, and information loss that were identified using the observed community community distribution data were also identified with the data from the null distribution (**Figure S2**). The null distribution data were used in the remainder of the study.
+
+
+```{r}
+r_cov_alpha <- read_tsv(here("data/process/ralpha_analysis.tsv"),
+		col_types = cols(.default=col_double(),
+					dataset=col_character(), method=col_character())
+	) %>% select(dataset, method, prune, starts_with("cv_")) %>%
+	filter(prune == 2 | prune ==1) %>%
+	pivot_wider(id_cols=c(dataset, method), names_from=prune, values_from=starts_with("cv_")) %>%
+	mutate(cv_sobs = cv_sobs_2/cv_sobs_1,
+			cv_shannon = cv_shannon_2/cv_shannon_1
+		) %>%
+	select(dataset, method, cv_sobs, cv_shannon)
+
+pc_cov_alpha <- r_cov_alpha %>% filter(method == "pc")
+pc_cov_sobs <- pc_cov_alpha %>% arrange(cv_sobs) %>% slice(1, nrow(.)) %>% pull(cv_sobs)
+pc_cov_shannon <- pc_cov_alpha %>% arrange(cv_shannon) %>% slice(1, nrow(.)) %>% pull(cv_shannon)
+
+otu_cov_alpha <- r_cov_alpha %>% filter(method == "otu")
+otu_cov_sobs <- otu_cov_alpha %>% arrange(cv_sobs) %>% slice(1, nrow(.)) %>% pull(cv_sobs)
+otu_cov_shannon <- otu_cov_alpha %>% arrange(cv_shannon) %>% slice(1, nrow(.)) %>% pull(cv_shannon)
+
+pc_v_otu_alpha <- r_cov_alpha %>% pivot_wider(dataset, names_from=method, values_from=c(cv_sobs, cv_shannon)) %>% mutate(sobs = 100*(1-cv_sobs_otu/cv_sobs_pc), shannon = 100*(1-cv_shannon_otu/cv_shannon_pc))
+
+pc_v_otu_sobs <- range(pc_v_otu_alpha$sobs)
+pc_v_otu_shannon <- range(pc_v_otu_alpha$shannon)
+
+
+r_cov_bc <- read_tsv(here("data/process/rbeta_analysis.tsv"),
+		col_types = cols(.default=col_double(),
+					dataset=col_character(), method=col_character())) %>%
+		filter(prune == 2 | prune ==1) %>%
+		pivot_wider(id_cols=c(dataset, method), names_from=prune, values_from=starts_with("sd_")) %>%
+		mutate(cv_diff = `2`/`1`) %>%
+		select(dataset, method, cv_diff)
+
+pc_cov_bc <- r_cov_bc %>% filter(method == "pc") %>% arrange(cv_diff) %>% slice(1, nrow(.)) %>% pull(cv_diff)
+
+otu_cov_bc <- r_cov_bc %>% filter(method == "otu") %>% arrange(cv_diff) %>% slice(1, nrow(.)) %>% pull(cv_diff)
+
+```
+
+**How do the relationships between communities change when they are screened by removing rare ASVs.** Considering the loss of the number of ASVs, diversity, and information when a community has its rarest ASVs removed, it seemed likely that the relationship between communities would be altered. To assess the impact of removing rare ASVs on measures of alpha diversity between samples I calculated the coefficients of variation (COV, i.e. standard deviation divided by the mean) for the number of ASVs and diversity for each study at multiple abundance thresholds. The COV for the number of ASVs across the studies after removing singletons were between `r oxford_comma(pc_cov_sobs, 1)`-times larger than they were without removing singleton ASVs. Similarly, the COVs for the diversity of ASVs were between `r oxford_comma(pc_cov_shannon, 1)`-times larger when singletons were removed than when they were not removed.To assess the impact of removing rare ASVs on measures of beta diversity between samples I calculated the COV of the Bray-Curtis distances between samples within the same study at multiple abundance thresholds. The COV between Bray-Curtis distances within a study when singletons were removed was between `r oxford_comma(pc_cov_bc, 1)`-times larger than when they were not removed. Increasing the minimum abundance threshold increased the COV between samples when using metrics of alpha and beta diversity. When ASVs were clustered into OTUs the difference in the COV was less than it was for the ASVs (**Figure 2**). These results indicate that removing rare ASVs increases the dissimilarity between samples, which could have a significant impact on the statistical power to detect differences between treatment groups.
+
+```{r}
+b_alpha <- read_tsv(here("data/process/bffect_alpha_analysis.tsv"),
+		col_types = cols(.default=col_double(),
+					dataset=col_character(), method=col_character(), metric=col_character())) %>%
+	filter(metric != "invsimpson", dataset != "marine") %>%
+	filter(prune == 2 | prune ==1) %>%
+	pivot_wider(id_cols=c(dataset, metric, method), names_from=c(prune), values_from=frac_sig) %>%
+	mutate(pp_drop = `1` - `2`,
+		percentage_drop = 100*(1-`2` / `1`)) %>%
+	arrange(percentage_drop)
+
+
+b_base_pc_sobs <- b_alpha %>% filter(metric == "sobs", method == "pc") %>% select(`1`) %>% range()
+b_base_pc_shannon <- b_alpha %>% filter(metric == "shannon", method == "pc") %>% select(`1`) %>% range()
+
+b_base_otu_sobs <- b_alpha %>% filter(metric == "sobs", method == "otu") %>% select(`1`) %>% range()
+b_base_otu_shannon <- b_alpha %>% filter(metric == "shannon", method == "otu") %>% select(`1`) %>% range()
+
+b_pc_sobs <- b_alpha %>% filter(metric == "sobs", method == "pc") %>% slice(1, n()) %>% pull(percentage_drop)
+
+b_pc_shannon <- b_alpha %>% filter(metric == "shannon", method == "pc") %>% slice(1, n()) %>% pull(percentage_drop)
+
+
+b_beta <- read_tsv(here("data/process/bffect_beta_analysis.tsv"),
+		col_types = cols(.default=col_double(),
+					dataset=col_character(), clustering=col_character())) %>%
+	filter(dataset != "marine") %>%
+	filter(prune==11 | prune == 2 | prune ==1) %>%
+	pivot_wider(id_cols=c(dataset, clustering), names_from=c(prune), values_from=frac_sig) %>%
+	mutate(p_drop_singletons = 100*(1-`2` / `1`),
+					p_drop_tens = 100*(1-`11` / `1`)) %>%
+	arrange(p_drop_singletons)
+
+b_base_beta <- b_beta %>% filter(clustering == "pc") %>% select(`1`) %>% range()
+
+n_unfazed_singletons <- b_beta %>% filter(clustering=="pc" & p_drop_singletons <= 0) %>% nrow()
+
+fazed_singletons <- b_beta %>% filter(clustering=="pc" & p_drop_singletons > 0) %>% select(p_drop_singletons) %>% range()
+
+n_unfazed_tentons <- b_beta %>% filter(clustering=="pc" & p_drop_tens <= 10) %>% nrow()
+stopifnot(n_unfazed_tentons == 0)
+
+fazed_tentons <- b_beta %>% filter(clustering=="pc" & p_drop_tens > 10) %>% select(p_drop_tens) %>% range()
+```
+
+**How does the increased inter-sample variation impact the ability to detect differences between samples?** To test the effect of increased inter-sample variation, I randomly assigned samples to one of two treatment groups. In the first treatment group, communities were randomly sampled from the null distribution as described above. For the second treatment group, I increased the abundance of 10% of the ASVs in the pooled study distribution by 5%. I randomly generated 100 simulated sets of treatment groups and samples. I then tested the ability to detect a difference between the two treatment groups using alpha and beta diversity metrics. The fraction of significant tests was a measurement of the statistical power to detect the difference between the treatment groups. Across all of the metrics I tested, the marine dataset yielded no simulated sets that were statistically significant, which was likely due to the small number of samples in the study (N=7); the marine dataset is not included in the following analysis. Among the remaining datasets, the power to detect a difference in the observed number of ASVs ranged between `r oxford_comma(b_base_pc_sobs, 2)` and between `r oxford_comma(b_base_pc_shannon, 2)` to detect a difference in diversity when using a Wilcox test (**Figure X**). When singleton ASVs were removed, the power to detect a difference in the number of ASVs dropped by between `r oxford_comma(b_pc_sobs, 1)`% and by between `r oxford_comma(b_pc_shannon, 1)`% to detect a difference in diversity. The effect of removing rare ASVs on the number of OTUs and their diversity was similar. A popular alternative approach calculates the dissimilarity between communities based on the abundance of each ASV or OTU. We used the Bray-Curtis dissimilarity index to compare the simulated communities within each dataset and calculated the power to detect differences between the two simulated treatment groups using the analysis of molecular variance (also called PERMANOVA). Without removing rare sequences, the power to detect a difference between the two simulated treatment groups varied between `r oxford_comma(b_base_beta, 2)`. Aside from `r n_unfazed_singletons` datasets, the power to detect differences dropped by between `r oxford_comma(fazed_singletons, 1)`% when singletons were removed. However, when ASVs that occurred 10 or fewer times were removed from each sample, the power to detect differences dropped by `r oxford_comma(fazed_tentons, 1)`%; similar results were observed when ASVs were clustered into OTUs. Removing rare ASVs reduced the ability to detect simulated treatment effects using metrics commonly used to compare microbial communities.
+
+
+```{r}
+type_one_null_alpha_summary <-
+  read_tsv(here("data/process/rffect_alpha_analysis.tsv"),
+		col_types = cols(.default=col_double(),
+					dataset=col_character(), method=col_character(), metric=col_character())) %>%
+	filter(dataset != "marine" & metric != "invsimpson") %>%
+  filter((metric == "sobs" | metric == "shannon")) %>%
+	group_by(prune, method, metric) %>%
+	summarize(p=mean(frac_sig), p_sd = sd(frac_sig)) %>%
+	ungroup()
+
+type_one_null_beta_summary <- read_tsv(here("data/process/rffect_beta_analysis.tsv"),
+		col_types = cols(.default=col_double(),
+					dataset=col_character(), clustering=col_character())) %>%
+	filter(dataset != "marine") %>%
+	group_by(prune, clustering) %>%
+	summarize(p=mean(frac_sig), p_sd = sd(frac_sig)) %>%
+  ungroup()
+
+type_one_skew_alpha_summary <-
+  read_tsv(here("data/process/sffect_alpha_analysis.tsv"),
+		col_types = cols(.default=col_double(),
+					dataset=col_character(), method=col_character(), metric=col_character())) %>%
+	filter(dataset != "marine" & metric != "invsimpson") %>%
+  filter((metric == "sobs" | metric == "shannon")) %>%
+  group_by(prune, method, metric) %>%
+  summarize(p=mean(frac_sig), p_sd = sd(frac_sig), min_p=min(frac_sig)) %>%
+  ungroup()
+
+type_one_skew_beta_summary <- read_tsv(here("data/process/sffect_beta_analysis.tsv"),
+		col_types = cols(.default=col_double(),
+					dataset=col_character(), clustering=col_character())) %>%
+	filter(dataset != "marine") %>%
+	group_by(prune, clustering) %>%
+	summarize(p=mean(frac_sig), p_sd = sd(frac_sig), min_p=min(frac_sig)) %>%
+  ungroup()
+
+
+
+```
+
+**How does the removing of rare ASVs impact the probability of falsely detecting a difference between treatment groups?** Observing reduced ability to detect differences between communities when rare ASVs were removed from each sample, I next asked whether removing rare ASVs could lead to falsely claiming that a treatment effect had a significant effect on community diversity and structure. First, for each dataset, I sampled sequences from the null distribution and randomly assigned each sample to one of two treatment groups and determined the number of observed ASVs and OTUs and their Shannon diversity index. Testing at an experiment-wise error rate of 0.05, I expected 5% of the iterations for each dataset to yield a significant test result. Indeed, there was no evidence that removing rare ASVs resulted in an inflated experiment-wise error rate. The average fraction of significant tests did not meaningfully vary from 0.05 across the minimum abundance threshold, dataset, metric of describing sample alpha-diversity, or whether the abundance of ASVs or OTUs were used (**Figure XA**). Similarly, the average fraction of significant tests did not meaningfully vary from 0.05 when using analysis of molecular variance to compare communities using Bray-Curtis distances. Second, I again sampled sequences from the null distribution, but assigned samples to one of two treatment groups based on the number of sequences in each sample. The samples with fewer than the median number of sequences for the dataset were assigned to one group and those with more than the median were assigned to the other. This exaggerated bias has been observed in comparisons of the lung and oral microbiota because of the larger nubmer of non-specific amplicons that can be sequenced from lung samples relative to those in the oral cavity [**REF**]. When rare sequences were not removed, the fraction of significant tests did not differ from 5% for comparing the number of observed taxa (using ASVs or OTUs), their shannon diversity, or Bray-Curtis distances. However, when rare taxa of any frequency were removed, the probability of falsely detecing a difference as signifiant increased with the definition of rarity (**Figure XB**). Across the datasets, the average fraction the average fraction of falsely detecting a difference was when only singletons were removed was greater than 90%. If there is any relationship between the number of sequences and the treatment group, the risk of falsely rejecting the null hypothesis is inflated when researchers use the strategy of removing rare sequences. The most conservative approach is to not remove low abundance sequences.
 
 
 
@@ -114,12 +362,11 @@ Need to treat rare sequences with a grain of salt
 
 ## Materials and Methods
 
-
+* sequencing pipeline description
 
 \newpage
 
 ## References
-25 references
 
 <div id="refs"></div>
 
