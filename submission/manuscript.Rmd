@@ -3,8 +3,28 @@ bibliography: references.bib
 output:
   pdf_document:
     keep_tex: true
-    includes:
-      in_header: header.tex
+header-includes:
+ - \usepackage{booktabs}
+ - \usepackage{longtable}
+ - \usepackage{array}
+ - \usepackage{multirow}
+ - \usepackage{wrapfig}
+ - \usepackage{float}
+ - \usepackage{colortbl}
+ - \usepackage{pdflscape}
+ - \usepackage{tabu}
+ - \usepackage{threeparttable}
+ - \usepackage{threeparttablex}
+ - \usepackage[normalem]{ulem}
+ - \usepackage{makecell}
+ - \usepackage{setspace}
+ - \doublespacing
+ - \usepackage[left]{lineno}
+ - \linenumbers
+ - \modulolinenumbers
+ - \usepackage{helvet} % Helvetica font
+ - \renewcommand*\familydefault{\sfdefault} % Use the sans serif version of the font
+ - \usepackage[T1]{fontenc}
 csl: mbio.csl
 geometry: margin=1.0in
 ---
@@ -16,6 +36,8 @@ geometry: margin=1.0in
 options(tidyverse.quiet = TRUE)
 
 library(tidyverse)
+library(glue)
+library(kableExtra)
 library(knitr)
 suppressPackageStartupMessages(library(here))
 
@@ -372,6 +394,29 @@ Need to treat rare sequences with a grain of salt
 
 \newpage
 
+**Table 1. Summary of studies used in the analysis.** For all studies, the number of sequences used from each study was rarefied to the smallest sample size. A graphical represenation of the distribution of sample sizes for each study and the samples that were removed from each study are provided in Figure S1.
+
+```{r}
+read_tsv(here('data/process/study_summary_statistics.tsv')) %>%
+  arrange(nice_name) %>%
+  mutate(name_ref = glue("{nice_name} ({reference})"),
+    total_seqs=format(total_seqs, big.mark=",", trim=TRUE),
+    median=format(as.integer(median), big.mark=",", trim=TRUE),
+    min=format(min, big.mark=",", trim=TRUE),
+    max=format(max, big.mark=",", trim=TRUE),
+    range = glue("{min}-{max}"),
+    n_samples = n_samples,
+    fold_difference = round(fold_difference, 1)) %>%
+  select(name_ref, n_samples, total_seqs, median, range, fold_difference) %>%
+  kable("latex", booktabs=TRUE, escape=F, align="lrrrrr", linesep="",
+		col.names = linebreak(c("Study (Ref)", "Samples", "Total\nsequences", "Median\nsequences",
+			"Range of\nsequences", "Fold-difference\nbetween largest\nand smallest sample"), align="c")
+	) %>%
+	row_spec(0, bold=T)
+```
+
+\newpage
+
 <!--- \includegraphics{figure_1.png} -->
 
 **Figure 1.**
@@ -381,3 +426,4 @@ Need to treat rare sequences with a grain of salt
 <!--- \includegraphics{figure_2.png} -->
 
 **Figure 2.**
+v
