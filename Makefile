@@ -411,11 +411,16 @@ data/process/study_summary_statistics.tsv: code/get_sample_summary_statistics.R\
 
 
 # Plot strip chart showing the number of sequences per sample for each study
-results/figures/seqs_per_sample.pdf: code/plot_seqs_per_sample.R\
+results/figures/seqs_per_sample.tiff: code/plot_seqs_per_sample.R\
 		$(foreach S, $(samples), data/$S/data.remove_accnos)\
 		$(foreach S, $(samples), data/$S/data.count.summary)
 	Rscript $<
 
+results/figures/correlation_coverage.tiff: code/plot_correlation_coverage.R\
+		data/process/sequence_loss_table_cor.tsv\
+		data/process/sequence_coverage_table_cor.tsv\
+		data/process/sequence_coverage_table_raw.tsv
+	Rscript $<
 
 
 
@@ -425,9 +430,18 @@ results/figures/seqs_per_sample.pdf: code/plot_seqs_per_sample.R\
 #
 ####################################################################################################
 
-submission/manuscript.pdf submission/manuscript.md submission/manuscript.tex : submission/mbio.csl\
-							submission/header.tex\
-							submission/manuscript.Rmd
+submission/figure_s1.tiff : results/figures/seqs_per_sample.tiff
+	cp $< $@
+
+submission/figure_1.tiff : results/figures/correlation_coverage.tiff
+	cp $< $@
+
+
+submission/manuscript.pdf submission/manuscript.md submission/manuscript.tex : \
+		submission/figure_s1.pdf\
+		submission/mbio.csl\
+		submission/header.tex\
+		submission/manuscript.Rmd
 	R -e "library('rmarkdown'); render('submission/manuscript.Rmd', clean=FALSE)"
 	mv submission/manuscript.utf8.md submission/manuscript.md
 	rm submission/manuscript.knit.md
