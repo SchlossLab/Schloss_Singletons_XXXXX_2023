@@ -49,4 +49,4 @@ ggplot(counts_data, aes(y=n_seqs, x=study)) +
 	labs(y="Number of sequences per sample", x=NULL) +
 	theme_classic()
 
-ggsave("results/figures/seqs_per_sample.pdf", width=7, height=4)
+ggsave("results/figures/seqs_per_sample.tiff", width=7, height=4, compression="lzw")
