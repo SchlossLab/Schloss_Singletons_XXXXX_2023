@@ -412,6 +412,12 @@ results/figures/loss_of_information_random.tiff: \
 		data/process/rintra_analysis.tsv
 	Rscript $<
 
+results/figures/%_coefficient_of_variation.tiff: \
+		code/plot_inter_sample_variation.R\
+		data/process/ralpha_analysis.tsv\
+		data/process/rbeta_analysis.tsv
+	Rscript $<
+
 ################################################################################
 #
 #	Build manuscript
@@ -424,6 +430,9 @@ submission/figure_1.tiff : results/figures/correlation_coverage.tiff
 submission/figure_2.tiff : results/figures/asv_loss_of_information_obs.tiff
 	cp $< $@
 
+submission/figure_3.tiff : results/figures/asv_coefficient_of_variation.tiff
+	cp $< $@
+
 
 submission/figure_s1.tiff : results/figures/seqs_per_sample.tiff
 	cp $< $@
@@ -433,6 +442,10 @@ submission/figure_s2.tiff : results/figures/otu_loss_of_information_obs.tiff
 
 submission/figure_s3.tiff : results/figures/loss_of_information_random.tiff
 	cp $< $@
+
+submission/figure_s4.tiff : results/figures/otu_coefficient_of_variation.tiff
+	cp $< $@
+
 
 submission/manuscript.pdf submission/manuscript.md submission/manuscript.tex : \
 		submission/figure_1.tiff\
