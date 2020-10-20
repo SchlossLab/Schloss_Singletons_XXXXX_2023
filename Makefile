@@ -1,9 +1,7 @@
-####################################################################################################
-#
+################################################################################
 # Helper functions and definitions
 #
-####################################################################################################
-
+################################################################################
 print-%:
 	@echo '$*=$($*)'
 
@@ -12,12 +10,10 @@ PRUNE := $(shell seq 11)
 
 samples = bioethanol human lake marine mice peromyscus rainforest rice seagrass sediment soil stream
 
-####################################################################################################
-#
+################################################################################
 # Obtain the necessary reference files
 #
-####################################################################################################
-
+################################################################################
 REFS = data/references
 
 $(REFS)/silva.v4.% :
@@ -42,12 +38,10 @@ $(REFS)/trainset16_022016.pds.% :
 $(REFS)/HMP_MOCK.fasta :
 	wget -N -P $(REFS)/ https://raw.githubusercontent.com/SchlossLab/Kozich_MiSeqSOP_AEM_2013/master/data/references/HMP_MOCK.fasta
 
-####################################################################################################
-#
+################################################################################
 # Generate pruned versions of datasets based on the original assignments of sequences to each sample
 #
-####################################################################################################
-
+################################################################################
 # Run datasets { mice human soil marine etc. } through mothur pipeline through remove.lineage
 %/data.fasta %/data.count_table %/data.taxonomy : code/datasets_process.sh\
 			code/datasets_download.sh\
@@ -90,12 +84,10 @@ $(REFS)/HMP_MOCK.fasta :
 	Rscript code/prune_orig_otu_shared.R $^
 
 
-####################################################################################################
-#
+################################################################################
 # Generate pruned versions of datasets based on random assignments of sequences to each sample
 #
-####################################################################################################
-
+################################################################################
 .SECONDEXPANSION:
 %.rand_pruned_groups %.rdesign : code/randomize_prune.R\
 			$$(addsuffix .count_table,$$(basename $$(basename $$(basename $$@))))\
@@ -128,13 +120,11 @@ $(REFS)/HMP_MOCK.fasta :
 	Rscript $^ $@
 
 
-####################################################################################################
-#
+################################################################################
 # Generate pruned versions of datasets based on random assignments of sequences to each sample with
 # effect size defined by removing 1% of the PC sequences
 #
-####################################################################################################
-
+################################################################################
 .SECONDEXPANSION:
 %.effect_pruned_groups %.edesign : code/effect_prune.R\
 			$$(addsuffix .count_table,$$(basename $$(basename $$(basename $$@))))\
@@ -167,13 +157,11 @@ $(REFS)/HMP_MOCK.fasta :
 	Rscript $^ $@
 
 
-####################################################################################################
-#
+################################################################################
 # Generate pruned versions of datasets based on random assignments of sequences to each sample with
 # effect size defined by increasing the abundance of 5% of the OTUs by 10%
 #
-####################################################################################################
-
+################################################################################
 .SECONDEXPANSION:
 %.bffect_pruned_groups %.bdesign : code/bffect_prune.R\
 			$$(addsuffix .count_table,$$(basename $$(basename $$(basename $$@))))\
@@ -206,13 +194,11 @@ $(REFS)/HMP_MOCK.fasta :
 	Rscript $^ $@
 
 
-####################################################################################################
-#
+################################################################################
 # Generate skewed versions of datasets on assignments of samples to different treatment groups
 # depending on whether the number of sequences in the sample is below or above the median
 #
-####################################################################################################
-
+################################################################################
 .SECONDEXPANSION:
 %.sdesign : code/get_skew_design.R\
 			$$(addsuffix .rand_pruned_groups,$$(basename $$@))
@@ -240,12 +226,10 @@ $(REFS)/HMP_MOCK.fasta :
 	Rscript $^ $@
 
 
-####################################################################################################
-#
+################################################################################
 # Generate diversity files
 #
-####################################################################################################
-
+################################################################################
 %n_seqs : code/get_nseqs.sh %shared
 	bash $^
 
@@ -262,12 +246,10 @@ $(REFS)/HMP_MOCK.fasta :
 	Rscript $^
 
 
-####################################################################################################
-#
+################################################################################
 # Synthesize diversity files
 #
-####################################################################################################
-
+################################################################################
 .SECONDEXPANSION:
 %.ointra_analysis : $$(addsuffix $$(suffix $$(basename $$@)).oshared,$$(foreach P,$$(PRUNE),$$(basename $$(basename $$@)).$$P))\
 		code/get_intra_analysis.R
@@ -302,12 +284,10 @@ $(REFS)/HMP_MOCK.fasta :
 
 
 
-####################################################################################################
-#
+################################################################################
 # Pool results from different environments
 #
-####################################################################################################
-
+################################################################################
 data/process/ointra_analysis.tsv : code/pool_intra_analysis.R\
 		$(foreach S, $(samples), data/$S/data.pc.ointra_analysis)\
 		$(foreach S, $(samples), data/$S/data.otu.ointra_analysis)
@@ -376,11 +356,11 @@ data/process/sffect_beta_analysis.tsv : code/pool_ffect.R\
 	Rscript $^ $@
 
 
-####################################################################################################
+################################################################################
 #
 # Build figures and tables
 #
-####################################################################################################
+################################################################################
 
 
 # Find the amount of sequence loss from pruning
@@ -422,13 +402,16 @@ results/figures/correlation_coverage.tiff: code/plot_correlation_coverage.R\
 		data/process/sequence_coverage_table_raw.tsv
 	Rscript $<
 
+results/figures/%_loss_of_information.tiff: code/plot_loss_of_information.R\
+		data/process/ointra_analysis.tsv
+	Rscript $<
 
 
-####################################################################################################
+################################################################################
 #
 #	Build manuscript
 #
-####################################################################################################
+################################################################################
 
 submission/figure_s1.tiff : results/figures/seqs_per_sample.tiff
 	cp $< $@
@@ -436,9 +419,17 @@ submission/figure_s1.tiff : results/figures/seqs_per_sample.tiff
 submission/figure_1.tiff : results/figures/correlation_coverage.tiff
 	cp $< $@
 
+submission/figure_2.tiff : results/figures/asv_loss_of_information.tiff
+	cp $< $@
+
+submission/figure_s2.tiff : results/figures/otu_loss_of_information.tiff
+	cp $< $@
 
 submission/manuscript.pdf submission/manuscript.md submission/manuscript.tex : \
-		submission/figure_s1.pdf\
+		submission/figure_1.tiff\
+		submission/figure_2.tiff\
+		submission/figure_s1.tiff\
+		submission/figure_s2.tiff\
 		submission/mbio.csl\
 		submission/header.tex\
 		submission/manuscript.Rmd
