@@ -424,6 +424,14 @@ results/figures/%_power.tiff: \
 		data/process/bffect_beta_analysis.tsv
 	Rscript $<
 
+results/figures/%_type_one.tiff: \
+		code/plot_type1.R\
+		data/process/rffect_alpha_analysis.tsv\
+		data/process/rffect_beta_analysis.tsv\
+		data/process/sffect_alpha_analysis.tsv\
+		data/process/sffect_beta_analysis.tsv
+	Rscript $<
+
 
 ################################################################################
 #
@@ -443,6 +451,9 @@ submission/figure_3.tiff : results/figures/asv_coefficient_of_variation.tiff
 submission/figure_4.tiff : results/figures/asv_power.tiff
 	cp $< $@
 
+submission/figure_5.tiff : results/figures/asv_type_one.tiff
+	cp $< $@
+
 
 submission/figure_s1.tiff : results/figures/seqs_per_sample.tiff
 	cp $< $@
@@ -457,6 +468,9 @@ submission/figure_s4.tiff : results/figures/otu_coefficient_of_variation.tiff
 	cp $< $@
 
 submission/figure_s5.tiff : results/figures/otu_power.tiff
+	cp $< $@
+
+submission/figure_s6.tiff : results/figures/otu_type_one.tiff
 	cp $< $@
 
 
