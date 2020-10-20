@@ -402,10 +402,15 @@ results/figures/correlation_coverage.tiff: code/plot_correlation_coverage.R\
 		data/process/sequence_coverage_table_raw.tsv
 	Rscript $<
 
-results/figures/%_loss_of_information.tiff: code/plot_loss_of_information.R\
+results/figures/%_loss_of_information_obs.tiff: \
+		code/plot_loss_of_information_obs.R\
 		data/process/ointra_analysis.tsv
 	Rscript $<
 
+results/figures/loss_of_information_random.tiff: \
+		code/plot_loss_of_information_random.R\
+		data/process/rintra_analysis.tsv
+	Rscript $<
 
 ################################################################################
 #
@@ -413,16 +418,20 @@ results/figures/%_loss_of_information.tiff: code/plot_loss_of_information.R\
 #
 ################################################################################
 
-submission/figure_s1.tiff : results/figures/seqs_per_sample.tiff
-	cp $< $@
-
 submission/figure_1.tiff : results/figures/correlation_coverage.tiff
 	cp $< $@
 
-submission/figure_2.tiff : results/figures/asv_loss_of_information.tiff
+submission/figure_2.tiff : results/figures/asv_loss_of_information_obs.tiff
 	cp $< $@
 
-submission/figure_s2.tiff : results/figures/otu_loss_of_information.tiff
+
+submission/figure_s1.tiff : results/figures/seqs_per_sample.tiff
+	cp $< $@
+
+submission/figure_s2.tiff : results/figures/otu_loss_of_information_obs.tiff
+	cp $< $@
+
+submission/figure_s3.tiff : results/figures/loss_of_information_random.tiff
 	cp $< $@
 
 submission/manuscript.pdf submission/manuscript.md submission/manuscript.tex : \

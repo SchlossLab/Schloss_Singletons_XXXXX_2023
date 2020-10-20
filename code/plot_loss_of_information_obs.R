@@ -32,9 +32,9 @@ plot_data <- function(subset_method, subset_string) {
     mutate(metric = factor(metric,
       levels=c("mean_s_drop", "mean_h_drop", "mean_kl_drop"),
       labels=c(
-        paste0("Reduction in number\nof ", subset_string, "s (%)"),
-        paste0("Reduction in Shannon\ndiversity using ", subset_string, "s (%)"),
-        paste0("Kullbac-Leibler divergence\nusing ", subset_string, "s"))
+        paste0("Reduction in\nrichness (%)"),
+        paste0("Reduction in\nShannon diversity (%)"),
+        paste0("Kullbac-Leibler\ndivergence"))
       )
     )
 
@@ -82,7 +82,11 @@ plot_data <- function(subset_method, subset_string) {
 		)
 
   ggsave(
-    paste0("results/figures/", tolower(subset_string), "_loss_of_information.tiff"),
+    paste0(
+			"results/figures/",
+			tolower(subset_string),
+			"_loss_of_information_obs.tiff"
+		),
     width=6.87,
     height=6,
     compression = "lzw"
