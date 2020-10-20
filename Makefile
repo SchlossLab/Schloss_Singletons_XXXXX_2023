@@ -475,10 +475,10 @@ submission/figure_s6.tiff : results/figures/otu_type_one.tiff
 
 
 submission/manuscript.pdf submission/manuscript.md submission/manuscript.tex : \
-		submission/figure_1.tiff\
-		submission/figure_2.tiff\
-		submission/figure_s1.tiff\
-		submission/figure_s2.tiff\
+		submission/figure_1.tiff submission/figure_2.tiff submission/figure_3.tiff\
+		submission/figure_4.tiff submission/figure_5.tiff\
+		submission/figure_s1.tiff submission/figure_s2.tiff submission/figure_s3.tiff\
+		submission/figure_s4.tiff submission/figure_s5.tiff submission/figure_s6.tiff\
 		submission/mbio.csl\
 		submission/header.tex\
 		submission/manuscript.Rmd
