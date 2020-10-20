@@ -48,7 +48,7 @@ plot_data <- function(subset_method, subset_string) {
 
 
   subset_data_points <- subset_data %>%
-      filter(min_class %in% c(2, 5, 8, 11))
+      filter(min_class %in% c(1, 3, 5, 7, 9, 11))
 
   figure <- ggplot(
         data=subset_data,
