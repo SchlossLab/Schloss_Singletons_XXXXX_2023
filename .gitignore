@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 .DS_Store
+Rplots.pdf
 
 data/
 !README.md
