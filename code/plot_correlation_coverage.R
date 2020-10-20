@@ -54,7 +54,7 @@ panel_label <- tibble(
 	y=c(12.5, 12.5, 12.5)
 )
 
-bind_rows(correlations, coverage, limits) %>%
+figure <- bind_rows(correlations, coverage, limits) %>%
 	mutate(comparison = factor(comparison,
  		levels=c("cor_loss", "coverage", "cor_coverage")),
 		dataset = factor(dataset, levels=studies)	) %>%
@@ -78,11 +78,16 @@ bind_rows(correlations, coverage, limits) %>%
 		axis.text.x=element_text(size=7),
 		line=element_line(lineend="round"),
 		plot.margin=margin(t=10)
-	) +
-	geom_text(data=panel_label,
-		aes(x=x, y=y, label=label),
-		fontface="bold",
-		size=8,
-		nudge_y=0.25, nudge_x=0.02)
+	)
 
-ggsave("results/figures/correlation_coverage.tiff", width=7, height=4.25, compression = "lzw")
+ggdraw(figure) +
+	draw_plot_label(
+		label=c("A", "B", "C"),
+		x=c(0.1, 0.4, 0.7),
+		y=c(1.02, 1.02, 1.02),
+		size = 20,
+		fontface="bold"
+	)
+
+
+ggsave("results/figures/correlation_coverage.tiff", width=6.87, height=4.25, compression = "lzw")
