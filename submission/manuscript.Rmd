@@ -3,6 +3,8 @@ bibliography: references.bib
 output:
   pdf_document:
     keep_tex: true
+csl: mbio.csl
+geometry: margin=1.0in
 header-includes:
  - \usepackage{booktabs}
  - \usepackage{longtable}
@@ -25,8 +27,6 @@ header-includes:
  - \usepackage{helvet} % Helvetica font
  - \renewcommand*\familydefault{\sfdefault} % Use the sans serif version of the font
  - \usepackage[T1]{fontenc}
-csl: mbio.csl
-geometry: margin=1.0in
 ---
 
 
@@ -95,7 +95,7 @@ Ann Arbor, MI 48109
 ## Research article format
 
 \newpage
-\linenumbers
+<!-- \linenumbers -->
 
 ```{r datasets}
 table_1 <- read_tsv(here('data/process/study_summary_statistics.tsv'))
@@ -163,7 +163,6 @@ percent_singletons_range_vals <- fraction_singletons_range %>% pull(median) * 10
 percent_singletons_range_names <- fraction_singletons_range %>% pull(dataset)
 
 
-
 cor_n <- read_tsv(here('data/process/sequence_loss_table_cor.tsv')) %>%
  	filter(min_freq == 1) %>%
 	select(dataset, cor_n_estimate, cor_n_p.value) %>%
@@ -179,8 +178,6 @@ cor_n_sig <- cor_n %>%
 
 cor_n_sig_values <- cor_n_sig %>% pull(cor_n_estimate)
 cor_n_sig_names <- cor_n_sig %>% pull(dataset)
-
-
 
 
 frac_coverage <- read_tsv(here('data/process/sequence_coverage_table_raw.tsv')) %>%
@@ -252,8 +249,6 @@ pc_cov_sobs <- pc_cov_alpha %>% arrange(cv_sobs) %>% slice(1, nrow(.))
 pc_cov_shannon <- pc_cov_alpha %>% arrange(cv_shannon) %>% slice(1, nrow(.))
 
 
-
-
 r_cov_bc <- read_tsv(here("data/process/rbeta_analysis.tsv"),
 		col_types = cols(.default=col_double(),
 					dataset=col_character(), method=col_character())) %>%
@@ -280,11 +275,8 @@ b_alpha <- read_tsv(here("data/process/bffect_alpha_analysis.tsv"),
 		percentage_drop = 100*(1-`2` / `1`)) %>%
 	arrange(percentage_drop)
 
-
 b_base_pc_sobs <- b_alpha %>% filter(metric == "sobs", method == "pc") %>% arrange(`1`) %>% slice(1, nrow(.))
 b_base_pc_shannon <- b_alpha %>% filter(metric == "shannon", method == "pc") %>% arrange(`1`) %>% slice(1, nrow(.))
-
-
 b_pc_sobs <- b_alpha %>% filter(metric == "sobs", method == "pc") %>% slice(1, n())
 b_pc_shannon <- b_alpha %>% filter(metric == "shannon", method == "pc") %>% slice(1, n())
 
@@ -357,7 +349,6 @@ min_ave_p <-
   filter(prune > 1) %>%
   summarize(min_p = min(p)) %>%
   pull(min_p)
-
 ```
 
 **The impact of removing rare ASVs on the probability of falsely detecting a difference between treatment groups.** I next asked whether removing rare ASVs could lead to falsely claiming that a treatment effect had a significant effect on community diversity and structure. First, I sampled sequences from the null distribution for each dataset and randomly assigned each sample to one of two treatment groups and determined the richness and diversity of ASVs and OTUs. Testing at an experiment-wise error rate of 0.05, I expected 5% of the iterations for each dataset to yield a significant test result. Indeed, there was no evidence that removing rare ASVs resulted in an inflated experiment-wise error rate. The average fraction of significant tests did not meaningfully vary from 0.05 across the minimum abundance threshold, dataset, metric of describing sample alpha-diversity, or whether the abundance of ASVs or OTUs were used (Figure 5A and S6A). Similarly, the average fraction of significant tests did not meaningfully vary from 0.05 when using analysis of molecular variance to compare communities using Bray-Curtis distances (Figure 5A and S6A). Second, I again sampled sequences from the null distribution, but assigned samples to one of two treatment groups based on the number of sequences in each sample. The samples with fewer than the median number of sequences for the dataset were assigned to one group and those with more than the median were assigned to the other. This exaggerated bias has been observed in comparisons of the lung and oral microbiota because of the larger number of non-specific amplicons that can be sequenced from lung samples relative to those in the oral cavity leading to a significant difference in sequencing depth between treatment groups [@Morris2013]. When rare sequences were not removed, the fraction of significant tests did not differ from 5% for comparing the richness, their diversity, or Bray-Curtis distances (Figure 5B and S6B). However, when rare taxa of any frequency were removed, the probability of falsely detecing a difference as signifiant increased with the definition of rarity (Figure 5B and S6B). Not including the small marine dataset, the average fraction the average fraction of falsely detecting a difference across datasets when only singletons were removed was `r 100*min_ave_p`%. If there is any relationship between the number of sequences and the treatment group, the risk of falsely rejecting the null hypothesis is inflated when researchers use the strategy of removing rare sequences. The most conservative approach is to not remove low abundance sequences.
@@ -366,38 +357,17 @@ min_ave_p <-
 
 ## Discussion
 
-### Big points
-* Rare sequences are likely to be covered in other samples, suggesting they are rare; removing them biases against samples with fewer sequences
-* Removing rare sequences reduces the diversity within samples and changes the shape of the communities
-* The results include
-  - increases the differences between samples; this makes it harder to detect differences between samples when those differences actually exist
-  - If there is confounding between the number of reads per sample and the experimental grouping, then removing rare sequences increases the probability of falsely detecting a difference
+Removing rare sequences from 16S rRNA gene sequence data is a common practice that is used as a heuristic to help remove residual PCR artifacts and low quality sequences. In this analysis, I have shown that rare sequences are more common in samples with shallow sequencing than in those with deep sequencing and that rare sequences are frequently observed in multiple samples. These observations suggest that many of the sequences being removed are actually good sequences. Becuase rarity is often defined by a fixed number of observations per sample (e.g. sequences that only appear once in a sample, regardless of the size of the sample), removing rare sequences has a disproportionate impact on samples with fewer sequences. Removing rare sequences resulted in a reduction in the alpha diversity and a pronounced change in the structure of individual samples. The effect was an increase in the differences observed between samples, which made it more difficult to detect differences between treatment groups when differences actually existed. Furthermore, if the number of reads per sample was confounded with the treatment groups, then removing rare sequences increased the probability of falsely detecting a difference between the treatment groups. The practice of removing rare sequences from samples should be stopped.
 
-Removing rare sequences decreases the diversity represented by 16S rRNA gene sequence data and increases the variation between samples. Such impacts will hinder the statistical power to differentiate between treatment groups.
+The practice of removing rare sequences from samples seems to be a response to researchers prioritizing the number of reads and length of sequences over their quality [@Bokulich2013]. Previous work has shown that assembly of fully overlapping sequence reads results in the lowest sequencing error rates [@Kozich2013]. The studies highlighted in this analysis sequenced the V4 region of the 16S rRNA gene using the Illumina MiSeq sequencing platform with their v2 chemistry. The resulting data consists of two 250 nt reads that span a region that is about 250 nt long. In contrast, there has been a movement to sequence longer regions with similar chemistry resulting in less overlap between the sequencing reads [@Fadrosh2014; @Holm2019]. Alternatively, others have prioritized increasing the number of sequences per sample by sequencing the V4 region, but with paired or single reads that are 150 nt long [@Thompson2017; @McDonald2018]. Both practices result in a significantly higher error rate for the resulting assmebly. Instead, researchers should prioritize the quality over the quantity and length of their data. For these reasons, this analysis did not use lower quality data generated by alternative methods
 
-### What to do
-* Removal of rare sequences is largely a response to optimizing the number of reads and length of sequences over their quality
-* Researchers should instead focus on optimizing their sequence generation to minimize the amount of PCR and sequencing errors. We know that incomplete overlap of sequence reads significantly increases the sequencing error rate. Didn't test on crappy data
-* Rarefy data to control for uneven sampling of communities and PCR or sequencing artifacts
+The impacts of removing rare sequences on the representation of communities are caused by the uneven impact of applying a single abundance threshold across all samples. The number of sequences per sample in the datasets highlighted in this analysis varied by 100-fold (Figure S1); I suspect the range is actually larger since researchers may have opted against depositing samples with fewer reads into the SRA. If the range in read coverage for a study is 100-fold, a singleton in a small sample would have had a comparable relative abundance as a sequence that appeared 100 times in a more densely sequenced sample. However, it would have been removed from the smaller sample and not the larger sample. Thus, applying a single abundance threshold disproportionately impacted the samples with fewer sequences. This seems to contradict the purpose of removing rare sequences since a singleton in the smaller sample is more reliable than the singleton in the larger sample. A superior approach to removing rare sequences is to use rarefaction to conrol for uneven sampling.
 
-In addition, samples should be rarefied to a common number of sequences across samples without prior culling of rare sequences. The number of artifacts is correlated to the number of sequences being considered. With this in mind, rarefaction allows one to control for uneven sampling effort and to control for the number of artifacts in the analysis.
+Even with the best sequencing approaches, PCR artifacts and sequencing errors persist. This may account for some sequences not being observed other samples. Although this lack of inter-sample coverage could have been due to treatment effects and natural variation, it is likely that some portion of the sequences that were unique to samples were artifacts or contained errors. Researchers are encouraged to use rarefaction to control for uneven sampling and the presence of spurious sequences. Previous work sequencing mock communities has shown that the number of spurious sequences increases with sequencing depth [@Kozich2013; @Schloss2011]. By rarefying data to a common number of sequences per sample, the number of spurious sequences can be controlled. As shown in the data I presented, which was rarefied to a common number of reads per sample within a dataset, when rare sequences were not removed the power to detect differences was the highest and the false discovery rate was the expected 5% (Figures 5 and S6).
 
-### Should we implicitly trust rare sequences?
-* No.
-  - Need to treat rare sequences with a grain of salt, but don't discard
-  - Need to use other methods to validate results observed using rare taxa
-* For community metrics
-  - rare sequencs are an important component and removing them shifts the community distribution.
-  - metrics need to be treated on a relative rather than absolute basis
+In addition to considerations of how to control for the presence of spurious sequences, researchers also need to be mindful of how to interpret the results of their work. Because every dataset will contain residual sequences that are spurious, measures of richness and diversity should be made on a relative basis. For example, pronouncements that communities from an environment or treatment contain a specific number of taxa are problematic. Instead, we should limit ourselves to indicating that samples from one treatment group has more taxa than another without using absolute values of richness. Furthermore, we must take caution in interpreting rare taxa. Although the data from the studies highlighted here suggest that most rare sequences are not spurious, it is likely that some are. Therefore, researchers must approach rare sequences with more skepticism than more abundant sequences. Reseachers should seek out other methods to confirm inferences that they make about rare sequences. This is a standard that should be applied regardless of their abundance [@Schloss2018].
 
-### Definition of rarity
-* Idea of a blanket removal of reads below a threshold is stupid anyway
-* Microbial communities contain numerically rare, temporarily rare, and spatially rare taxa.
-* Removing those populations fundamentally changes how we think of microbial communities
-
-
-
-
+How to curate and interpret rare sequences has been a significant challenge since microbial ecologists transitioned away from Sanger sequencing of samples [@Sogin2006; @Huse2010; @Reeder2009]. Although the extent of the "rare biosphere" is still an open question, it is important to appreciate the importance of rare populations in all communities. Populations can be numerically rare but ubuiquitous or abundant and limited in their geographic range. Alternatively, they can be numerically rare but temporally common or abundant but present infrequently. Removing sequences from any of these settings will limit our ability to study the role of such populations or the processes that drive their patchy distributions that are so common with microbial communities [@Reid2011].
 
 
 \newpage
@@ -408,6 +378,13 @@ In addition, samples should be rarefied to a common number of sequences across s
 
 ## Acknowledgements
 
+
+
+\newpage
+
+## References
+
+<div id="refs"></div>
 
 
 \newpage
@@ -443,9 +420,3 @@ table_1 %>%
 <!--- \includegraphics{figure_2.png} -->
 
 **Figure 2.**
-
-\newpage
-
-## References
-
-<div id="refs"></div>
