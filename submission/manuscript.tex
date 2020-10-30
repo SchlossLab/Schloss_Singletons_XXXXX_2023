@@ -406,7 +406,7 @@ assigned to the other. This exaggerated bias has been observed in
 comparisons of the lung and oral microbiota because of the larger number
 of non-specific amplicons that can be sequenced from lung samples
 relative to those in the oral cavity leading to a significant difference
-in sequencing depth between treatment groups {[}{]}. When rare sequences
+in sequencing depth between treatment groups (3). When rare sequences
 were not removed, the fraction of significant tests did not differ from
 5\% for comparing the richness, their diversity, or Bray-Curtis
 distances (Figure 5B and S6B). However, when rare taxa of any frequency
@@ -422,19 +422,90 @@ is to not remove low abundance sequences.
 
 \subsection{Discussion}\label{discussion}
 
+\subsubsection{Big points}\label{big-points}
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  Rare sequences are likely to be covered in other samples, suggesting
+  they are rare; removing them biases against samples with fewer
+  sequences
+\item
+  Removing rare sequences reduces the diversity within samples and
+  changes the shape of the communities
+\item
+  The results include
+\item
+  increases the differences between samples; this makes it harder to
+  detect differences between samples when those differences actually
+  exist
+\item
+  If there is confounding between the number of reads per sample and the
+  experimental grouping, then removing rare sequences increases the
+  probability of falsely detecting a difference
+\end{itemize}
+
 Removing rare sequences decreases the diversity represented by 16S rRNA
 gene sequence data and increases the variation between samples. Such
 impacts will hinder the statistical power to differentiate between
-treatment groups. Instead of removing rare sequences, researchers should
-focus on optimizing their sequence generation to minimize the amount of
-PCR and sequencing errors. In addition, samples should be rarefied to a
-common number of sequences across samples without prior culling of rare
-sequences. The number of artifacts is correlated to the number of
-sequences being considered. With this in mind, rarefaction allows one to
-control for uneven sampling effort and to control for the number of
-artifacts in the analysis.
+treatment groups.
 
-Need to treat rare sequences with a grain of salt
+\subsubsection{What to do}\label{what-to-do}
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  Removal of rare sequences is largely a response to optimizing the
+  number of reads and length of sequences over their quality
+\item
+  Researchers should instead focus on optimizing their sequence
+  generation to minimize the amount of PCR and sequencing errors. We
+  know that incomplete overlap of sequence reads significantly increases
+  the sequencing error rate. Didn't test on crappy data
+\item
+  Rarefy data to control for uneven sampling of communities and PCR or
+  sequencing artifacts
+\end{itemize}
+
+In addition, samples should be rarefied to a common number of sequences
+across samples without prior culling of rare sequences. The number of
+artifacts is correlated to the number of sequences being considered.
+With this in mind, rarefaction allows one to control for uneven sampling
+effort and to control for the number of artifacts in the analysis.
+
+\subsubsection{Should we implicitly trust rare
+sequences?}\label{should-we-implicitly-trust-rare-sequences}
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  No.
+\item
+  Need to treat rare sequences with a grain of salt, but don't discard
+\item
+  Need to use other methods to validate results observed using rare taxa
+\item
+  For community metrics
+\item
+  rare sequencs are an important component and removing them shifts the
+  community distribution.
+\item
+  metrics need to be treated on a relative rather than absolute basis
+\end{itemize}
+
+\subsubsection{Definition of rarity}\label{definition-of-rarity}
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  Idea of a blanket removal of reads below a threshold is stupid anyway
+\item
+  Microbial communities contain numerically rare, temporarily rare, and
+  spatially rare taxa.
+\item
+  Removing those populations fundamentally changes how we think of
+  microbial communities
+\end{itemize}
 
 \newpage
 
@@ -503,5 +574,16 @@ community-supported software for describing and comparing microbial
 communities. Applied and Environmental Microbiology
 \textbf{75}:7537--7541.
 doi:\href{http://dx.doi.org/10.1128/aem.01541-09}{10.1128/aem.01541-09}.
+
+3. \textbf{Morris A}, \textbf{Beck JM}, \textbf{Schloss PD},
+\textbf{Campbell TB}, \textbf{Crothers K}, \textbf{Curtis JL},
+\textbf{Flores SC}, \textbf{Fontenot AP}, \textbf{Ghedin E},
+\textbf{Huang L}, \textbf{Jablonski K}, \textbf{Kleerup E},
+\textbf{Lynch SV}, \textbf{Sodergren E}, \textbf{Twigg H}, \textbf{Young
+VB}, \textbf{Bassis CM}, \textbf{Venkataraman A}, \textbf{Schmidt TM},
+\textbf{Weinstock GM}. 2013. Comparison of the respiratory microbiome in
+healthy nonsmokers and smokers. American Journal of Respiratory and
+Critical Care Medicine \textbf{187}:1067--1075.
+doi:\href{http://dx.doi.org/10.1164/rccm.201210-1913oc}{10.1164/rccm.201210-1913oc}.
 
 \end{document}
