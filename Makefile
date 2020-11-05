@@ -454,7 +454,6 @@ submission/figure_4.tiff : results/figures/asv_power.tiff
 submission/figure_5.tiff : results/figures/asv_type_one.tiff
 	cp $< $@
 
-
 submission/figure_s1.tiff : results/figures/seqs_per_sample.tiff
 	cp $< $@
 
@@ -473,18 +472,25 @@ submission/figure_s5.tiff : results/figures/otu_power.tiff
 submission/figure_s6.tiff : results/figures/otu_type_one.tiff
 	cp $< $@
 
+%.png : %.tiff
+	convert $< $@
+
+pngs : submission/figure_1.png submission/figure_2.png submission/figure_3.png\
+			submission/figure_4.png submission/figure_5.png\
+			submission/figure_s1.png submission/figure_s2.png submission/figure_s3.png\
+			submission/figure_s4.png submission/figure_s5.png submission/figure_s6.png
 
 submission/manuscript.pdf submission/manuscript.md submission/manuscript.tex : \
-		submission/figure_1.tiff submission/figure_2.tiff submission/figure_3.tiff\
-		submission/figure_4.tiff submission/figure_5.tiff\
-		submission/figure_s1.tiff submission/figure_s2.tiff submission/figure_s3.tiff\
-		submission/figure_s4.tiff submission/figure_s5.tiff submission/figure_s6.tiff\
+		submission/figure_1.png submission/figure_2.png submission/figure_3.png\
+		submission/figure_4.png submission/figure_5.png\
+		submission/figure_s1.png submission/figure_s2.png submission/figure_s3.png\
+		submission/figure_s4.png submission/figure_s5.png submission/figure_s6.png\
 		submission/mbio.csl\
 		submission/header.tex\
 		submission/manuscript.Rmd
 	R -e "library('rmarkdown'); render('submission/manuscript.Rmd', clean=FALSE)"
 	mv submission/manuscript.utf8.md submission/manuscript.md
-	rm submission/manuscript.knit.md
+	rm -f submission/manuscript.knit.md submission/manuscript.log
 
 
 # module load perl-modules latexdiff/1.2.0

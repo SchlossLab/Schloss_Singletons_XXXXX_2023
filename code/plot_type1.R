@@ -64,7 +64,7 @@ plot_data <- function(subset_method, subset_string) {
       dataset = factor(dataset, levels=studies, labels=nice_studies),
       simulation = factor(simulation, levels=c("null", "skew"),
             labels=c(
-              "Samples randomly assignedto groups\nwithout regard for sample size",
+              "Samples randomly assigned to groups\nwithout regard for sample size",
               "Samples randomly assigned to groups\nbased on sample size"
             )
           )

@@ -1,69 +1,63 @@
-\documentclass[]{article}
-\usepackage[T1]{fontenc}
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
 \usepackage{lmodern}
-\usepackage{amssymb,amsmath}
+\usepackage{amsmath}
 \usepackage{ifxetex,ifluatex}
-\usepackage{fixltx2e} % provides \textsubscript
-% use upquote if available, for straight quotes in verbatim environments
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
-\else % if luatex or xelatex
-  \ifxetex
-    \usepackage{mathspec}
-    \usepackage{xltxtra,xunicode}
-  \else
-    \usepackage{fontspec}
-  \fi
-  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
-  \newcommand{\euro}{€}
+  \usepackage{textcomp} % provide euro and other symbols
+  \usepackage{amssymb}
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 \fi
-% use microtype if available
-\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
 \usepackage[margin=1.0in]{geometry}
 \usepackage{graphicx}
-% Redefine \includegraphics so that, unless explicit options are
-% given, the image width will not exceed the width of the page.
-% Images get their normal width if they fit onto the page, but
-% are scaled down if they would overflow the margins.
 \makeatletter
-\def\ScaleIfNeeded{%
-  \ifdim\Gin@nat@width>\linewidth
-    \linewidth
-  \else
-    \Gin@nat@width
-  \fi
-}
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
 \makeatother
-\let\Oldincludegraphics\includegraphics
-{%
- \catcode`\@=11\relax%
- \gdef\includegraphics{\@ifnextchar[{\Oldincludegraphics}{\Oldincludegraphics[width=\ScaleIfNeeded]}}%
-}%
-\ifxetex
-  \usepackage[setpagesize=false, % page size defined by xetex
-              unicode=false, % unicode breaks when used with xetex
-              xetex]{hyperref}
-\else
-  \usepackage[unicode=true]{hyperref}
-\fi
-\hypersetup{breaklinks=true,
-            bookmarks=true,
-            pdfauthor={},
-            pdftitle={},
-            colorlinks=true,
-            citecolor=blue,
-            urlcolor=blue,
-            linkcolor=magenta,
-            pdfborder={0 0 0}}
-\urlstyle{same}  % don't use monospace font for urls
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{6pt plus 2pt minus 1pt}
-\setlength{\emergencystretch}{3em}  % prevent overfull lines
-\setcounter{secnumdepth}{0}
-
-\author{}
-\date{\vspace{-2.5em}}
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
@@ -98,20 +92,47 @@
 \usepackage{threeparttablex}
 \usepackage[normalem]{ulem}
 \usepackage{makecell}
+\ifluatex
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[3] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1 \everypar{\setlength{\hangindent}{\cslhangindent}}\ignorespaces\fi
+  % set entry spacing
+  \ifnum #2 > 0
+  \setlength{\parskip}{#2\baselineskip}
+  \fi
+ }%
+ {}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+
+\author{}
+\date{\vspace{-2.5em}}
 
 \begin{document}
 
+\hypertarget{removal-of-rare-sequences-from-16s-rrna-gene-sequence-surveys-biases-the-interpretation-of-community-structure-data}{%
 \section{Removal of rare sequences from 16S rRNA gene sequence surveys
 biases the interpretation of community structure
-data}\label{removal-of-rare-sequences-from-16s-rrna-gene-sequence-surveys-biases-the-interpretation-of-community-structure-data}
+data}\label{removal-of-rare-sequences-from-16s-rrna-gene-sequence-surveys-biases-the-interpretation-of-community-structure-data}}
 
 \vspace{35mm}
 
-Patrick D. Schloss${^\dagger}$
+Patrick D. Schloss\({^\dagger}\)
 
 \vspace{40mm}
 
-$\dagger$ To whom correspondence should be addressed:
+\(\dagger\) To whom correspondence should be addressed:
 
 \href{mailto:pschloss@umich.edu}{pschloss@umich.edu}
 
@@ -120,11 +141,13 @@ Arbor, MI 48109
 
 \vspace{35mm}
 
-\subsection{Research article format}\label{research-article-format}
+\hypertarget{research-article-format}{%
+\subsection{Research article format}\label{research-article-format}}
 
 \newpage
 
-\subsection{Abstract}\label{abstract}
+\hypertarget{abstract}{%
+\subsection{Abstract}\label{abstract}}
 
 \textbf{word choice: sample vs.~community}
 
@@ -132,7 +155,8 @@ Arbor, MI 48109
 
 \newpage
 
-\subsection{Importance}\label{importance}
+\hypertarget{importance}{%
+\subsection{Importance}\label{importance}}
 
 150 words
 
@@ -204,7 +228,8 @@ than 3\% different from each other. The results reject the assumptions
 built into abundance-based screening and highlight the problems inherent
 in removing rare ASVs.
 
-\subsection{Results}\label{results}
+\hypertarget{results}{%
+\subsection{Results}\label{results}}
 
 \textbf{Datasets.} I collected 12 publicly available datasets that used
 the Illumina MiSeq platform to sequence the V4 region of the 16S rRNA
@@ -235,7 +260,7 @@ median percentage of sequences that were discarded when singleton ASVs
 were removed from each dataset varied between 0.42 and 22.23\%
 (bioethanol and seagrass). In addition, with the exception of the
 samples from the marine and sediment datasets (Spearman correlation,
-P\textgreater{}0.05), the fraction of singleton ASVs in samples was
+P\textgreater0.05), the fraction of singleton ASVs in samples was
 negatively correlated with the number of sequences in each sample with a
 range between -0.27 and -0.87 (rice and bioethanol) (Figure 1A). This
 showed that with additional sequencing, the probability of seeing
@@ -258,12 +283,12 @@ seagrass datasets, respectively (Figure 1C). The negative correlation
 indicated that the singleton ASVs in the smaller samples were more
 likely to be covered by ASVs in the larger samples. Among the three
 datasets without a significant correlation (Spearman correlation,
-P\textgreater{}0.05), the marine and soil datasets had the fewest
-samples in our collection and the stream dataset already had a high
-level of coverage regardless of the number of sequences. Contrary to the
-common motivation for removing rare ASVs, these results indicate that
-this practice disproportionately impacts samples with fewer sequences
-and likely removes more non-artifact ASVs than those that are artifacts.
+P\textgreater0.05), the marine and soil datasets had the fewest samples
+in our collection and the stream dataset already had a high level of
+coverage regardless of the number of sequences. Contrary to the common
+motivation for removing rare ASVs, these results indicate that this
+practice disproportionately impacts samples with fewer sequences and
+likely removes more non-artifact ASVs than those that are artifacts.
 
 \textbf{The impact of removing rare ASVs on the information represented
 in each sample.} Removing rare ASVs will reduce the richness of ASVs
@@ -419,7 +444,8 @@ falsely rejecting the null hypothesis is inflated when researchers use
 the strategy of removing rare sequences. The most conservative approach
 is to not remove low abundance sequences.
 
-\subsection{Discussion}\label{discussion}
+\hypertarget{discussion}{%
+\subsection{Discussion}\label{discussion}}
 
 Removing rare sequences from 16S rRNA gene sequence data is a common
 practice that is used as a heuristic to help remove residual PCR
@@ -524,74 +550,50 @@ distributions that are so common with microbial communities (14).
 
 \newpage
 
-\subsection{Materials and Methods}\label{materials-and-methods}
+\hypertarget{materials-and-methods}{%
+\subsection{Materials and Methods}\label{materials-and-methods}}
 
 \begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
+\tightlist
 \item
   sequencing pipeline description
 \end{itemize}
 
-\subsection{Acknowledgements}\label{acknowledgements}
+\hypertarget{acknowledgements}{%
+\subsection{Acknowledgements}\label{acknowledgements}}
 
 \newpage
 
-\subsection{References}\label{references}
+\hypertarget{references}{%
+\subsection{References}\label{references}}
 
-\newpage
+\hypertarget{refs}{}
+\begin{CSLReferences}{0}{0}
+\leavevmode\hypertarget{ref-Kozich2013}{}%
+\CSLLeftMargin{1. }
+\CSLRightInline{\textbf{Kozich JJ}, \textbf{Westcott SL}, \textbf{Baxter
+NT}, \textbf{Highlander SK}, \textbf{Schloss PD}. 2013. {Development of
+a dual-index sequencing strategy and curation pipeline for analyzing
+amplicon sequence data on the MiSeq Illumina sequencing platform}.
+Applied and environmental microbiology \textbf{79}:5112--5120.}
 
-\textbf{Table 1. Summary of studies used in the analysis.} For all
-studies, the number of sequences used from each study was rarefied to
-the smallest sample size. A graphical represenation of the distribution
-of sample sizes for each study and the samples that were removed from
-each study are provided in Figure S1.
-
-\begin{tabular}{lrrrrr}
-\toprule
-\textbf{Study} & \textbf{Samples} & \textbf{\makecell[c]{Total\\sequences}} & \textbf{\makecell[c]{Median\\sequences}} & \textbf{\makecell[c]{Range of\\sequences}} & \textbf{\makecell[c]{Fold-difference\\between largest\\and smallest sample}}\\
-\midrule
-Bioethanol & 95 & 3,972,943 & 16,015 & 3,688-356,136 & 96.6\\
-Human & 490 & 20,909,768 & 32,505 & 10,523-430,415 & 40.9\\
-Lake & 52 & 3,169,868 & 69,041 & 15,347-112,871 & 7.4\\
-Marine & 7 & 1,391,396 & 193,464 & 133,516-254,060 & 1.9\\
-Mice & 348 & 2,813,747 & 6,477 & 1,804-30,565 & 16.9\\
-Peromyscus & 111 & 1,555,545 & 12,446 & 4,464-33,644 & 7.5\\
-Rainforest & 69 & 946,295 & 11,561 & 4,932-37,767 & 7.7\\
-Rice & 490 & 22,591,168 & 43,216 & 2,776-193,464 & 69.7\\
-Seagrass & 286 & 4,130,454 & 13,567 & 1,803-45,191 & 25.1\\
-Sediment & 58 & 1,154,174 & 17,584 & 7,685-68,321 & 8.9\\
-Soil & 18 & 956,656 & 51,844 & 47,806-59,956 & 1.3\\
-Stream & 201 & 21,162,574 & 90,159 & 9,175-390,964 & 42.6\\
-\bottomrule
-\end{tabular}
-
-\newpage
-
-\textbf{Figure 1.}
-
-\newpage
-
-\textbf{Figure 2.}
-
-1. \textbf{Kozich JJ}, \textbf{Westcott SL}, \textbf{Baxter NT},
-\textbf{Highlander SK}, \textbf{Schloss PD}. 2013. Development of a
-dual-index sequencing strategy and curation pipeline for analyzing
-amplicon sequence data on the MiSeq Illumina sequencing platform.
-Applied and environmental microbiology \textbf{79}:5112--5120.
-
-2. \textbf{Schloss PD}, \textbf{Westcott SL}, \textbf{Ryabin T},
-\textbf{Hall JR}, \textbf{Hartmann M}, \textbf{Hollister EB},
-\textbf{Lesniewski RA}, \textbf{Oakley BB}, \textbf{Parks DH},
-\textbf{Robinson CJ}, \textbf{Sahl JW}, \textbf{Stres B},
-\textbf{Thallinger GG}, \textbf{Horn DJV}, \textbf{Weber CF}. 2009.
+\leavevmode\hypertarget{ref-Schloss2009}{}%
+\CSLLeftMargin{2. }
+\CSLRightInline{\textbf{Schloss PD}, \textbf{Westcott SL},
+\textbf{Ryabin T}, \textbf{Hall JR}, \textbf{Hartmann M},
+\textbf{Hollister EB}, \textbf{Lesniewski RA}, \textbf{Oakley BB},
+\textbf{Parks DH}, \textbf{Robinson CJ}, \textbf{Sahl JW}, \textbf{Stres
+B}, \textbf{Thallinger GG}, \textbf{Horn DJV}, \textbf{Weber CF}. 2009.
 Introducing mothur: Open-source, platform-independent,
 community-supported software for describing and comparing microbial
 communities. Applied and Environmental Microbiology
 \textbf{75}:7537--7541.
-doi:\href{http://dx.doi.org/10.1128/aem.01541-09}{10.1128/aem.01541-09}.
+doi:\href{https://doi.org/10.1128/aem.01541-09}{10.1128/aem.01541-09}.}
 
-3. \textbf{Morris A}, \textbf{Beck JM}, \textbf{Schloss PD},
-\textbf{Campbell TB}, \textbf{Crothers K}, \textbf{Curtis JL},
+\leavevmode\hypertarget{ref-Morris2013}{}%
+\CSLLeftMargin{3. }
+\CSLRightInline{\textbf{Morris A}, \textbf{Beck JM}, \textbf{Schloss
+PD}, \textbf{Campbell TB}, \textbf{Crothers K}, \textbf{Curtis JL},
 \textbf{Flores SC}, \textbf{Fontenot AP}, \textbf{Ghedin E},
 \textbf{Huang L}, \textbf{Jablonski K}, \textbf{Kleerup E},
 \textbf{Lynch SV}, \textbf{Sodergren E}, \textbf{Twigg H}, \textbf{Young
@@ -599,39 +601,47 @@ VB}, \textbf{Bassis CM}, \textbf{Venkataraman A}, \textbf{Schmidt TM},
 \textbf{Weinstock GM}. 2013. Comparison of the respiratory microbiome in
 healthy nonsmokers and smokers. American Journal of Respiratory and
 Critical Care Medicine \textbf{187}:1067--1075.
-doi:\href{http://dx.doi.org/10.1164/rccm.201210-1913oc}{10.1164/rccm.201210-1913oc}.
+doi:\href{https://doi.org/10.1164/rccm.201210-1913oc}{10.1164/rccm.201210-1913oc}.}
 
-4. \textbf{Bokulich NA}, \textbf{Subramanian S}, \textbf{Faith JJ},
-\textbf{Gevers D}, \textbf{Gordon JI}, \textbf{Knight R}, \textbf{Mills
-DA}, \textbf{Caporaso JG}. 2013. Quality-filtering vastly improves
-diversity estimates from illumina amplicon sequencing. Nature Methods
-\textbf{10}:57--59.
-doi:\href{http://dx.doi.org/10.1038/nmeth.2276}{10.1038/nmeth.2276}.
+\leavevmode\hypertarget{ref-Bokulich2013}{}%
+\CSLLeftMargin{4. }
+\CSLRightInline{\textbf{Bokulich NA}, \textbf{Subramanian S},
+\textbf{Faith JJ}, \textbf{Gevers D}, \textbf{Gordon JI}, \textbf{Knight
+R}, \textbf{Mills DA}, \textbf{Caporaso JG}. 2013. Quality-filtering
+vastly improves diversity estimates from illumina amplicon sequencing.
+Nature Methods \textbf{10}:57--59.
+doi:\href{https://doi.org/10.1038/nmeth.2276}{10.1038/nmeth.2276}.}
 
-5. \textbf{Fadrosh DW}, \textbf{Ma B}, \textbf{Gajer P},
+\leavevmode\hypertarget{ref-Fadrosh2014}{}%
+\CSLLeftMargin{5. }
+\CSLRightInline{\textbf{Fadrosh DW}, \textbf{Ma B}, \textbf{Gajer P},
 \textbf{Sengamalay N}, \textbf{Ott S}, \textbf{Brotman RM},
 \textbf{Ravel J}. 2014. An improved dual-indexing approach for
-multiplexed 16S rRNA gene sequencing on the illumina MiSeq platform.
+multiplexed 16S {rRNA} gene sequencing on the illumina {MiSeq} platform.
 Microbiome \textbf{2}:6.
-doi:\href{http://dx.doi.org/10.1186/2049-2618-2-6}{10.1186/2049-2618-2-6}.
+doi:\href{https://doi.org/10.1186/2049-2618-2-6}{10.1186/2049-2618-2-6}.}
 
-6. \textbf{Holm JB}, \textbf{Humphrys MS}, \textbf{Robinson CK},
-\textbf{Settles ML}, \textbf{Ott S}, \textbf{Fu L}, \textbf{Yang H},
-\textbf{Gajer P}, \textbf{He X}, \textbf{McComb E}, \textbf{Gravitt PE},
-\textbf{Ghanem KG}, \textbf{Brotman RM}, \textbf{Ravel J}. 2019.
-Ultrahigh-throughput multiplexing and sequencing of $>$500-base-pair
-amplicon regions on the Illumina HiSeq 2500 platform. mSystems
+\leavevmode\hypertarget{ref-Holm2019}{}%
+\CSLLeftMargin{6. }
+\CSLRightInline{\textbf{Holm JB}, \textbf{Humphrys MS}, \textbf{Robinson
+CK}, \textbf{Settles ML}, \textbf{Ott S}, \textbf{Fu L}, \textbf{Yang
+H}, \textbf{Gajer P}, \textbf{He X}, \textbf{McComb E}, \textbf{Gravitt
+PE}, \textbf{Ghanem KG}, \textbf{Brotman RM}, \textbf{Ravel J}. 2019.
+Ultrahigh-throughput multiplexing and sequencing of \(>\)500-base-pair
+amplicon regions on the {Illumina} {HiSeq} 2500 platform. {mSystems}
 \textbf{4}.
-doi:\href{http://dx.doi.org/10.1128/msystems.00029-19}{10.1128/msystems.00029-19}.
+doi:\href{https://doi.org/10.1128/msystems.00029-19}{10.1128/msystems.00029-19}.}
 
-7. \textbf{Thompson LR}, \textbf{Jon G. Sanders}, \textbf{McDonald D},
-\textbf{Amir A}, \textbf{Ladau J}, \textbf{Locey KJ}, \textbf{Prill RJ},
-\textbf{Tripathi A}, \textbf{Gibbons SM}, \textbf{Ackermann G},
-\textbf{Navas-Molina JA}, \textbf{Janssen S}, \textbf{Kopylova E},
-\textbf{V{á}zquez-Baeza Y}, \textbf{Gonz{á}lez A}, \textbf{Morton JT},
-\textbf{Mirarab S}, \textbf{Xu ZZ}, \textbf{Jiang L}, \textbf{Haroon
-MF}, \textbf{Kanbar J}, \textbf{Zhu Q}, \textbf{Song SJ},
-\textbf{Kosciolek T}, \textbf{Bokulich NA}, \textbf{Lefler J},
+\leavevmode\hypertarget{ref-Thompson2017}{}%
+\CSLLeftMargin{7. }
+\CSLRightInline{\textbf{Thompson LR}, \textbf{Jon G. Sanders and},
+\textbf{McDonald D}, \textbf{Amir A}, \textbf{Ladau J}, \textbf{Locey
+KJ}, \textbf{Prill RJ}, \textbf{Tripathi A}, \textbf{Gibbons SM},
+\textbf{Ackermann G}, \textbf{Navas-Molina JA}, \textbf{Janssen S},
+\textbf{Kopylova E}, \textbf{Vázquez-Baeza Y}, \textbf{González A},
+\textbf{Morton JT}, \textbf{Mirarab S}, \textbf{Xu ZZ}, \textbf{Jiang
+L}, \textbf{Haroon MF}, \textbf{Kanbar J}, \textbf{Zhu Q}, \textbf{Song
+SJ}, \textbf{Kosciolek T}, \textbf{Bokulich NA}, \textbf{Lefler J},
 \textbf{Brislawn CJ}, \textbf{Humphrey G}, \textbf{Owens SM},
 \textbf{Hampton-Marcell J}, \textbf{Berg-Lyons D}, \textbf{McKenzie V},
 \textbf{Fierer N}, \textbf{Fuhrman JA}, \textbf{Clauset A},
@@ -639,10 +649,12 @@ MF}, \textbf{Kanbar J}, \textbf{Zhu Q}, \textbf{Song SJ},
 \textbf{Goodwin KD}, \textbf{Jansson JK}, \textbf{Gilbert JA},
 \textbf{Knight R}. 2017. A communal catalogue reveals earth's multiscale
 microbial diversity. Nature \textbf{551}:457--463.
-doi:\href{http://dx.doi.org/10.1038/nature24621}{10.1038/nature24621}.
+doi:\href{https://doi.org/10.1038/nature24621}{10.1038/nature24621}.}
 
-8. \textbf{McDonald D}, \textbf{Hyde E}, \textbf{Debelius JW},
-\textbf{Morton JT}, \textbf{Gonzalez A}, \textbf{Ackermann G},
+\leavevmode\hypertarget{ref-McDonald2018}{}%
+\CSLLeftMargin{8. }
+\CSLRightInline{\textbf{McDonald D}, \textbf{Hyde E}, \textbf{Debelius
+JW}, \textbf{Morton JT}, \textbf{Gonzalez A}, \textbf{Ackermann G},
 \textbf{Aksenov AA}, \textbf{Behsaz B}, \textbf{Brennan C}, \textbf{Chen
 Y}, \textbf{Goldasich LD}, \textbf{Dorrestein PC}, \textbf{Dunn RR},
 \textbf{Fahimipour AK}, \textbf{Gaffney J}, \textbf{Gilbert JA},
@@ -657,7 +669,7 @@ AV}, \textbf{Metcalf JL}, \textbf{Mohimani H}, \textbf{Montassier E},
 \textbf{Robbins-Pianka A}, \textbf{Sangwan N}, \textbf{Shorenstein J},
 \textbf{Smarr L}, \textbf{Song SJ}, \textbf{Spector T}, \textbf{Swafford
 AD}, \textbf{Thackray VG}, \textbf{Thompson LR}, \textbf{Tripathi A},
-\textbf{V{á}zquez-Baeza Y}, \textbf{Vrbanac A}, \textbf{Wischmeyer P},
+\textbf{Vázquez-Baeza Y}, \textbf{Vrbanac A}, \textbf{Wischmeyer P},
 \textbf{Wolfe E}, \textbf{Zhu Q}, \textbf{Knight R}, \textbf{Mann AE},
 \textbf{Amir A}, \textbf{Frazier A}, \textbf{Martino C},
 \textbf{Lebrilla C}, \textbf{Lozupone C}, \textbf{Lewis CM},
@@ -693,37 +705,226 @@ A}, \textbf{Geier J}, \textbf{Reeve N}, \textbf{Silva R},
 \textbf{Benitez RAS}, \textbf{Heale AC}, \textbf{Abramson M},
 \textbf{Waldispühl J}, \textbf{Butyaev A}, \textbf{Drogaris C},
 \textbf{Nazarova E}, \textbf{Ball M}, \textbf{Gunderson B}. 2018.
-American gut: an open platform for citizen science microbiome research.
-mSystems \textbf{3}.
-doi:\href{http://dx.doi.org/10.1128/msystems.00031-18}{10.1128/msystems.00031-18}.
+American gut: An open platform for citizen science microbiome research.
+{mSystems} \textbf{3}.
+doi:\href{https://doi.org/10.1128/msystems.00031-18}{10.1128/msystems.00031-18}.}
 
-9. \textbf{Schloss PD}, \textbf{Gevers D}, \textbf{Westcott SL}. 2011.
-Reducing the effects of PCR amplification and sequencing artifacts on
-16S rRNA-based studies. PLoS ONE \textbf{6}:e27310.
-doi:\href{http://dx.doi.org/10.1371/journal.pone.0027310}{10.1371/journal.pone.0027310}.
+\leavevmode\hypertarget{ref-Schloss2011}{}%
+\CSLLeftMargin{9. }
+\CSLRightInline{\textbf{Schloss PD}, \textbf{Gevers D}, \textbf{Westcott
+SL}. 2011. Reducing the effects of {PCR} amplification and sequencing
+artifacts on 16S {rRNA}-based studies. {PLoS} {ONE} \textbf{6}:e27310.
+doi:\href{https://doi.org/10.1371/journal.pone.0027310}{10.1371/journal.pone.0027310}.}
 
-10. \textbf{Schloss PD}. 2018. Identifying and overcoming threats to
-reproducibility, replicability, robustness, and generalizability in
-microbiome research. mBio \textbf{9}.
-doi:\href{http://dx.doi.org/10.1128/mbio.00525-18}{10.1128/mbio.00525-18}.
+\leavevmode\hypertarget{ref-Schloss2018}{}%
+\CSLLeftMargin{10. }
+\CSLRightInline{\textbf{Schloss PD}. 2018. Identifying and overcoming
+threats to reproducibility, replicability, robustness, and
+generalizability in microbiome research. {mBio} \textbf{9}.
+doi:\href{https://doi.org/10.1128/mbio.00525-18}{10.1128/mbio.00525-18}.}
 
-11. \textbf{Sogin ML}, \textbf{Morrison HG}, \textbf{Huber JA},
-\textbf{Welch DM}, \textbf{Huse SM}, \textbf{Neal PR}, \textbf{Arrieta
-JM}, \textbf{Herndl GJ}. 2006. Microbial diversity in the deep sea and
-the underexplored ``rare biosphere''. Proceedings of the National
-Academy of Sciences \textbf{103}:12115--12120.
-doi:\href{http://dx.doi.org/10.1073/pnas.0605127103}{10.1073/pnas.0605127103}.
+\leavevmode\hypertarget{ref-Sogin2006}{}%
+\CSLLeftMargin{11. }
+\CSLRightInline{\textbf{Sogin ML}, \textbf{Morrison HG}, \textbf{Huber
+JA}, \textbf{Welch DM}, \textbf{Huse SM}, \textbf{Neal PR},
+\textbf{Arrieta JM}, \textbf{Herndl GJ}. 2006. Microbial diversity in
+the deep sea and the underexplored "rare biosphere". Proceedings of the
+National Academy of Sciences \textbf{103}:12115--12120.
+doi:\href{https://doi.org/10.1073/pnas.0605127103}{10.1073/pnas.0605127103}.}
 
-12. \textbf{Huse SM}, \textbf{Welch DM}, \textbf{Morrison HG},
-\textbf{Sogin ML}. 2010. Ironing out the wrinkles in the rare biosphere
-through improved OTU clustering. Environmental Microbiology
+\leavevmode\hypertarget{ref-Huse2010}{}%
+\CSLLeftMargin{12. }
+\CSLRightInline{\textbf{Huse SM}, \textbf{Welch DM}, \textbf{Morrison
+HG}, \textbf{Sogin ML}. 2010. Ironing out the wrinkles in the rare
+biosphere through improved {OTU} clustering. Environmental Microbiology
 \textbf{12}:1889--1898.
-doi:\href{http://dx.doi.org/10.1111/j.1462-2920.2010.02193.x}{10.1111/j.1462-2920.2010.02193.x}.
+doi:\href{https://doi.org/10.1111/j.1462-2920.2010.02193.x}{10.1111/j.1462-2920.2010.02193.x}.}
 
-13. \textbf{Reeder J}, \textbf{Knight R}. 2009. The rare biosphere: a
-reality check. Nature Methods \textbf{6}:636--637.
-doi:\href{http://dx.doi.org/10.1038/nmeth0909-636}{10.1038/nmeth0909-636}.
+\leavevmode\hypertarget{ref-Reeder2009}{}%
+\CSLLeftMargin{13. }
+\CSLRightInline{\textbf{Reeder J}, \textbf{Knight R}. 2009. The {{}}rare
+biosphere{{}}: A reality check. Nature Methods \textbf{6}:636--637.
+doi:\href{https://doi.org/10.1038/nmeth0909-636}{10.1038/nmeth0909-636}.}
 
-14. \textbf{Reid A}, \textbf{Buckley M}. 2011. The rare biosphere.
+\leavevmode\hypertarget{ref-Reid2011}{}%
+\CSLLeftMargin{14. }
+\CSLRightInline{\textbf{Reid A}, \textbf{Buckley M}. 2011. The rare
+biosphere.}
+
+\end{CSLReferences}
+
+\newpage
+
+\textbf{Table 1. Summary of studies used in the analysis.} For all
+studies, the number of sequences used from each study was rarefied to
+the smallest sample size. A graphical represenation of the distribution
+of sample sizes for each study and the samples that were removed from
+each study are provided in Figure S1.
+
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Study} & \textbf{Samples} & \textbf{\makecell[c]{Total\\sequences}} & \textbf{\makecell[c]{Median\\sequences}} & \textbf{\makecell[c]{Range of\\sequences}} & \textbf{\makecell[c]{Fold-difference\\between largest\\and smallest sample}}\\
+\midrule
+Bioethanol & 95 & 3,972,943 & 16,015 & 3,688-356,136 & 96.6\\
+Human & 490 & 20,909,768 & 32,505 & 10,523-430,415 & 40.9\\
+Lake & 52 & 3,169,868 & 69,041 & 15,347-112,871 & 7.4\\
+Marine & 7 & 1,391,396 & 193,464 & 133,516-254,060 & 1.9\\
+Mice & 348 & 2,813,747 & 6,477 & 1,804-30,565 & 16.9\\
+Peromyscus & 111 & 1,555,545 & 12,446 & 4,464-33,644 & 7.5\\
+Rainforest & 69 & 946,295 & 11,561 & 4,932-37,767 & 7.7\\
+Rice & 490 & 22,591,168 & 43,216 & 2,776-193,464 & 69.7\\
+Seagrass & 286 & 4,130,454 & 13,567 & 1,803-45,191 & 25.1\\
+Sediment & 58 & 1,154,174 & 17,584 & 7,685-68,321 & 8.9\\
+Soil & 18 & 956,656 & 51,844 & 47,806-59,956 & 1.3\\
+Stream & 201 & 21,162,574 & 90,159 & 9,175-390,964 & 42.6\\
+\bottomrule
+\end{tabular}
+
+\newpage
+
+\includegraphics{figure_1.png}
+
+\textbf{Figure 1. Singletons are more common in samples with fewer
+seqeunces and tend to be shared with samples having more sequences.} For
+each of the 12 datasets, Spearman correlation coefficients were
+calcualted between the number of sequences in each sample and the number
+of singletons in the sample (A) and the fraction of its singletons that
+were shared with another sample (C). Those correlations that were not
+statisically significant had a P-value greater than 0.05. The faction of
+singletons shared across samples (B) were calculated for each dataset.
+The median value is shown with a solid circle and the 95\% confidence
+interval is indicated by the solid line.
+
+\newpage
+
+\includegraphics{figure_2.png}
+
+\textbf{Figure 2. Removing rare sequences from samples alters their
+representation of alpha-diversity using amplicon sequence variants
+(ASVs).} The average difference in the richness (A), Shannon diversity
+(B), and Kullback-Leiber divergence (C) for each sample within a dataset
+was calculated between the original community structures relative to
+applying different minimum abundance thresholds.
+
+\newpage
+
+\includegraphics{figure_3.png}
+
+\textbf{Figure 3. Removing rare sequences from samples increases the
+inter-sample variation for amplicon sequence variants (ASVs).} The
+coefficient of variation in richness (A), Shannon diversity (B), and
+Bray-Curtis distances (C) for each dataset was calculated using the null
+distributed samples for each dataset with varying minimum abundance
+thresholds.
+
+\newpage
+
+\includegraphics{figure_4.png}
+
+\textbf{Figure 4. Removing rare sequences from samples reduces the
+statistical power to detect differences between empirically generated
+treatment groups when using amplicon sequence variants (ASVs).} The
+fraction of significant tests comparing the richness (A) and Shannon
+diversity (B) using a Wilcox test and Bray-Curtis distances (C) using
+analysis of molecular variance for each dataset was calculated using
+empirically generated treatment groups containing equal numbers of
+samples for each dataset with varying minimum abundance thresholds. For
+each dataset and minimum abundance threshold, 100 randomizations were
+peformed.
+
+\newpage
+
+\includegraphics{figure_5.png}
+
+\textbf{Figure 5. Removing rare sequences does not impact the false
+detection rate unless the number of sequences per sample is confounded
+with the treatment groups when using amplicon sequence variants (ASVs).}
+The fraction of significant tests comparing the richness and Shannon
+diversity using a Wilcox test and Bray-Curtis distances using analysis
+of molecular variance for each dataset was calculated. Empirically
+generated treatment groups were generated containing equal numbers of
+samples where the samples represented a null distribution. In one
+simulation the samples were randomly assigned to a treatment group (A)
+and in the other the samples were assigned based on the number of
+sequences in each sample (B). For each dataset and minimum abundance
+threshold, 100 randomizations were peformed.
+
+\newpage
+
+\includegraphics{figure_s1.png}
+
+\textbf{Figure S1. Distribution of the number of sequences per sample in
+the 12 datasets included in this study.} A different minimum number of
+sequences per sample threshold was applied to each dataset based on
+identifying natural breaks in the distribution of the number of
+sequences per sample.
+
+\newpage
+
+\includegraphics{figure_s2.png}
+
+\textbf{Figure S2. Removing rare sequences from samples alters their
+representation of alpha-diversity using operational taxonomic units
+(OTUs).} The average difference in the richness (A), Shannon diversity
+(B), and Kullback-Leiber divergence (C) for each sample within a dataset
+was calculated between the original community structures relative to
+applying different minimum abundance thresholds.
+
+\newpage
+
+\includegraphics{figure_s3.png}
+
+\textbf{Figure S3. Removing rare sequences from samples alters their
+representation of alpha-diversity when regenerating samples using a null
+distribution for each dataset.} The average difference in the richness,
+Shannon diversity, and Kullback-Leiber divergence for each sample within
+a dataset was calculated between the original community structures
+relative to applying different minimum abundance thresholds. Some values
+of Kullback-Leiber divergence are missing because undefined values were
+calculated due to the removal of rare sequences. Data are shown for
+amplicon sequence variants (ASVs) and operational taxonomic units (OTUs)
+
+\newpage
+
+\includegraphics{figure_s4.png}
+
+\textbf{Figure S4. Removing rare sequences from samples increases the
+inter-sample variation for operational taxonomic units (OTUs).} The
+coefficient of variation in richness (A), Shannon diversity (B), and
+Bray-Curtis distances (C) for each dataset was calculated using the null
+distributed samples for each dataset with varying minimum abundance
+thresholds.
+
+\newpage
+
+\includegraphics{figure_s5.png}
+
+\textbf{Figure S5. Removing rare sequences from samples reduces the
+statistical power to detect differences between empirically generated
+treatment groups when using operational taxonomic units (OTUs).} The
+fraction of significant tests comparing the richness (A) and Shannon
+diversity (B) using a Wilcox test and Bray-Curtis distances (C) using
+analysis of molecular variance for each dataset was calculated using
+empirically generated treatment groups containing equal numbers of
+samples for each dataset with varying minimum abundance thresholds. For
+each dataset and minimum abundance threshold, 100 randomizations were
+peformed.
+
+\newpage
+
+\includegraphics{figure_s6.png}
+
+\textbf{Figure S6. Removing rare sequences does not impact the false
+detection rate unless the number of sequences per sample is confounded
+with the treatment groups when using operational taxonomic units
+(OTUs).} The fraction of significant tests comparing the richness and
+Shannon diversity using a Wilcox test and Bray-Curtis distances using
+analysis of molecular variance for each dataset was calculated.
+Empirically generated treatment groups were generated containing equal
+numbers of samples where the samples represented a null distribution. In
+one simulation the samples were randomly assigned to a treatment group
+(A) and in the other the samples were assigned based on the number of
+sequences in each sample (B). For each dataset and minimum abundance
+threshold, 100 randomizations were peformed.
 
 \end{document}

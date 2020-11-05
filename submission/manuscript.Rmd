@@ -411,12 +411,72 @@ table_1 %>%
 
 \newpage
 
-<!--- \includegraphics{figure_1.png} -->
+\includegraphics{figure_1.png}
 
-**Figure 1.**
+**Figure 1. Singletons are more common in samples with fewer seqeunces and tend to be shared with samples having more sequences.** For each of the 12 datasets, Spearman correlation coefficients were calcualted between the number of sequences in each sample and the number of singletons in the sample (A) and the fraction of its singletons that were shared with another sample (C). Those correlations that were not statisically significant had a P-value greater than 0.05. The faction of singletons shared across samples (B) were calculated for each dataset. The median value is shown with a solid circle and the 95% confidence interval is indicated by the solid line.
 
 \newpage
 
-<!--- \includegraphics{figure_2.png} -->
+\includegraphics{figure_2.png}
 
-**Figure 2.**
+**Figure 2. Removing rare sequences from samples alters their representation of alpha-diversity using amplicon sequence variants (ASVs).** The average difference in the richness (A), Shannon diversity (B), and Kullback-Leiber divergence (C) for each sample within a dataset was calculated between the original community structures relative to applying different minimum abundance thresholds.
+
+\newpage
+
+\includegraphics{figure_3.png}
+
+**Figure 3. Removing rare sequences from samples increases the inter-sample variation for amplicon sequence variants (ASVs).** The coefficient of variation in richness (A), Shannon diversity (B), and Bray-Curtis distances (C) for each dataset was calculated using the null distributed samples for each dataset with varying minimum abundance thresholds.
+
+\newpage
+
+\includegraphics{figure_4.png}
+
+**Figure 4. Removing rare sequences from samples reduces the statistical power to detect differences between empirically generated treatment groups when using amplicon sequence variants (ASVs).** The fraction of significant tests comparing the richness (A) and Shannon diversity (B) using a Wilcox test and Bray-Curtis distances (C) using analysis of molecular variance for each dataset was calculated using empirically generated treatment groups containing equal numbers of samples for each dataset with varying minimum abundance thresholds. For each dataset and minimum abundance threshold, 100 randomizations were peformed.
+
+
+
+\newpage
+
+\includegraphics{figure_5.png}
+
+**Figure 5. Removing rare sequences does not impact the false detection rate unless the number of sequences per sample is confounded with the treatment groups when using amplicon sequence variants (ASVs).** The fraction of significant tests comparing the richness and Shannon diversity using a Wilcox test and Bray-Curtis distances using analysis of molecular variance for each dataset was calculated. Empirically generated treatment groups were generated containing equal numbers of samples where the samples represented a null distribution. In one simulation the samples were randomly assigned to a treatment group (A) and in the other the samples were assigned based on the number of sequences in each sample (B). For each dataset and minimum abundance threshold, 100 randomizations were peformed.
+
+
+\newpage
+
+\includegraphics{figure_s1.png}
+
+**Figure S1. Distribution of the number of sequences per sample in the 12 datasets included in this study.** A different minimum number of sequences per sample threshold was applied to each dataset based on identifying natural breaks in the distribution of the number of sequences per sample.
+
+
+\newpage
+
+\includegraphics{figure_s2.png}
+
+**Figure S2. Removing rare sequences from samples alters their representation of alpha-diversity using operational taxonomic units (OTUs).** The average difference in the richness (A), Shannon diversity (B), and Kullback-Leiber divergence (C) for each sample within a dataset was calculated between the original community structures relative to applying different minimum abundance thresholds.
+
+
+\newpage
+
+\includegraphics{figure_s3.png}
+
+**Figure S3. Removing rare sequences from samples alters their representation of alpha-diversity when regenerating samples using a null distribution for each dataset.** The average difference in the richness, Shannon diversity, and Kullback-Leiber divergence for each sample within a dataset was calculated between the original community structures relative to applying different minimum abundance thresholds. Some values of Kullback-Leiber divergence are missing because undefined values were calculated due to the removal of rare sequences. Data are shown for amplicon sequence variants (ASVs) and operational taxonomic units (OTUs)
+
+\newpage
+
+\includegraphics{figure_s4.png}
+
+**Figure S4. Removing rare sequences from samples increases the inter-sample variation for operational taxonomic units (OTUs).** The coefficient of variation in richness (A), Shannon diversity (B), and Bray-Curtis distances (C) for each dataset was calculated using the null distributed samples for each dataset with varying minimum abundance thresholds.
+
+\newpage
+
+\includegraphics{figure_s5.png}
+
+**Figure S5. Removing rare sequences from samples reduces the statistical power to detect differences between empirically generated treatment groups when using operational taxonomic units (OTUs).** The fraction of significant tests comparing the richness (A) and Shannon diversity (B) using a Wilcox test and Bray-Curtis distances (C) using analysis of molecular variance for each dataset was calculated using empirically generated treatment groups containing equal numbers of samples for each dataset with varying minimum abundance thresholds. For each dataset and minimum abundance threshold, 100 randomizations were peformed.
+
+
+\newpage
+
+\includegraphics{figure_s6.png}
+
+**Figure S6. Removing rare sequences does not impact the false detection rate unless the number of sequences per sample is confounded with the treatment groups when using operational taxonomic units (OTUs).** The fraction of significant tests comparing the richness and Shannon diversity using a Wilcox test and Bray-Curtis distances using analysis of molecular variance for each dataset was calculated. Empirically generated treatment groups were generated containing equal numbers of samples where the samples represented a null distribution. In one simulation the samples were randomly assigned to a treatment group (A) and in the other the samples were assigned based on the number of sequences in each sample (B). For each dataset and minimum abundance threshold, 100 randomizations were peformed.

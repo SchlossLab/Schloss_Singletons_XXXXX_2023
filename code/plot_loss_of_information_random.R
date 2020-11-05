@@ -32,7 +32,7 @@ subset_data <- loss %>%
     labels=c(
       paste0("Reduction in\nrichness (%)"),
       paste0("Reduction in\nShannon diversity (%)"),
-      paste0("Kullbac-Leibler\ndivergence"))
+      paste0("Kullback-Leibler\ndivergence"))
     )
   ) %>%
   mutate(method = factor(method,
