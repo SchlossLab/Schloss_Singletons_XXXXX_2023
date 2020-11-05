@@ -386,6 +386,7 @@ data/process/sequence_coverage_table_cor.tsv : code/quantify_correlation_with_sa
 # Table that contains summary statistics about each sample
 data/process/study_summary_statistics.tsv: code/get_sample_summary_statistics.R\
 		$(foreach S, $(samples), data/$S/data.remove_accnos)\
+		$(foreach S, $(samples), data/$S/sra_info.tsv)\
 		$(foreach S, $(samples), data/$S/data.count.summary)
 	Rscript $<
 
@@ -481,6 +482,7 @@ pngs : submission/figure_1.png submission/figure_2.png submission/figure_3.png\
 			submission/figure_s4.png submission/figure_s5.png submission/figure_s6.png
 
 submission/manuscript.pdf submission/manuscript.md submission/manuscript.tex : \
+		data/process/study_summary_statistics.tsv\
 		submission/figure_1.png submission/figure_2.png submission/figure_3.png\
 		submission/figure_4.png submission/figure_5.png\
 		submission/figure_s1.png submission/figure_s2.png submission/figure_s3.png\
