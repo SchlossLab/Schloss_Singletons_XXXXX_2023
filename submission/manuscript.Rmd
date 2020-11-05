@@ -370,14 +370,16 @@ In addition to considerations of how to control for the presence of spurious seq
 How to curate and interpret rare sequences has been a significant challenge since microbial ecologists transitioned away from Sanger sequencing of samples [@Sogin2006; @Huse2010; @Reeder2009]. Although the extent of the "rare biosphere" is still an open question, it is important to appreciate the importance of rare populations in all communities. Populations can be numerically rare but ubuiquitous or abundant and limited in their geographic range. Alternatively, they can be numerically rare but temporally common or abundant but present infrequently. Removing sequences from any of these settings will limit our ability to study the role of such populations or the processes that drive their patchy distributions that are so common with microbial communities [@Reid2011].
 
 
-\newpage
 
 ## Materials and Methods
 
 * sequencing pipeline description
 
+
+
 ## Acknowledgements
 
+I endebted to the researchers who developed the 12 datasets used in this study for depositing their sequence data into the Sequence Read Archive. This work was supported in part by funding from the National Institutes of Health (U01AI124255, P30DK034933, R01CA215574).
 
 
 \newpage
