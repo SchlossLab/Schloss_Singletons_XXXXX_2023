@@ -131,10 +131,10 @@
 
 \begin{document}
 
-\hypertarget{removal-of-rare-sequences-from-16s-rrna-gene-sequence-surveys-biases-the-interpretation-of-community-structure-data}{%
-\section{Removal of rare sequences from 16S rRNA gene sequence surveys
-biases the interpretation of community structure
-data}\label{removal-of-rare-sequences-from-16s-rrna-gene-sequence-surveys-biases-the-interpretation-of-community-structure-data}}
+\hypertarget{removal-of-rare-amplicon-sequence-variants-from-16s-rrna-gene-sequence-surveys-biases-the-interpretation-of-community-structure-data}{%
+\section{Removal of rare amplicon sequence variants from 16S rRNA gene
+sequence surveys biases the interpretation of community structure
+data}\label{removal-of-rare-amplicon-sequence-variants-from-16s-rrna-gene-sequence-surveys-biases-the-interpretation-of-community-structure-data}}
 
 \vspace{35mm}
 
@@ -154,60 +154,54 @@ Arbor, MI 48109
 \hypertarget{research-article-format}{%
 \subsection{Research article format}\label{research-article-format}}
 
-\textbf{word choice: sample vs.~community} \textbf{word choice: dataset
-vs.~sample}
-
 \newpage
 
 \hypertarget{abstract}{%
 \subsection{Abstract}\label{abstract}}
 
 Methods for remediating PCR and sequencing artifacts in 16S rRNA gene
-sequence collections are in continuous development. The choices that
-researchers make have significant ramifications on the inferences that
-can be drawn from microbial ecology studies. One common approach is to
-remove rare sequences from datasets. But, the threshold that is applied
-is generally selected without regard for the number of sequences in the
-sample or the variation in sequencing depth across samples within a
-study. I analyzed the impact of removing rare sequences on metrics of
-alpha and beta diversity using samples collected across 12 published
-datasets. Removal of rare sequences significantly decreased the number
-of amplicon sequence variants and operational taxonomic units as well as
-their diversity. Furthermore, their removal increased the variation in
-community structure between samples. When a known effect size was
-simulated, removal of rare sequences reduced the statistical power to
-detect the effect relative to not removing rare sequences. Although
-removal of rare sequences did not affect the probability of falsely
-detetecting differences when samples were randomized to simulate a null
-model, the false detection rate increased when samples were assigned to
-simulated treatment groups according to their sequencing depth and rare
-sequences were removed. The false detection rate did not vary when rare
-sequences were retained. This analysis demonstrates the problems
-inherent in removing rare sequences. Researchers are encouraged to
-retain these sequences, to select approaches that minimize PCR and
-sequencing artifacts, and to use rarefaction to control for uneven
-sampling effort.
+sequence collections are in continuous development and have significant
+ramifications on the inferences that can be drawn. A common approach is
+to remove rare amplcon sequence variants (ASVs) from datasets. But, the
+definition of rarity is generally selected without regard for the number
+of sequences in the samples or the variation in sequencing depth across
+samples within a study. I analyzed the impact of removing rare ASVs on
+metrics of alpha and beta diversity using samples collected across 12
+published datasets. Removal of rare ASVs significantly decreased the
+number of ASVs and operational taxonomic units as well as their
+diversity. Furthermore, their removal increased the variation in
+community structure between samples. When simulating a known effect
+size, removal of rare ASVs reduced the power to detect the effect
+relative to not removing rare ASVs. Removal of rare ASVs did not affect
+the false detection rate when samples were randomized to simulate a null
+model. However, the false detection rate increased when rare ASVs were
+removed using a null distribution and assignment of samples to simulated
+treatment groups according to their sequencing depth. The false
+detection rate did not vary when rare ASVs were retained. This analysis
+demonstrates the problems inherent in removing rare ASVs. Researchers
+are encouraged to retain rare ASVs, to select approaches that minimize
+PCR and sequencing artifacts, and to use rarefaction to control for
+uneven sequencing effort.
 
 \newpage
 
 \hypertarget{importance}{%
 \subsection{Importance}\label{importance}}
 
-Removing rare sequences from 16S rRNA gene sequence collections is an
-approach that has grown in popularity for handling PCR and sequencing
-artifacts. Yet, it is unclear what impact an abundance-based filter has
-on downstream analyses. To investigate the effects of removing rare
-sequences, I analyzed the community distributions found in the samples
-of 12 published datasets. Analysis of these data and simulations based
-on them showed that removal of rare sequences distorts the
-representation of microbial communities. This has the effect of
+Removing rare amplicon sequence variants (ASVs) from 16S rRNA gene
+sequence collections is an approach that has grown in popularity for
+limiting PCR and sequencing artifacts. Yet, it is unclear what impact an
+abundance-based filter has on downstream analyses. To investigate the
+effects of removing rare ASVs, I analyzed the community distributions
+found in the samples of 12 published datasets. Analysis of these data
+and simulations based on them showed that removal of rare ASVs distorts
+the representation of microbial communities. This has the effect of
 artificially making it more difficult to detect differences between
 treatment groups. Also of concern was the observation that if sequencing
-depth is confounded with treatment group, then the probability of
-falsely detecting a difference between the treatment groups increases
-with the removal of rare sequences. The practice of removing rare
-sequences should stop, lest researcher adversely affect the
-interpretation of their data.
+depth is confounded with the treatment, then the probability of falsely
+detecting a difference between the treatment groups increased with the
+removal of rare ASVs. The practice of removing rare ASVs should stop,
+lest researcher adversely affect the interpretation of their data.
 
 \newpage
 
@@ -231,20 +225,20 @@ platform. In one approach, paired sequence reads are aligned and any
 discrepencies between the reads are resolved based on the difference in
 quality score for the position in question (2--4); quality scores are
 also used to curate single reads (5). In addition, a polishing step is
-often used to identify ideal sequecnces and their related artifacts
-based on the frequency of the sequences and their similarity sequences
-(2, 3, 6). In a second approach, the quality scores and types of errors
-to cluster sequences directly (7). Regardless of the approach, many
-pipelines advocate for abundance-based sceeening where rare sequences
-are removed from each dataset prior to outputting the sequence data as
-ASVs (3, 6, 7). Some algorithms recommend removing all ASVs that appear
-one (i.e.~singletons) (7), eight (3), or ten (6) or fewer times; these
-pipelines also vary in whether the minimum abundance threshold should be
-applied to individual samples (6, 7) or the pool of samples in a study
-(3). A notable exception, the mothur-based pipeline discourages the
-practice of removing rare sequences (2). After assigning sequences to
-ASVs, they are often analyzed as a taxonomic unit or clustered to
-generate operational taxonomic units (OTUs) or phylotypes.
+often used to identify ASVs based on the frequency and similarity of
+sequences (2, 3, 6). In a second approach, the quality scores and types
+of errors are modelled to cluster sequence reads directly into ASVs (7).
+Regardless of the approach, many pipelines advocate for abundance-based
+screening where rare sequences are removed from each dataset prior to
+outputting the sequence data as ASVs (3, 6, 7). Some algorithms
+recommend removing all ASVs that appear one (i.e.~singletons) (7), eight
+(3), or ten (6) or fewer times; these pipelines also vary in whether the
+minimum abundance threshold should be applied to individual samples (6,
+7) or the pool of samples in a study (3). A notable exception, the
+mothur-based pipeline discourages the practice of removing rare
+sequences (2). After assigning sequences to ASVs, ASVs are often
+analyzed as a taxonomic unit or clustered to generate operational
+taxonomic units (OTUs) or phylotypes.
 
 The abundance-based screening approach assumes that rare ASVs are more
 likely to be artifacts than more abundant ASVs. Sequencing of mock
@@ -263,9 +257,9 @@ developed and applied without regard for the number of sequences
 generated from each sample. These recommendations appear to assume that
 the number of reads per sample is consistent within and between studies.
 However, it is common that the number of sequences generated from each
-sample may vary by two or three orders of magnitude (e.g.~Figure S1). An
-ASV that appears once in a sample with 2,000 sequences is more
-trustworthy than an ASV that appears once in a sample with 100,000
+sample may vary by two or three orders of magnitude (e.g.~Table 1 and
+Figure S1). An ASV that appears once in a sample with 2,000 sequences is
+more trustworthy than an ASV that appears once in a sample with 100,000
 sequences since it has a 50-fold higher relative abundance. But,
 according to the pipeline recommendations, they are treated as being
 equally trustworthy. Rather than removing rare ASVs, the approach taken
@@ -278,8 +272,8 @@ are bona fide ASVs that may have an abundance below the proscribed
 threshold. For example, the abundance of an ASV may be below the
 threshold in some samples or time points and above the threshold in
 others. However, rarity, both in terms of prevalence and incidence, is
-an important ecological concept. Removing rare ASVs likely hinders one's
-to ability to make inferences about the dynamics and nature of the
+an important ecological concept (8). Removing rare ASVs likely hinders
+one's to ability to make inferences about the dynamics and nature of the
 populations that rare ASVs represent. Furthermore, removing ASVs whose
 abundances are below the proscribed threshold also potentially biases
 the community structure of the samples.
@@ -299,15 +293,14 @@ removing rare ASVs.
 
 \textbf{Datasets.} I collected 12 publicly available datasets that used
 the Illumina MiSeq platform to sequence the V4 region of the 16S rRNA
-gene from a variety of environments (Table 1). After removing poor
-quality and chimeric ASVs and samples that had uncharacteristically low
-number of sequences for the dataset, these datasets included between 7
-and 490 samples (Figure S1). The median number of sequences for each
-dataset ranged between 6,477 and 193,464 (Table 1). Strikingly, aside
-from the relatively small marine and soil datasets, the difference
-between the sample with the fewest sequences and the sample with the
-most sequences for each dataset varied by between 7.4 and 96.6-fold
-(Table 1).
+gene from a variety of environments (Table 1; Figure S1). After removing
+poor quality and chimeric ASVs and samples that had uncharacteristically
+low number of sequences for the dataset, these datasets included between
+7 and 490 samples. The median number of sequences for each dataset
+ranged between 6,477 and 193,464. Strikingly, aside from the relatively
+small marine and soil datasets, the difference between the sample with
+the fewest sequences and the sample with the most sequences for each
+dataset varied by between 7.4 and 96.6-fold.
 
 \textbf{The nature of singletons.} Removal of rare ASVs is commonly
 justified as a method of removing ASVs that are artifacts. If such ASVs
@@ -387,18 +380,18 @@ sample such that the total number of sequences in each sample and the
 total number of times each ASV was observed across all samples in the
 study was the same as was originally observed. This effectively made
 every community in a study a statistical sample of the study-wide
-composite community distribution. For example, after this procedure, the
-490 samples from the human dataset would be expected to have the same
-richness and diversity of ASVs and one would not expect to find
+composite community distribution. For example, after this procedure,
+each of the 490 samples from the human dataset would be expected to have
+the same richness and diversity of ASVs and one would not expect to find
 treatment-based effects between the samples. Because of the risk of bias
 if only one representation of the null distribution was generated, I
 generated 100 randomized datasets for each study. The trends between
 removing rare ASVs and the richness, diversity, and information loss
-that were identified using the observed community community distribution
-data were also identified with the data from the null distribution;
-however, the losses were larger when using the null distribution data
-(Figure S3). The null distribution data were used in the remainder of
-the study to minimize the risk of bias.
+that were identified using the observed community distribution data were
+also identified with the data from the null distribution; however, the
+losses were larger when using the null distribution data (Figure S3).
+The null distribution data were used in the remainder of the study to
+minimize the risk of bias.
 
 \textbf{The impact of removing rare ASVs on the information represented
 between samples.} Considering the loss of richness, diversity, and
@@ -443,20 +436,20 @@ Among the remaining datasets, the power to detect a difference in the
 richness of ASVs ranged between 0.10 and 0.49 (sediment and stream) and
 between 0.10 and 0.53 (rainforest and stream) to detect a difference in
 diversity when using a Wilcox test (Figure 4A). When singleton ASVs were
-removed, the power to detect a difference in the diversity of ASVs
+removed, the power to detect a difference in the richness of ASVs
 dropped by between 27.3 and 92.9\% (bioethanol and soil) and by between
-40.0 and 93.3\% (rainforest and soil; Figure 4B). The effect of removing
-rare ASVs on the richness of OTUs and their diversity was similar
-(Figure S5AB). I used the Bray-Curtis dissimilarity index to compare the
-simulated communities within each dataset and calculated the power to
-detect differences between the two simulated treatment groups using the
-analysis of molecular variance (Figure 4C and S5C). Without removing
-rare sequences, the power to detect a difference between the two
-simulated treatment groups varied between 0.41 and 1.00 (rainforest and
-rainforest). Aside from the bioethanol, human, and mice datasets, the
-power to detect differences dropped by between 6.5 and 64.0\% (soil and
-rice) when singletons were removed. However, when ASVs that occurred 10
-or fewer times were removed from each sample, the power to detect
+40.0 and 93.3\% for their diversity(rainforest and soil; Figure 4B). The
+effect of removing rare ASVs on the richness of OTUs and their diversity
+was similar (Figure S5AB). I used the Bray-Curtis dissimilarity index to
+compare the simulated communities within each dataset and calculated the
+power to detect differences between the two simulated treatment groups
+using the analysis of molecular variance (Figure 4C and S5C). Without
+removing rare sequences, the power to detect a difference between the
+two simulated treatment groups varied between 0.41 and 1.00 (rainforest
+and rainforest). Aside from the bioethanol, human, and mice datasets,
+the power to detect differences dropped by between 6.5 and 64.0\% (soil
+and rice) when singletons were removed. However, when ASVs that occurred
+10 or fewer times were removed from each sample, the power to detect
 differences dropped by 12.0 and 97.2\% (human and peromyscus); similar
 results were observed when ASVs were clustered into OTUs. Removing rare
 ASVs reduced the ability to detect simulated treatment effects using
@@ -487,7 +480,7 @@ assigned to the other. This exaggerated bias has been observed in
 comparisons of the lung and oral microbiota because of the larger number
 of non-specific amplicons that can be sequenced from lung samples
 relative to those in the oral cavity leading to a significant difference
-in sequencing depth between treatment groups (8). When rare sequences
+in sequencing depth between treatment groups (9). When rare sequences
 were not removed, the fraction of significant tests did not differ from
 5\% for comparing the richness, their diversity, or Bray-Curtis
 distances (Figure 5B and S6B). However, when rare taxa of any frequency
@@ -531,34 +524,34 @@ sequences over their quality (5). Previous work has shown that assembly
 of fully overlapping sequence reads results in the lowest sequencing
 error rates (2). The studies highlighted in this analysis sequenced the
 V4 region of the 16S rRNA gene using the Illumina MiSeq sequencing
-platform with their v2 chemistry. The resulting data consists of two 250
-nt reads that span a region that is about 250 nt long. In contrast,
-there has been a movement to sequence longer regions with similar
-chemistry resulting in less overlap between the sequencing reads (9,
-10). Alternatively, others have prioritized increasing the number of
-sequences per sample by sequencing the V4 region, but with paired or
-single reads that are 150 nt long (11, 12). Both practices result in a
+platform with their version 2 chemistry. The resulting data consists of
+two 250 nt reads that span a region that is about 253 nt long. In
+contrast, there has been a movement to sequence longer regions with
+similar chemistry resulting in less overlap between the sequencing reads
+(10, 11). Alternatively, others have prioritized increasing the number
+of sequences per sample by sequencing the V4 region, but with paired or
+single reads that are 150 nt long (12, 13). Both practices result in a
 significantly higher error rate for the resulting assmebly. Instead,
 researchers should prioritize the quality over the quantity and length
 of their data. For these reasons, this analysis did not use lower
-quality data generated by alternative methods
+quality data generated by alternative methods.
 
 The impacts of removing rare sequences on the representation of
 communities are caused by the uneven impact of applying a single
 abundance threshold across all samples. The number of sequences per
-sample in the datasets highlighted in this analysis varied by 100-fold
-(Figure S1); I suspect the range is actually larger since researchers
-may have opted against depositing samples with fewer reads into the SRA.
-If the range in read coverage for a study is 100-fold, a singleton in a
-small sample would have had a comparable relative abundance as a
-sequence that appeared 100 times in a more densely sequenced sample.
-However, it would have been removed from the smaller sample and not the
-larger sample. Thus, applying a single abundance threshold
-disproportionately impacted the samples with fewer sequences. This seems
-to contradict the purpose of removing rare sequences since a singleton
-in the smaller sample is more reliable than the singleton in the larger
-sample. A superior approach to removing rare sequences is to use
-rarefaction to conrol for uneven sampling.
+sample in the datasets highlighted in this analysis varied by as much as
+100-fold (Table 1; Figure S1). In practice, I suspect this range is
+actually larger since researchers may have opted against depositing
+samples with fewer reads into the SRA. If the range in read coverage for
+a study is 100-fold, a singleton in a small sample would have had a
+comparable relative abundance as a sequence that appeared 100 times in a
+more densely sequenced sample. However, it would have been removed from
+the smaller sample and not the larger sample. Thus, applying a single
+abundance threshold disproportionately impacted the samples with fewer
+sequences. This seems to contradict the purpose of removing rare
+sequences since a singleton in the smaller sample is more reliable than
+the singleton in the larger sample. A superior approach to removing rare
+sequences is to use rarefaction to conrol for uneven sampling.
 
 Even with the best sequencing approaches, PCR artifacts and sequencing
 errors persist. This may account for some sequences not being observed
@@ -568,7 +561,7 @@ some portion of the sequences that were unique to samples were artifacts
 or contained errors. Researchers are encouraged to use rarefaction to
 control for uneven sampling and the presence of spurious sequences.
 Previous work sequencing mock communities has shown that the number of
-spurious sequences increases with sequencing depth (2, 13). By rarefying
+spurious sequences increases with sequencing depth (2, 14). By rarefying
 data to a common number of sequences per sample, the number of spurious
 sequences can be controlled. As shown in the data I presented, which was
 rarefied to a common number of reads per sample within a dataset, when
@@ -591,11 +584,11 @@ spurious, it is likely that some are. Therefore, researchers must
 approach rare sequences with more skepticism than more abundant
 sequences. Reseachers should seek out other methods to confirm
 inferences that they make about rare sequences. This is a standard that
-should be applied regardless of their abundance (14).
+should be applied regardless of their abundance (15).
 
 How to curate and interpret rare sequences has been a significant
 challenge since microbial ecologists transitioned away from Sanger
-sequencing of samples (15--17). Although the extent of the ``rare
+sequencing of samples (16--18). Although the extent of the ``rare
 biosphere'' is still an open question, it is important to appreciate the
 importance of rare populations in all communities. Populations can be
 numerically rare but ubuiquitous or abundant and limited in their
@@ -603,36 +596,36 @@ geographic range. Alternatively, they can be numerically rare but
 temporally common or abundant but present infrequently. Removing
 sequences from any of these settings will limit our ability to study the
 role of such populations or the processes that drive their patchy
-distributions that are so common with microbial communities (18).
+distributions that are so common with microbial communities (8).
 
 \hypertarget{materials-and-methods}{%
 \subsection{Materials and Methods}\label{materials-and-methods}}
 
 \textbf{Data curation and analysis.} To insure the highest possible data
-quality, datasets were limited to those where the 500 cycle v2 MiSeq
-chemistry was used to sequence the amplicons. The paired 250 nt reads
-resulted in near complete 2-fold sequencing coverage of every nucleotide
-in the ca. 250 nt-long region. This region and sequencing platform were
-selected because previous work has shown that a standard data analysis
-pipeline in mothur results in a sequencing error rate below 0.02\% (2).
-All sequence data were obtained from the Sequence Read Archive (SRA) and
-processed using a standard mothur-based sequencing pipeline that
-resulted in ASVs as generated by the pre.cluster algorithm using a
-threshold of 2 nt (2, 19). ASVs were assigned to OTUs using a 3\%
-distance threshold using mothur's cluster function with the OptiClust
-algorithm (20). To minimize the effects of uneven sampling effort,
-samples were rarefied to the number of sequences in the smallest sample
-for each dataset. Because metrics of alpha diversity did not
+quality, datasets were limited to those where the 500 cycle version 2
+MiSeq chemistry was used to sequence the amplicons. The paired 250 nt
+reads resulted in near complete 2-fold sequencing coverage of every
+nucleotide in the ca. 253 nt-long region. This region and sequencing
+platform were selected because previous work has shown that a standard
+data analysis pipeline in mothur results in a sequencing error rate
+below 0.02\% (2). All sequence data were obtained from the Sequence Read
+Archive (SRA) and processed using a standard mothur-based sequencing
+pipeline that resulted in ASVs as generated by the pre.cluster algorithm
+using a threshold of 2 nt (2, 19). ASVs were assigned to OTUs using a
+3\% distance threshold using mothur's cluster function with the
+OptiClust algorithm (20). To minimize the effects of uneven sampling
+effort, samples were rarefied to the number of sequences in the smallest
+sample for each dataset. Because metrics of alpha diversity did not
 consistently follow a normal distribution, I used the non-parametric
 Wilcoxon rank test as implemented in R. For comparisons of Bray-Curtis
 distances, the amova function within mothur was used, which implements
 the analysis of molecular variance algorithm (21).
 
 \textbf{Reproducibility.} All analyses were performed using mothur
-(version 1.44.1) and R (version 4.0.2) with the tidyverse (v.130), broom
-(v.070), data.table (v. 113 4), and cowplot (v.110) packages. All of the
-code that was used in this analysis as well as the Makefile for running
-the analysis are available at
+(version 1.44.1) and R (version 4.0.2) with the tidyverse (version
+1.3.0), broom (version 0.7.0), data.table (version 1.13.4), and cowplot
+(version 1.1.0) packages. All of the code that was used in this analysis
+as well as the Makefile for running the analysis are available at
 \url{https://github.com/SchlossLab/Schloss_Singletons_XXXXX_2019} along
 with the complete version history of the project.
 
@@ -713,8 +706,13 @@ SP}. 2016. {DADA}2: High-resolution sample inference from illumina
 amplicon data. Nature Methods \textbf{13}:581--583.
 doi:\href{https://doi.org/10.1038/nmeth.3869}{10.1038/nmeth.3869}.}
 
-\leavevmode\hypertarget{ref-Morris2013}{}%
+\leavevmode\hypertarget{ref-Reid2011}{}%
 \CSLLeftMargin{8. }
+\CSLRightInline{\textbf{Reid A}, \textbf{Buckley M}. 2011. The rare
+biosphere.}
+
+\leavevmode\hypertarget{ref-Morris2013}{}%
+\CSLLeftMargin{9. }
 \CSLRightInline{\textbf{Morris A}, \textbf{Beck JM}, \textbf{Schloss
 PD}, \textbf{Campbell TB}, \textbf{Crothers K}, \textbf{Curtis JL},
 \textbf{Flores SC}, \textbf{Fontenot AP}, \textbf{Ghedin E},
@@ -727,7 +725,7 @@ Critical Care Medicine \textbf{187}:1067--1075.
 doi:\href{https://doi.org/10.1164/rccm.201210-1913oc}{10.1164/rccm.201210-1913oc}.}
 
 \leavevmode\hypertarget{ref-Fadrosh2014}{}%
-\CSLLeftMargin{9. }
+\CSLLeftMargin{10. }
 \CSLRightInline{\textbf{Fadrosh DW}, \textbf{Ma B}, \textbf{Gajer P},
 \textbf{Sengamalay N}, \textbf{Ott S}, \textbf{Brotman RM},
 \textbf{Ravel J}. 2014. An improved dual-indexing approach for
@@ -736,7 +734,7 @@ Microbiome \textbf{2}:6.
 doi:\href{https://doi.org/10.1186/2049-2618-2-6}{10.1186/2049-2618-2-6}.}
 
 \leavevmode\hypertarget{ref-Holm2019}{}%
-\CSLLeftMargin{10. }
+\CSLLeftMargin{11. }
 \CSLRightInline{\textbf{Holm JB}, \textbf{Humphrys MS}, \textbf{Robinson
 CK}, \textbf{Settles ML}, \textbf{Ott S}, \textbf{Fu L}, \textbf{Yang
 H}, \textbf{Gajer P}, \textbf{He X}, \textbf{McComb E}, \textbf{Gravitt
@@ -747,7 +745,7 @@ amplicon regions on the {Illumina} {HiSeq} 2500 platform. {mSystems}
 doi:\href{https://doi.org/10.1128/msystems.00029-19}{10.1128/msystems.00029-19}.}
 
 \leavevmode\hypertarget{ref-Thompson2017}{}%
-\CSLLeftMargin{11. }
+\CSLLeftMargin{12. }
 \CSLRightInline{\textbf{Thompson LR}, \textbf{Jon G. Sanders and},
 \textbf{McDonald D}, \textbf{Amir A}, \textbf{Ladau J}, \textbf{Locey
 KJ}, \textbf{Prill RJ}, \textbf{Tripathi A}, \textbf{Gibbons SM},
@@ -766,7 +764,7 @@ microbial diversity. Nature \textbf{551}:457--463.
 doi:\href{https://doi.org/10.1038/nature24621}{10.1038/nature24621}.}
 
 \leavevmode\hypertarget{ref-McDonald2018}{}%
-\CSLLeftMargin{12. }
+\CSLLeftMargin{13. }
 \CSLRightInline{\textbf{McDonald D}, \textbf{Hyde E}, \textbf{Debelius
 JW}, \textbf{Morton JT}, \textbf{Gonzalez A}, \textbf{Ackermann G},
 \textbf{Aksenov AA}, \textbf{Behsaz B}, \textbf{Brennan C}, \textbf{Chen
@@ -824,21 +822,21 @@ American gut: An open platform for citizen science microbiome research.
 doi:\href{https://doi.org/10.1128/msystems.00031-18}{10.1128/msystems.00031-18}.}
 
 \leavevmode\hypertarget{ref-Schloss2011}{}%
-\CSLLeftMargin{13. }
+\CSLLeftMargin{14. }
 \CSLRightInline{\textbf{Schloss PD}, \textbf{Gevers D}, \textbf{Westcott
 SL}. 2011. Reducing the effects of {PCR} amplification and sequencing
 artifacts on 16S {rRNA}-based studies. {PLoS} {ONE} \textbf{6}:e27310.
 doi:\href{https://doi.org/10.1371/journal.pone.0027310}{10.1371/journal.pone.0027310}.}
 
 \leavevmode\hypertarget{ref-Schloss2018}{}%
-\CSLLeftMargin{14. }
+\CSLLeftMargin{15. }
 \CSLRightInline{\textbf{Schloss PD}. 2018. Identifying and overcoming
 threats to reproducibility, replicability, robustness, and
 generalizability in microbiome research. {mBio} \textbf{9}.
 doi:\href{https://doi.org/10.1128/mbio.00525-18}{10.1128/mbio.00525-18}.}
 
 \leavevmode\hypertarget{ref-Sogin2006}{}%
-\CSLLeftMargin{15. }
+\CSLLeftMargin{16. }
 \CSLRightInline{\textbf{Sogin ML}, \textbf{Morrison HG}, \textbf{Huber
 JA}, \textbf{Welch DM}, \textbf{Huse SM}, \textbf{Neal PR},
 \textbf{Arrieta JM}, \textbf{Herndl GJ}. 2006. Microbial diversity in
@@ -847,7 +845,7 @@ National Academy of Sciences \textbf{103}:12115--12120.
 doi:\href{https://doi.org/10.1073/pnas.0605127103}{10.1073/pnas.0605127103}.}
 
 \leavevmode\hypertarget{ref-Huse2010}{}%
-\CSLLeftMargin{16. }
+\CSLLeftMargin{17. }
 \CSLRightInline{\textbf{Huse SM}, \textbf{Welch DM}, \textbf{Morrison
 HG}, \textbf{Sogin ML}. 2010. Ironing out the wrinkles in the rare
 biosphere through improved {OTU} clustering. Environmental Microbiology
@@ -855,15 +853,10 @@ biosphere through improved {OTU} clustering. Environmental Microbiology
 doi:\href{https://doi.org/10.1111/j.1462-2920.2010.02193.x}{10.1111/j.1462-2920.2010.02193.x}.}
 
 \leavevmode\hypertarget{ref-Reeder2009}{}%
-\CSLLeftMargin{17. }
+\CSLLeftMargin{18. }
 \CSLRightInline{\textbf{Reeder J}, \textbf{Knight R}. 2009. The {{}}rare
 biosphere{{}}: A reality check. Nature Methods \textbf{6}:636--637.
 doi:\href{https://doi.org/10.1038/nmeth0909-636}{10.1038/nmeth0909-636}.}
-
-\leavevmode\hypertarget{ref-Reid2011}{}%
-\CSLLeftMargin{18. }
-\CSLRightInline{\textbf{Reid A}, \textbf{Buckley M}. 2011. The rare
-biosphere.}
 
 \leavevmode\hypertarget{ref-Schloss2009}{}%
 \CSLLeftMargin{19. }
