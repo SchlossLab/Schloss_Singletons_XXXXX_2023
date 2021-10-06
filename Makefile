@@ -363,24 +363,27 @@ data/process/sffect_beta_analysis.tsv : code/pool_ffect.R\
 ################################################################################
 
 
-# Find the amount of sequence loss from pruning
+# Find the amount of sequence loss from pruning (Fig 1A)
 data/process/sequence_loss_table_raw.tsv : code/quantify_sequence_loss.R\
-			$(foreach S, $(samples), data/$S/data.count_table)
+			$(foreach S, $(samples), data/$S/data.count_table)\
+			$(foreach S, $(samples), data/$S/data.remove_accnos)
 	Rscript code/quantify_sequence_loss.R
 
-data/process/sequence_loss_table_cor.tsv : code/quantify_correlation_with_sample_size.R\
-		data/process/sequence_loss_table_raw.tsv
-	Rscript code/quantify_correlation_with_sample_size.R data/process/sequence_loss_table_raw.tsv
 
 # Find the amount of sequence coverage
 data/process/sequence_coverage_table_raw.tsv : code/quantify_sample_coverage.R\
 			$(foreach S, $(samples), data/$S/data.count_table)
 	Rscript code/quantify_sample_coverage.R
 
+
+data/process/sequence_loss_table_cor.tsv : code/quantify_correlation_with_sample_size.R\
+		data/process/sequence_loss_table_raw.tsv
+	Rscript code/quantify_correlation_with_sample_size.R data/process/sequence_loss_table_raw.tsv
+
+
 data/process/sequence_coverage_table_cor.tsv : code/quantify_correlation_with_sample_size.R\
 		data/process/sequence_coverage_table_raw.tsv
 	Rscript code/quantify_correlation_with_sample_size.R data/process/sequence_coverage_table_raw.tsv
-
 
 
 # Table that contains summary statistics about each sample
@@ -507,5 +510,5 @@ submission/manuscript.pdf submission/manuscript.md submission/manuscript.tex : \
 	# rm submission/marked_up.tex
 	# rm submission/manuscript_old.tex
 
-# submission/response_to_reviewers.pdf : submission/response_to_reviewers.md submission/header.tex
-# 	pandoc $< -o $@ --include-in-header=submission/header.tex
+submission/response_to_reviewers.pdf : submission/response_to_reviewers.md submission/header.tex
+	pandoc $< -o $@ -V geometry:margin=1in --include-in-header=submission/header.tex
