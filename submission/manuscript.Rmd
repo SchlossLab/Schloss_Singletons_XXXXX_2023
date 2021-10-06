@@ -82,7 +82,11 @@ oxford_comma <- function(x, digits=2) {
 
 # Removal of rare amplicon sequence variants from 16S rRNA gene sequence surveys biases the interpretation of community structure data
 
-\vspace{35mm}
+\vspace{10mm}
+
+**Running title:** Removal of rare ASVs biases community analyses
+
+\vspace{25mm}
 
 Patrick D. Schloss${^\dagger}$
 
