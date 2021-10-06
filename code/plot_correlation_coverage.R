@@ -23,14 +23,14 @@ correlations <- bind_rows(
 		cor_coverage=read_tsv('data/process/sequence_coverage_table_cor.tsv'),
 		.id="comparison"
 	) %>%
- 	filter(min_freq == 1) %>%
+ 	filter(freq_removed == 1) %>%
   mutate(sig = if_else(cor_n_p.value < 0.05, NA_character_, "not\nsignificant"),
     value = if_else(is.na(sig), cor_n_estimate, NA_real_)
 	) %>%
 	select(comparison, dataset, value, sig)
 
 coverage <- read_tsv('data/process/sequence_coverage_table_raw.tsv') %>%
-	filter(min_freq == 1) %>%
+	filter(freq_removed == 1) %>%
 	group_by(dataset) %>%
 	summarize(
 		value=median(coverage),

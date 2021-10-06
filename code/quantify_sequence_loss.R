@@ -18,17 +18,20 @@ get_shannon <- function(x) {
 }
 
 
-
 get_loss_table <- function(dataset){
 
 	print(dataset)
+
+	to_remove <- scan(paste0("data/", dataset, "/data.remove_accnos"), what=character(), quiet=TRUE) %>%
+		str_split(., pattern="-") %>%
+		unlist()
 
 	paste0("data/", dataset, "/data.count_table") %>%
 		fread(., colClasses=c(Representative_Sequence="character")) %>%
 		melt(id.vars=c("Representative_Sequence"), variable.name="sample", variable.factor=F, value.name="n_seqs") %>%
 	  filter(sample != "total") %>%
 		rename(sequences=Representative_Sequence) %>%
-		filter(n_seqs != 0) %>%
+		filter(n_seqs != 0 & !sample %in% to_remove) %>%
 		group_by(sample) %>%
 		summarize(n = sum(n_seqs),
 			shannon = get_shannon(n_seqs),
@@ -41,11 +44,12 @@ get_loss_table <- function(dataset){
 			n_7 = frac_n(n_seqs, 7),
 			n_8 = frac_n(n_seqs, 8),
 			n_9 = frac_n(n_seqs, 9),
-			n_10 = frac_n(n_seqs, 10)
+			n_10 = frac_n(n_seqs, 10),
+			.groups = "drop"
 		) %>%
-		pivot_longer(starts_with("n_"), names_to="min_freq", values_to="fraction_lost") %>%
+		pivot_longer(starts_with("n_"), names_to="freq_removed", values_to="fraction_lost") %>%
 		mutate(dataset = dataset,
-					min_freq = str_replace(min_freq, "n_", "")) %>%
+					freq_removed = str_replace(freq_removed, "n_", "")) %>%
 		select(dataset, sample, everything())
 
 }
