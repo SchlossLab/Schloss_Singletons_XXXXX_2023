@@ -510,21 +510,16 @@ submission/manuscript.pdf submission/manuscript.md submission/manuscript.tex : \
 		submission/header.tex\
 		submission/manuscript.Rmd
 	R -e "library('rmarkdown'); render('submission/manuscript.Rmd', clean=FALSE)"
-	mv submission/manuscript.utf8.md submission/manuscript.md
 	rm -f submission/manuscript.knit.md submission/manuscript.log
 
 
-# module load perl-modules latexdiff/1.2.0
-# submission/track_changes.pdf: submission/Schloss_Singletons_XXXXX_2019.tex\
-# 															submission/Schloss_Singletons_XXXXX_2019.tex
-	# git cat-file -p 6adb4c388158ab59:submission/manuscript.tex > submission/manuscript_old.tex
-	# latexdiff submission/manuscript_old.tex submission/manuscript.tex > submission/marked_up.tex
-	# pdflatex -output-directory=submission submission/marked_up.tex
-	# rm submission/marked_up.aux
-	# rm submission/marked_up.log
-	# rm submission/marked_up.out
-	# rm submission/marked_up.tex
-	# rm submission/manuscript_old.tex
+submission/track_changes.pdf: submission/manuscript.tex
+	git cat-file -p d1e952087c88e7979d212ca918e1c8b3fae675c9:submission/manuscript.tex > submission/manuscript_old.tex
+	latexdiff submission/manuscript_old.tex submission/manuscript.tex > submission/marked_up.tex
+	R -e "tinytex::pdflatex('submission/marked_up.tex')"
+	rm marked_up.log texput.log
+	rm submission/marked_up.tex
+	rm submission/manuscript_old.tex
 
 submission/response_to_reviewers.pdf : submission/response_to_reviewers.md submission/header.tex
 	pandoc $< -o $@ -V geometry:margin=1in --include-in-header=submission/header.tex

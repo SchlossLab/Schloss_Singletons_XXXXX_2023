@@ -2,12 +2,14 @@
 .Rhistory
 .RData
 .DS_Store
+.nfs*
 Rplots.pdf
 
 data/
 !README.md
 
 *.pbs*
+
 mothur*logfile
 *temp*
 *.docx
@@ -16,6 +18,9 @@ scratch
 
 *.batch
 *.slurm
-pbs_scripts
+*.slurm.o*
+slurm
+slurm_scripts
 
 *.tgz
+.vscode
