@@ -32,8 +32,7 @@
 
 **(A) Are the correlations meaningfully representative of a trend across all samples, or are they driven by a small number of outlier samples? Providing support of these trends by plotting the scatterplots for each study would help assuage this concern.**
 
-* Used Spearman correlation coefficients, which are robust to the effects of outliers
-* Create a new Figure S2 that shows the requested plots for the data in Fig 1AC
+I appreciate the reviewer's concern that the correlations presented in Figure 1AC could be driven by outliers. It is worth noting that I used Spearman correlation coefficients, which are robust to the effects of outliers since it is a ranked-based test. As suggested, by the reviewer, I created two new figures, Figures S2 and S3, which shows the requested plots for the data in Fig 1AC. I think it's pretty clear that the trend is robust to outliers.
 
 
 **(B) Despite these observations, couldn't these rare taxa include artifacts nonetheless and, if so, do real rare variants and artifacts contribute uniform information in all subsequent analyses? An effort to directly measure the impact of spurious sequences on analytical accuracy would help offset this concern.**

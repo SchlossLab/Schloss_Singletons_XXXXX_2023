@@ -406,6 +406,14 @@ results/figures/correlation_coverage.tiff: code/plot_correlation_coverage.R\
 		data/process/sequence_coverage_table_raw.tsv
 	Rscript $<
 
+results/figures/supp_sequence_loss_cor.tiff: code/plot_correlation_supp.R\
+		data/process/sequence_loss_table_raw.tsv
+	Rscript $^
+
+results/figures/supp_sequence_coverage_cor.tiff: code/plot_correlation_supp.R\
+		data/process/sequence_coverage_table_raw.tsv
+	Rscript $^
+
 results/figures/%_loss_of_information_obs.tiff: \
 		code/plot_loss_of_information_obs.R\
 		data/process/ointra_analysis.tsv
@@ -461,19 +469,25 @@ submission/figure_5.tiff : results/figures/asv_type_one.tiff
 submission/figure_s1.tiff : results/figures/seqs_per_sample.tiff
 	cp $< $@
 
-submission/figure_s2.tiff : results/figures/otu_loss_of_information_obs.tiff
+submission/figure_s2.tiff : results/figures/supp_sequence_loss_cor.tiff
 	cp $< $@
 
-submission/figure_s3.tiff : results/figures/loss_of_information_random.tiff
+submission/figure_s3.tiff : results/figures/supp_sequence_coverage_cor.tiff
 	cp $< $@
 
-submission/figure_s4.tiff : results/figures/otu_coefficient_of_variation.tiff
+submission/figure_s4.tiff : results/figures/otu_loss_of_information_obs.tiff
 	cp $< $@
 
-submission/figure_s5.tiff : results/figures/otu_power.tiff
+submission/figure_s5.tiff : results/figures/loss_of_information_random.tiff
 	cp $< $@
 
-submission/figure_s6.tiff : results/figures/otu_type_one.tiff
+submission/figure_s6.tiff : results/figures/otu_coefficient_of_variation.tiff
+	cp $< $@
+
+submission/figure_s7.tiff : results/figures/otu_power.tiff
+	cp $< $@
+
+submission/figure_s8.tiff : results/figures/otu_type_one.tiff
 	cp $< $@
 
 %.png : %.tiff
@@ -482,7 +496,8 @@ submission/figure_s6.tiff : results/figures/otu_type_one.tiff
 pngs : submission/figure_1.png submission/figure_2.png submission/figure_3.png\
 			submission/figure_4.png submission/figure_5.png\
 			submission/figure_s1.png submission/figure_s2.png submission/figure_s3.png\
-			submission/figure_s4.png submission/figure_s5.png submission/figure_s6.png
+			submission/figure_s4.png submission/figure_s5.png submission/figure_s6.png\
+			submission/figure_s7.png submission/figure_s8.png
 
 submission/manuscript.pdf submission/manuscript.md submission/manuscript.tex : \
 		data/process/study_summary_statistics.tsv\
@@ -490,6 +505,7 @@ submission/manuscript.pdf submission/manuscript.md submission/manuscript.tex : \
 		submission/figure_4.png submission/figure_5.png\
 		submission/figure_s1.png submission/figure_s2.png submission/figure_s3.png\
 		submission/figure_s4.png submission/figure_s5.png submission/figure_s6.png\
+		submission/figure_s7.png submission/figure_s8.png\
 		submission/mbio.csl\
 		submission/header.tex\
 		submission/manuscript.Rmd

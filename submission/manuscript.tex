@@ -311,13 +311,13 @@ justified as a method of removing ASVs that are artifacts. If such ASVs
 are artifacts, then one would expect the number of singleton ASVs to
 accumulate with sequencing depth. Contrary to this expectation, the
 median percentage of sequences that were discarded when singleton ASVs
-were removed from each dataset varied between 0.42 and 22.23\%
+were removed from each dataset varied between 0.42 and 22.20\%
 (bioethanol and seagrass). In addition, with the exception of the
 samples from the marine and sediment datasets (Spearman correlation,
 P\textgreater0.05), the fraction of singleton ASVs in samples was
 negatively correlated with the number of sequences in each sample with a
-range between -0.27 and -0.87 (rice and bioethanol) (Figure 1A). This
-showed that with additional sequencing, the probability of seeing
+range between -0.26 and -0.87 (rice and bioethanol) (Figures 1A and S2).
+This showed that with additional sequencing, the probability of seeing
 singleton ASVs in multiple samples was greater than the probability of
 generating an artifact. This suggests that the singleton ASVs are not as
 likely to be artifacts as previously thought. Furthermore, if singleton
@@ -332,11 +332,11 @@ and inter-sample diversity, the high coverage of singleton ASVs in these
 datasets was remarkable. The correlation between the number of sequences
 in a sample and the fraction of that sample's singleton ASVs that were
 covered by another sample in the dataset was significant and negative
-for 9 of the datasets ranging between -0.31 and -0.84 for the rice and
-seagrass datasets, respectively (Figure 1C). The negative correlation
-indicated that the singleton ASVs in the smaller samples were more
-likely to be covered by ASVs in the larger samples. Among the three
-datasets without a significant correlation (Spearman correlation,
+for 9 of the datasets ranging between -0.33 and -0.84 for the rice and
+seagrass datasets, respectively ((Figures 1C and S3)). The negative
+correlation indicated that the singleton ASVs in the smaller samples
+were more likely to be covered by ASVs in the larger samples. Among the
+three datasets without a significant correlation (Spearman correlation,
 P\textgreater0.05), the marine and soil datasets had the fewest samples
 in our collection and the stream dataset already had a high level of
 coverage regardless of the number of sequences. Contrary to the common
@@ -365,13 +365,13 @@ used in microbial ecology studies. Although pooling similar ASVs into
 OTUs reduced the impact of removing the rare ASVs relative to the
 ASV-based analysis, the minimum abundance threshold still decreased the
 richness of OTUs and the diversity decreased relative to the full
-community (Figure S2AB). In contrast to the richness and diversity
+community (Figure S4AB). In contrast to the richness and diversity
 measurements, the Kullback--Leibler divergence compares the relative
 abundance of specific ASVs or OTUs between representations of the
 community. I calculated the Kullback--Leibler divergence between the
 full communities and those where rare ASVs were removed. As the
 threshold for removing ASVs increased, the amount of information lost
-also increased for both ASVs and OTUs (Figure 2C and Figure S2C). The
+also increased for both ASVs and OTUs (Figure 2C and Figure S4C). The
 relative loss of information was generally smaller for OTUs than than it
 was for ASVs. Removing rare ASVs, regardless of abundance threshold, had
 profound impacts on the representation of the communities.
@@ -393,7 +393,7 @@ generated 100 randomized datasets for each study. The trends between
 removing rare ASVs and the richness, diversity, and information loss
 that were identified using the observed community distribution data were
 also identified with the data from the null distribution; however, the
-losses were larger when using the null distribution data (Figure S3).
+losses were larger when using the null distribution data (Figure S5).
 The null distribution data were used in the remainder of the study to
 minimize the risk of bias.
 
@@ -417,7 +417,7 @@ The COVs between Bray-Curtis distances within a study when singletons
 were removed was between 1.3 and 18.6-times larger than when they were
 not removed (mice and stream; Figure 3C). When ASVs were clustered into
 OTUs the difference in COVs was less than it was for the ASVs (Figure
-S4). These results indicate that removing rare ASVs increases the
+S6). These results indicate that removing rare ASVs increases the
 dissimilarity between samples, which could have a significant impact on
 the statistical power to detect differences between treatment groups.
 
@@ -444,10 +444,10 @@ removed, the power to detect a difference in the richness of ASVs
 dropped by between 27.3 and 92.9\% (bioethanol and soil) and by between
 40.0 and 93.3\% for their diversity(rainforest and soil; Figure 4B). The
 effect of removing rare ASVs on the richness of OTUs and their diversity
-was similar (Figure S5AB). I used the Bray-Curtis dissimilarity index to
+was similar (Figure S7AB). I used the Bray-Curtis dissimilarity index to
 compare the simulated communities within each dataset and calculated the
 power to detect differences between the two simulated treatment groups
-using the analysis of molecular variance (Figure 4C and S5C). Without
+using the analysis of molecular variance (Figure 4C and S7C). Without
 removing rare sequences, the power to detect a difference between the
 two simulated treatment groups varied between 0.41 and 1.00 (rainforest
 and rainforest). Aside from the bioethanol, human, and mice datasets,
@@ -472,10 +472,10 @@ evidence that removing rare ASVs resulted in an inflated experiment-wise
 error rate. The average fraction of significant tests did not
 meaningfully vary from 0.05 across the minimum abundance threshold,
 dataset, metric of describing sample alpha-diversity, or whether the
-abundance of ASVs or OTUs were used (Figure 5A and S6A). Similarly, the
+abundance of ASVs or OTUs were used (Figure 5A and S8A). Similarly, the
 average fraction of significant tests did not meaningfully vary from
 0.05 when using analysis of molecular variance to compare communities
-using Bray-Curtis distances (Figure 5A and S6A). Second, I again sampled
+using Bray-Curtis distances (Figure 5A and S8A). Second, I again sampled
 sequences from the null distribution, but assigned samples to one of two
 treatment groups based on the number of sequences in each sample. The
 samples with fewer than the median number of sequences for the dataset
@@ -487,9 +487,9 @@ relative to those in the oral cavity leading to a significant difference
 in sequencing depth between treatment groups (9). When rare sequences
 were not removed, the fraction of significant tests did not differ from
 5\% for comparing the richness, their diversity, or Bray-Curtis
-distances (Figure 5B and S6B). However, when rare taxa of any frequency
+distances (Figure 5B and S8B). However, when rare taxa of any frequency
 were removed, the probability of falsely detecing a difference as
-signifiant increased with the definition of rarity (Figure 5B and S6B).
+signifiant increased with the definition of rarity (Figure 5B and S8B).
 Not including the small marine dataset, the average fraction the average
 fraction of falsely detecting a difference across datasets when only
 singletons were removed was 92.45\%. If there is any relationship
@@ -571,7 +571,7 @@ sequences can be controlled. As shown in the data I presented, which was
 rarefied to a common number of reads per sample within a dataset, when
 rare sequences were not removed the power to detect differences was the
 highest and the false discovery rate was the expected 5\% (Figures 5 and
-S6).
+S8).
 
 In addition to considerations of how to control for the presence of
 spurious sequences, researchers also need to be mindful of how to
@@ -1052,7 +1052,8 @@ were shared with another sample (C). Those correlations that were not
 statisically significant had a P-value greater than 0.05. The faction of
 singletons shared across samples (B) were calculated for each dataset.
 The median value is shown with a solid circle and the 95\% confidence
-interval is indicated by the solid line.
+interval is indicated by the solid line. The raw data for A and C are
+presented in Figures S2 and S3, respectively.
 
 \newpage
 
@@ -1122,7 +1123,32 @@ sequences per sample.
 
 \includegraphics{figure_s2.png}
 
-\textbf{Figure S2. Removing rare sequences from samples alters their
+\textbf{Figure S2. Singletons are more common in samples with fewer
+seqeunces.} Spearman correlation coefficients (\(\rho\)) were calcualted
+between the total number of sequences and the number of singletons in
+the sample. The Spearman correlation coefficients for the Marine and
+Sediment datasets were not significantly different from 0.00
+(P\textgreater0.05). The blue line indicates the linear trend in the
+data. These data are summarized in Figure 1A.
+
+\newpage
+
+\includegraphics{figure_s3.png}
+
+\textbf{Figure S3. Singletons tend to be shared with samples having more
+sequences.} Spearman correlation coefficients (\(\rho\)) were calcualted
+between the total number of sequences and the number of singletons in a
+sample that were shared with other samples from the same deataset. The
+Spearman correlation coefficients for the Marine, Soil, and Stream
+datasets were not significantly different from 0.00 (P\textgreater0.05).
+The blue line indicates the linear trend in the data. These data are
+summarized in Figure 1C.
+
+\newpage
+
+\includegraphics{figure_s4.png}
+
+\textbf{Figure S4. Removing rare sequences from samples alters their
 representation of alpha-diversity using operational taxonomic units
 (OTUs).} The average difference in the richness (A), Shannon diversity
 (B), and Kullback-Leiber divergence (C) for each sample within a dataset
@@ -1131,9 +1157,9 @@ applying different minimum abundance thresholds.
 
 \newpage
 
-\includegraphics{figure_s3.png}
+\includegraphics{figure_s5.png}
 
-\textbf{Figure S3. Removing rare sequences from samples alters their
+\textbf{Figure S5. Removing rare sequences from samples alters their
 representation of alpha-diversity when regenerating samples using a null
 distribution for each dataset.} The average difference in the richness,
 Shannon diversity, and Kullback-Leiber divergence for each sample within
@@ -1145,9 +1171,9 @@ amplicon sequence variants (ASVs) and operational taxonomic units (OTUs)
 
 \newpage
 
-\includegraphics{figure_s4.png}
+\includegraphics{figure_s6.png}
 
-\textbf{Figure S4. Removing rare sequences from samples increases the
+\textbf{Figure S6. Removing rare sequences from samples increases the
 inter-sample variation for operational taxonomic units (OTUs).} The
 coefficient of variation in richness (A), Shannon diversity (B), and
 Bray-Curtis distances (C) for each dataset was calculated using the null
@@ -1156,9 +1182,9 @@ thresholds.
 
 \newpage
 
-\includegraphics{figure_s5.png}
+\includegraphics{figure_s7.png}
 
-\textbf{Figure S5. Removing rare sequences from samples reduces the
+\textbf{Figure S7. Removing rare sequences from samples reduces the
 statistical power to detect differences between empirically generated
 treatment groups when using operational taxonomic units (OTUs).} The
 fraction of significant tests comparing the richness (A) and Shannon
@@ -1171,9 +1197,9 @@ peformed.
 
 \newpage
 
-\includegraphics{figure_s6.png}
+\includegraphics{figure_s8.png}
 
-\textbf{Figure S6. Removing rare sequences does not impact the false
+\textbf{Figure S8. Removing rare sequences does not impact the false
 detection rate unless the number of sequences per sample is confounded
 with the treatment groups when using operational taxonomic units
 (OTUs).} The fraction of significant tests comparing the richness and
