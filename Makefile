@@ -122,43 +122,6 @@ $(REFS)/HMP_MOCK.fasta :
 
 ################################################################################
 # Generate pruned versions of datasets based on random assignments of sequences to each sample with
-# effect size defined by removing 1% of the PC sequences
-#
-################################################################################
-.SECONDEXPANSION:
-%.effect_pruned_groups %.edesign : code/effect_prune.R\
-			$$(addsuffix .count_table,$$(basename $$(basename $$(basename $$@))))\
-			$$(addsuffix .remove_accnos,$$(basename $$(basename $$(basename $$@))))
-	$(eval DIR=$(dir $@))
-	$(eval SEED=$(subst .,,$(suffix $(basename $(basename $@)))))
-	$(eval MIN_SEQ_COUNT=$(subst .,,$(suffix $(basename $@))))
-	Rscript code/effect_prune.R $(DIR) $(SEED) $(MIN_SEQ_COUNT) 0.99
-
-
-%.pc.eshared : code/prune_effect_pc_shared.R %.effect_pruned_groups
-	Rscript $^
-
-
-%otu.eshared : code/prune_rand_otu_shared.R %effect_pruned_groups $$(dir $$@)data.otu_seq.map
-	Rscript $^
-
-
-%.eamova : code/run_amova.sh %.ebeta_matrix $$(addsuffix .edesign,$$(basename $$(basename $$@)))
-	bash $^
-
-
-.SECONDEXPANSION:
-%/data.effect.alpha_summary : code/run_wilcox.R $$(foreach S, $$(SEED), $$(foreach P, $$(PRUNE), $$(foreach M, otu pc, $$(dir $$@)data.$$S.$$P.$$M.ealpha_diversity)))
-	Rscript $^ $@
-
-
-.SECONDEXPANSION:
-%/data.effect.beta_summary : code/amova_analysis.R $$(foreach S, $$(SEED), $$(foreach P, $$(PRUNE), $$(foreach M, otu pc, $$(dir $$@)data.$$S.$$P.$$M.eamova)))
-	Rscript $^ $@
-
-
-################################################################################
-# Generate pruned versions of datasets based on random assignments of sequences to each sample with
 # effect size defined by increasing the abundance of 5% of the OTUs by 10%
 #
 ################################################################################
@@ -325,10 +288,6 @@ data/process/rffect_alpha_analysis.tsv : code/pool_ffect.R\
 		$(foreach S, $(samples), data/$S/data.rffect.alpha_summary)
 	Rscript $^ $@
 
-data/process/effect_alpha_analysis.tsv : code/pool_ffect.R\
-		$(foreach S, $(samples), data/$S/data.effect.alpha_summary)
-	Rscript $^ $@
-
 data/process/bffect_alpha_analysis.tsv : code/pool_ffect.R\
 		$(foreach S, $(samples), data/$S/data.bffect.alpha_summary)
 	Rscript $^ $@
@@ -338,13 +297,8 @@ data/process/sffect_alpha_analysis.tsv : code/pool_ffect.R\
 	Rscript $^ $@
 
 
-
 data/process/rffect_beta_analysis.tsv : code/pool_ffect.R\
 		$(foreach S, $(samples), data/$S/data.rffect.beta_summary)
-	Rscript $^ $@
-
-data/process/effect_beta_analysis.tsv : code/pool_ffect.R\
-		$(foreach S, $(samples), data/$S/data.effect.beta_summary)
 	Rscript $^ $@
 
 data/process/bffect_beta_analysis.tsv : code/pool_ffect.R\
