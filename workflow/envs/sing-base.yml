@@ -1,0 +1,10 @@
+name: sing-base
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - snakemake=7.26.0
+  - coreutils=9.3
+  - latexdiff=1.3.3
+  - poppler=23.05.0
+  - imagemagick=7.1

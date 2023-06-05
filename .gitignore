@@ -16,11 +16,9 @@ mothur*logfile
 
 scratch
 
-*.batch
-*.slurm
-*.slurm.o*
-slurm
-slurm_scripts
 
 *.tgz
 .vscode
+
+*test.R
+

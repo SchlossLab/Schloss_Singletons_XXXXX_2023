@@ -1,0 +1,50 @@
+import re
+
+norarefy_slugs = [ 
+    "norarefy-source/dispersion-survey/dispersion",
+    "norarefy-source/minimal-rarefy-example/minimal-rarefy-example",
+    "norarefy-source/simulation-cluster-accuracy/simulation-cluster-accuracy-server",
+    "norarefy-source/simulation-differential-abundance/simulation-differential-abundance-server"
+]
+
+models = [ "gp", "log"]
+distributions = [ "random", "skew"]
+depths = [1000, 2000, 5000, 10000, 50000]
+effect_sizes = [1, 1.15, 1.25, 1.5, 1.75, 2, 2.5, 3.5]
+reps = 100
+preprocs = ["nofilter", "filter"]
+transforms = [ "none",
+              "proportion",
+              "subsample00", "subsample05", "subsample10", "subsample15",
+                "subsample20", "subsample25", "subsample40",
+              "rarefaction00", "rarefaction05", "rarefaction10", "rarefaction15",
+                "rarefaction20", "rarefaction25", "rarefaction40",
+              "deseq",
+              "upperquartile", "TMM", "RLE" ]
+distances = [ "bray",
+            "euclidean",
+            "poisson",
+            "logFC", "bcv",
+            "uunifrac",
+            "wunifrac" ]
+betas = [ "clusters", "adonis" ]
+
+rule all_targets:
+  input:
+    "submission/manuscript.pdf"
+
+
+rule s1_download_archive:
+  input:
+    "workflow/scripts/s1_download_archive.sh"
+  output:
+    expand("{norarefy_slug}.Rmd", norarefy_slug = norarefy_slugs),
+    expand("{norarefy_slug}.html", norarefy_slug = norarefy_slugs),
+    "norarefy-source/norarefy-source.zip"
+  conda:
+    "envs/nr-s1.yml"
+  shell:
+    """
+    {input}
+    """
+
