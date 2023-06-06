@@ -1,50 +1,496 @@
 import re
 
-norarefy_slugs = [ 
-    "norarefy-source/dispersion-survey/dispersion",
-    "norarefy-source/minimal-rarefy-example/minimal-rarefy-example",
-    "norarefy-source/simulation-cluster-accuracy/simulation-cluster-accuracy-server",
-    "norarefy-source/simulation-differential-abundance/simulation-differential-abundance-server"
-]
+seeds = list(range(1, 101))
 
-models = [ "gp", "log"]
-distributions = [ "random", "skew"]
-depths = [1000, 2000, 5000, 10000, 50000]
-effect_sizes = [1, 1.15, 1.25, 1.5, 1.75, 2, 2.5, 3.5]
-reps = 100
-preprocs = ["nofilter", "filter"]
-transforms = [ "none",
-              "proportion",
-              "subsample00", "subsample05", "subsample10", "subsample15",
-                "subsample20", "subsample25", "subsample40",
-              "rarefaction00", "rarefaction05", "rarefaction10", "rarefaction15",
-                "rarefaction20", "rarefaction25", "rarefaction40",
-              "deseq",
-              "upperquartile", "TMM", "RLE" ]
-distances = [ "bray",
-            "euclidean",
-            "poisson",
-            "logFC", "bcv",
-            "uunifrac",
-            "wunifrac" ]
-betas = [ "clusters", "adonis" ]
+samples = ["bioethanol", "human", "lake", "marine", "mice", "peromyscus",
+           "rainforest", "rice", "seagrass", "sediment", "soil", "stream"]
+
+distros = ["observed", "random", "effect"]
+
+treatments = ["random", "staggered", "effect"]
+
+seeds = list(range(1, 101))
+
+resolutions = ["pc", "otu"]
+
+prunings = {
+    "indiv_count": [1, 2, 3, 4, 5, 6, 8, 9, 10],
+    "indiv_relabund": [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50],
+    "indiv_cumrelabund": [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50],
+    "aggr_count": [1, 2, 3, 4, 5, 6, 8, 9, 10],
+    "aggr_relabund": [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50],
+    "aggr_cumrelabund": [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50],
+}
+
+pruning_combos = []
+for key, values in prunings.items():
+    for value in values:
+      pruning_combos.append(f"{key}.{value}")
+
+
+greeks = ["alpha", "beta"]
 
 rule all_targets:
   input:
-    "submission/manuscript.pdf"
+    expand("data/{env}/{treatment}.{greek}_test_summary",
+          env = "marine", treatment = treatments, greek = greeks),
+    expand("data/{env}/{distro}.{greek}_summary",
+          env = "marine", distro = ["observed", "random"], greek = greeks),
+    expand("data/{env}/{distro}.intra_analysis",
+          env = "marine", distro = ["observed", "random"])
 
+################################################################################
+#
+# Download and preprocess reference files from SILVA and RDP
+#
+################################################################################
 
-rule s1_download_archive:
+rule ref_rdp_download:
   input:
-    "workflow/scripts/s1_download_archive.sh"
+    "workflow/scripts/ref_rdp.bash"
   output:
-    expand("{norarefy_slug}.Rmd", norarefy_slug = norarefy_slugs),
-    expand("{norarefy_slug}.html", norarefy_slug = norarefy_slugs),
-    "norarefy-source/norarefy-source.zip"
-  conda:
-    "envs/nr-s1.yml"
+    "data/references/trainset18_062020.pds.fasta",
+    "data/references/trainset18_062020.pds.tax"
+  shell:
+    """
+    {input}
+    """
+    
+    
+rule ref_silva_download:
+  input:
+    "workflow/scripts/ref_silva.bash"
+  output:
+    "data/references/silva.v4.align",
   shell:
     """
     {input}
     """
 
+################################################################################
+#
+# Download and process datasets
+#
+################################################################################
+
+rule datasets_download:
+  input:
+    bash_script="workflow/scripts/datasets_download.bash",
+    r_script="workflow/scripts/datasets_make_files.R",
+    sra_tsv="{data_dataset}/sra_info.tsv"
+  output:
+    "{data_dataset}/data.files"
+  shell:
+    """
+    {input.bash_script} {wildcards.data_dataset}
+    {input.r_script} {wildcards.data_dataset}
+    """
+
+
+rule datasets_curate:
+  input:
+    "workflow/scripts/datasets_curate.bash",
+    "data/references/silva.v4.align",
+    "data/references/trainset18_062020.pds.fasta",
+    "data/references/trainset18_062020.pds.tax",
+    "{data_dataset}/data.files"
+  output:
+    "{data_dataset}/data.fasta",
+    "{data_dataset}/data.count_table",
+    "{data_dataset}/data.taxonomy",
+  threads: 8
+  shell:
+    """
+    workflow/scripts/datasets_curate.bash {wildcards.data_dataset} {threads}
+    """
+	
+  
+rule datasets_count_groups:
+  input:
+    "workflow/scripts/datasets_count_groups.bash",
+    "{data_dataset}/data.count_table"
+  output:
+    "{data_dataset}/data.count.summary"
+  shell:
+    """
+    workflow/scripts/datasets_count_groups.bash {wildcards.data_dataset}
+    """
+
+
+rule datasets_remove_groups:
+  input:
+    r_script = "workflow/scripts/datasets_remove_groups.R",
+    counts = "{data_dataset}/data.count.summary"
+  output:
+    "{data_dataset}/data.remove_accnos"
+  shell:
+    """
+    {input.r_script} {input.counts}
+    """
+
+
+rule datasets_pc_shared:
+  input:
+    "{data_dataset}/data.count_table",
+    "{data_dataset}/data.remove_accnos",
+    "workflow/scripts/datasets_pc_shared.bash"
+  output:
+    "{data_dataset}/observed.pc.shared",
+    "{data_dataset}/data.pc.list"
+  shell:
+    """
+    workflow/scripts/datasets_pc_shared.bash {wildcards.data_dataset}
+    """
+
+
+rule datasets_otu_shared:
+  input:
+    "{data_dataset}/data.fasta",
+    "{data_dataset}/data.taxonomy",
+    "{data_dataset}/data.count_table",
+    "{data_dataset}/data.remove_accnos",
+    "workflow/scripts/datasets_otu_shared.bash"
+  output:
+    "{data_dataset}/observed.otu.shared",
+    "{data_dataset}/data.otu.list"
+  threads: 8
+  shell:
+    """
+    workflow/scripts/datasets_otu_shared.bash {wildcards.data_dataset} {threads}
+    """
+
+
+rule datasets_parse_list:
+  input:
+    list = "{data_dataset_tag}.list",
+    r_script = "workflow/scripts/datasets_parse_list.R"
+  output:
+    "{data_dataset_tag}_seq.map"
+  shell:
+    """
+    {input.r_script} {input.list}
+    """
+
+
+################################################################################
+#
+# Pruning methods to generate pc.shared and otu.shared files
+#
+################################################################################
+
+rule prune_pc_indiv_counts:
+  input:
+    bash="workflow/scripts/prune_pc_indiv_counts.R",
+    shared="{data_dataset}.pc.shared"
+  output:
+    "{data_dataset}.indiv_count.{threshold}.pc.shared"
+  shell:
+    """
+    {input.bash} {input.shared} {wildcards.threshold}
+    """
+
+
+rule prune_pc_aggr_counts:
+  input:
+    bash="workflow/scripts/prune_pc_aggr_counts.R",
+    shared="{data_dataset}.pc.shared"
+  output:
+    "{data_dataset}.aggr_count.{threshold}.pc.shared"
+  shell:
+    """
+    {input.bash} {input.shared} {wildcards.threshold}
+    """
+
+
+rule prune_pc_indiv_relabund:
+  input:
+    bash="workflow/scripts/prune_pc_indiv_relabund.R",
+    shared="{data_dataset}.pc.shared"
+  output:
+    "{data_dataset}.indiv_relabund.{threshold}.pc.shared"
+  shell:
+    """
+    {input.bash} {input.shared} {wildcards.threshold}
+    """
+
+
+rule prune_pc_aggr_relabund:
+  input:
+    bash="workflow/scripts/prune_pc_aggr_relabund.R",
+    shared="{data_dataset}.pc.shared"
+  output:
+    "{data_dataset}.aggr_relabund.{threshold}.pc.shared"
+  shell:
+    """
+    {input.bash} {input.shared} {wildcards.threshold}
+    """
+
+
+rule prune_pc_indiv_aggrelabund:
+  input:
+    bash="workflow/scripts/prune_pc_indiv_cumrelabund.R",
+    shared="{data_dataset}.pc.shared"
+  output:
+    "{data_dataset}.indiv_cumrelabund.{threshold}.pc.shared"
+  shell:
+    """
+    {input.bash} {input.shared} {wildcards.threshold}
+    """
+
+
+rule prune_pc_aggr_aggrelabund:
+  input:
+    bash="workflow/scripts/prune_pc_aggr_cumrelabund.R",
+    shared="{data_dataset}.pc.shared"
+  output:
+    "{data_dataset}.aggr_cumrelabund.{threshold}.pc.shared"
+  shell:
+    """
+    {input.bash} {input.shared} {wildcards.threshold}
+    """
+
+
+rule prune_otu_shared:
+  input:
+    r_script = "workflow/scripts/prune_otu_shared.R",
+    pc_shared = "{data_dataset}/{conditions_pruned}.pc.shared",
+    asv_seq_map = "{data_dataset}/data.pc_seq.map",
+    otu_seq_map = "{data_dataset}/data.otu_seq.map"
+  output:
+    "{data_dataset}/{conditions_pruned}.otu.shared"
+  shell:
+    """
+    {input.r_script} {input.pc_shared} {input.asv_seq_map} {input.otu_seq_map}
+    """
+
+
+################################################################################
+#
+# Rules to generate different distributions of data
+#
+################################################################################
+
+rule distro_random_shared:
+  input:
+    r_script = "workflow/scripts/distro_random_shared.R",
+    observed = "{data_dataset}/observed.pc.shared",
+  output:
+    "{data_dataset}/random.{rng_seed, [0-9]+}.pc.shared"
+  shell:
+    """
+    {input.r_script} {input.observed} {wildcards.rng_seed}
+    """
+
+
+rule distro_random_design:
+  input:
+    r_script = "workflow/scripts/distro_random_design.R",
+    observed = "{data_dataset}/observed.pc.shared",
+  output:
+    "{data_dataset}/random.{rng_seed, [0-9]+}.design"
+  shell:
+    """
+    {input.r_script} {input.observed} {wildcards.rng_seed}
+    """
+
+
+rule distro_staggered_design:
+  input:
+    r_script = "workflow/scripts/distro_staggered_design.R",
+    observed = "{data_dataset}/observed.pc.shared",
+  output:
+    "{data_dataset}/staggered.{rng_seed, [0-9]+}.design"
+  shell:
+    """
+    {input.r_script} {input.observed} {wildcards.rng_seed}
+    """
+
+
+rule distro_effect_shared_design:
+  input:
+    r_script = "workflow/scripts/distro_effect_shared_design.R",
+    observed = "{data_dataset}/observed.pc.shared",
+  output:
+    "{data_dataset}/effect.{rng_seed, [0-9]+}.pc.shared",
+    "{data_dataset}/effect.{rng_seed, [0-9]+}.design"
+  shell:
+    """
+    {input.r_script} {input.observed} {wildcards.rng_seed}
+    """
+
+
+################################################################################
+#
+# Rules to calculate diversity metrics
+#
+################################################################################
+
+rule diversity_alpha:
+  input:
+    bash_script = "workflow/scripts/diversity_alpha.bash",
+    shared = "{all_the_stuff}.shared"
+  output:
+    "{all_the_stuff}.alpha"
+  shell:
+    """
+    {input.bash_script} {input.shared}
+    """
+
+
+rule diversity_alpha_stag:
+  input:
+    random = "{path_dataset}/random.{all_the_stuff}.alpha"
+  output:
+    staggered = "{path_dataset}/staggered.{all_the_stuff}.alpha"
+  shell:
+    """
+    cp {input.random} {output.staggered}
+    """
+
+
+rule diversity_beta_matrix:
+  input:
+    bash_script = "workflow/scripts/diversity_beta_matrix.bash",
+    shared = "{all_the_stuff}.shared"
+  output:
+    "{all_the_stuff}.beta_matrix"
+  shell:
+    """
+    {input.bash_script} {input.shared}
+    """
+
+
+rule diversity_beta_martrix_stag:
+  input:
+    random = "{path_dataset}/random.{all_the_stuff}.beta_matrix"
+  output:
+    staggered = "{path_dataset}/staggered.{all_the_stuff}.beta_matrix"
+  shell:
+    """
+    cp {input.random} {output.staggered}
+    """
+
+
+rule diversity_amova:
+  input:
+    bash_script = "workflow/scripts/diversity_amova.bash",
+    beta_matrix = "{path_distro}.{seed}.{filter}.{size}.{resolution}.beta_matrix",
+    design = "{path_distro}.{seed}.design"
+  output:
+    "{path_distro}.{seed}.{filter}.{size}.{resolution}.amova"
+  shell:
+    """
+    {input.bash_script} {input.beta_matrix} {input.design}
+    """
+
+
+rule diversity_ralpha_summary:
+  input:
+    r_script = "workflow/scripts/diversity_alpha_summary.R",
+    alphas = expand("data/{env}/random.{seed}.{pruning_combo}.{resolution}.alpha",
+                    seed = seeds, pruning_combo = pruning_combos, resolution = resolutions,
+                    allow_missing=True),
+  output:
+    "data/{env}/random.alpha_summary"
+  shell:
+    """
+   {input.r_script} {input.alphas} {output}
+    """
+
+rule diversity_oalpha_summary:
+  input:
+    r_script = "workflow/scripts/diversity_alpha_summary.R",
+    alphas = expand("data/{env}/observed.{seed}.{pruning_combo}.{resolution}.alpha",
+                seed = seeds, pruning_combo = pruning_combos, resolution = resolutions,
+                allow_missing=True),
+  output:
+   "data/{env}/observed.alpha_summary"
+  shell:
+    """
+   {input.r_script} {input.alphas} {output}
+    """
+
+
+rule diversity_alpha_test_summary:
+  input:
+    r_script = "workflow/scripts/diversity_alpha_test_summary.R",
+    alphas = expand("data/{env}/{distro}.{seed}.{pruning_combo}.{resolution}.alpha",
+                seed = seeds, pruning_combo = pruning_combos, resolution = resolutions,
+                allow_missing=True),
+    design = expand("data/{env}/{distro}.{seed}.design",
+                    seed = seeds,
+                    allow_missing=True)
+  output:
+    "data/{env}/{distro}.alpha_test_summary"
+  shell:
+    """
+    {input.r_script} {input.alphas} {output}
+    """
+
+
+rule diversity_beta_test_summary:
+  input:
+    r_script = "workflow/scripts/diversity_beta_test_summary.R",
+    amovas = expand("data/{env}/{distro}.{seed}.{pruning_combo}.{resolution}.amova",
+                seed = seeds, pruning_combo = pruning_combos, resolution = resolutions,
+                allow_missing=True),
+  output:
+    "data/{env}/{distro}.beta_test_summary"
+  shell:
+    """
+    {input.r_script} {input.amovas} {output}
+    """
+
+
+rule diversity_obeta_summary:
+  input:
+    r_script = "workflow/scripts/diversity_beta_summary.R",
+    betas = expand("data/{env}/observed.{pruning_combo}.{resolution}.beta_matrix",
+                    pruning_combo = pruning_combos, resolution = resolutions,
+                    allow_missing=True),
+  output:
+   "data/{env}/observed.beta_summary"
+  shell:
+    """
+    {input.r_script} {input.betas} {output}
+    """
+
+rule diversity_rbeta_summary:
+  input:
+    r_script = "workflow/scripts/diversity_beta_summary.R",
+    betas = expand("data/{env}/random.{seed}.{pruning_combo}.{resolution}.beta_matrix",
+                seed = seeds, pruning_combo = pruning_combos,
+                resolution = resolutions, allow_missing=True),
+  output:
+   "data/{env}/random.beta_summary"
+  shell:
+    """
+    {input.r_script} {input.betas} {output}
+    """
+
+
+rule diversity_ointra_analysis:
+  input:
+    r_script = "workflow/scripts/diversity_intra_analysis.R",
+    shareds = expand("data/{env}/observed.{pruning_combo}.{resolution}.shared",
+                    pruning_combo = pruning_combos, resolution = resolutions,
+                    allow_missing=True),
+  output:
+   "data/{env}/observed.intra_analysis"
+  shell:
+    """
+   {input.r_script} {input.shareds} {output}
+    """
+
+rule diversity_rintra_analysis:
+  input:
+    r_script = "workflow/scripts/diversity_intra_analysis.R",
+    shareds = expand("data/{env}/random.{seed}.{pruning_combo}.{resolution}.shared",
+                seed = seeds, pruning_combo = pruning_combos,
+                resolution = resolutions, allow_missing=True),
+  output:
+   "data/{env}/random.intra_analysis"
+  shell:
+    """
+   {input.r_script} {input.shareds} {output}
+    """

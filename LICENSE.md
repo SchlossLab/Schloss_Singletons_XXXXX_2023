@@ -1,6 +1,6 @@
 The MIT License (MIT)
 
-Copyright (c) 2019 Patrick D. Schloss
+Copyright (c) 2023 Patrick D. Schloss
 
 
 

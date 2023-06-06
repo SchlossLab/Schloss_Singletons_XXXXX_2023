@@ -6,6 +6,7 @@
 Rplots.pdf
 
 data/
+
 !README.md
 
 *.pbs*
@@ -22,3 +23,5 @@ scratch
 
 *test.R
 
+.snakemake
+bin

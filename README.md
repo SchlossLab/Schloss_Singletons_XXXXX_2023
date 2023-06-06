@@ -86,3 +86,10 @@ Schloss_Singletons_XXXXX_2016
 ### stream: Temporal and spatial dynamics in microbial community composition within a temperate stream network
 * https://doi.org/10.1111/1462-2920.14311
 * https://www.ncbi.nlm.nih.gov/bioproject/PRJNA323602
+
+
+
+~~~~~~~~
+
+Need to install SRA toolkit binaries into `./bin/`
+

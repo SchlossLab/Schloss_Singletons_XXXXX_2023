@@ -9,12 +9,11 @@ cluster:
     --nodes=1
     --time=100:00:00
     --mem={resources.mem_mb}
-    -c1   
-#    --mem=8000mb
+    --cpus-per-task={threads}
 
 # default resources used for rules with no Resources specified
 default-resources: 
-  - cpus=1
+  - threads=1
   - mem_mb=4000
   - partition=standard
   - time_min=120
