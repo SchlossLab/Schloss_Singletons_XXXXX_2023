@@ -4,12 +4,12 @@
 #SBATCH --mail-user=pschloss@umich.edu
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --partition=standard
-#SBATCH --account=pschloss1
+#SBATCH --account=pschloss0
 #SBATCH --time=100:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=8g
+#SBATCH --mem=45g
 
 
 

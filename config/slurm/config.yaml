@@ -8,8 +8,11 @@ cluster:
     --account=pschloss0
     --nodes=1
     --time=100:00:00
-    --mem={resources.mem_mb}
-    --cpus-per-task={threads}
+    --mem=8000
+    --cpus-per-task=8
+
+#    --mem={resources.mem_mb}
+#    --cpus-per-task={threads}
 
 # default resources used for rules with no Resources specified
 default-resources: 
@@ -17,7 +20,7 @@ default-resources:
   - mem_mb=4000
   - partition=standard
   - time_min=120
-  - job_name="rare"
+  - job_name="sing"
   
 # snakemake args
 jobs: 3000
@@ -30,3 +33,9 @@ latency-wait: 120
 touch: false
 conda-cleanup-envs: false
 conda-create-envs-only: false
+group-components:
+  - prune_pc=1000
+  - prune_otu=1000
+  - alpha=1000
+  - beta=1000
+  - amova=1000

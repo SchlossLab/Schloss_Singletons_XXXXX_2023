@@ -1,0 +1,7 @@
+name: sing-mothur
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - coreutils=9.3
+  - mothur=1.48.0

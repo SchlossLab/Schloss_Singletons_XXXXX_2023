@@ -14,10 +14,10 @@ seeds = list(range(1, 101))
 resolutions = ["pc", "otu"]
 
 prunings = {
-    "indiv_count": [1, 2, 3, 4, 5, 6, 8, 9, 10],
+    "indiv_count": [1, 2, 3, 4, 5, 6, 8, 9, 10, 11],
     "indiv_relabund": [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50],
     "indiv_cumrelabund": [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50],
-    "aggr_count": [1, 2, 3, 4, 5, 6, 8, 9, 10],
+    "aggr_count": [1, 2, 3, 4, 5, 6, 8, 9, 10, 11],
     "aggr_relabund": [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50],
     "aggr_cumrelabund": [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50],
 }
@@ -39,6 +39,7 @@ rule all_targets:
     expand("data/{env}/{distro}.intra_analysis",
           env = "marine", distro = ["observed", "random"])
 
+
 ################################################################################
 #
 # Download and preprocess reference files from SILVA and RDP
@@ -51,6 +52,8 @@ rule ref_rdp_download:
   output:
     "data/references/trainset18_062020.pds.fasta",
     "data/references/trainset18_062020.pds.tax"
+  conda:
+    "envs/sing-mothur.yml"
   shell:
     """
     {input}
@@ -62,10 +65,13 @@ rule ref_silva_download:
     "workflow/scripts/ref_silva.bash"
   output:
     "data/references/silva.v4.align",
+  conda:
+    "envs/sing-mothur.yml"
   shell:
     """
     {input}
     """
+
 
 ################################################################################
 #
@@ -80,6 +86,8 @@ rule datasets_download:
     sra_tsv="{data_dataset}/sra_info.tsv"
   output:
     "{data_dataset}/data.files"
+  conda:
+    "envs/sing-sra_r.yml"
   shell:
     """
     {input.bash_script} {wildcards.data_dataset}
@@ -99,6 +107,8 @@ rule datasets_curate:
     "{data_dataset}/data.count_table",
     "{data_dataset}/data.taxonomy",
   threads: 8
+  conda:
+    "envs/sing-mothur.yml"
   shell:
     """
     workflow/scripts/datasets_curate.bash {wildcards.data_dataset} {threads}
@@ -111,6 +121,8 @@ rule datasets_count_groups:
     "{data_dataset}/data.count_table"
   output:
     "{data_dataset}/data.count.summary"
+  conda:
+    "envs/sing-mothur.yml"
   shell:
     """
     workflow/scripts/datasets_count_groups.bash {wildcards.data_dataset}
@@ -137,6 +149,8 @@ rule datasets_pc_shared:
   output:
     "{data_dataset}/observed.pc.shared",
     "{data_dataset}/data.pc.list"
+  conda:
+    "envs/sing-mothur.yml"
   shell:
     """
     workflow/scripts/datasets_pc_shared.bash {wildcards.data_dataset}
@@ -154,6 +168,8 @@ rule datasets_otu_shared:
     "{data_dataset}/observed.otu.shared",
     "{data_dataset}/data.otu.list"
   threads: 8
+  conda:
+    "envs/sing-mothur.yml"
   shell:
     """
     workflow/scripts/datasets_otu_shared.bash {wildcards.data_dataset} {threads}
@@ -180,73 +196,85 @@ rule datasets_parse_list:
 
 rule prune_pc_indiv_counts:
   input:
-    bash="workflow/scripts/prune_pc_indiv_counts.R",
+    r_script="workflow/scripts/prune_pc_indiv_counts.R",
     shared="{data_dataset}.pc.shared"
   output:
     "{data_dataset}.indiv_count.{threshold}.pc.shared"
+  group:
+    "prune_pc"
   shell:
     """
-    {input.bash} {input.shared} {wildcards.threshold}
+    {input.r_script} {input.shared} {wildcards.threshold}
     """
 
 
 rule prune_pc_aggr_counts:
   input:
-    bash="workflow/scripts/prune_pc_aggr_counts.R",
+    r_script="workflow/scripts/prune_pc_aggr_counts.R",
     shared="{data_dataset}.pc.shared"
   output:
     "{data_dataset}.aggr_count.{threshold}.pc.shared"
+  group:
+    "prune_pc"
   shell:
     """
-    {input.bash} {input.shared} {wildcards.threshold}
+    {input.r_script} {input.shared} {wildcards.threshold}
     """
 
 
 rule prune_pc_indiv_relabund:
   input:
-    bash="workflow/scripts/prune_pc_indiv_relabund.R",
+    r_script="workflow/scripts/prune_pc_indiv_relabund.R",
     shared="{data_dataset}.pc.shared"
   output:
     "{data_dataset}.indiv_relabund.{threshold}.pc.shared"
+  group:
+    "prune_pc"
   shell:
     """
-    {input.bash} {input.shared} {wildcards.threshold}
+    {input.r_script} {input.shared} {wildcards.threshold}
     """
 
 
 rule prune_pc_aggr_relabund:
   input:
-    bash="workflow/scripts/prune_pc_aggr_relabund.R",
+    r_script="workflow/scripts/prune_pc_aggr_relabund.R",
     shared="{data_dataset}.pc.shared"
   output:
     "{data_dataset}.aggr_relabund.{threshold}.pc.shared"
+  group:
+    "prune_pc"
   shell:
     """
-    {input.bash} {input.shared} {wildcards.threshold}
+    {input.r_script} {input.shared} {wildcards.threshold}
     """
 
 
 rule prune_pc_indiv_aggrelabund:
   input:
-    bash="workflow/scripts/prune_pc_indiv_cumrelabund.R",
+    r_script="workflow/scripts/prune_pc_indiv_cumrelabund.R",
     shared="{data_dataset}.pc.shared"
   output:
     "{data_dataset}.indiv_cumrelabund.{threshold}.pc.shared"
+  group:
+    "prune_pc"
   shell:
     """
-    {input.bash} {input.shared} {wildcards.threshold}
+    {input.r_script} {input.shared} {wildcards.threshold}
     """
 
 
 rule prune_pc_aggr_aggrelabund:
   input:
-    bash="workflow/scripts/prune_pc_aggr_cumrelabund.R",
+    r_script="workflow/scripts/prune_pc_aggr_cumrelabund.R",
     shared="{data_dataset}.pc.shared"
   output:
     "{data_dataset}.aggr_cumrelabund.{threshold}.pc.shared"
+  group:
+    "prune_pc"
   shell:
     """
-    {input.bash} {input.shared} {wildcards.threshold}
+    {input.r_script} {input.shared} {wildcards.threshold}
     """
 
 
@@ -258,6 +286,8 @@ rule prune_otu_shared:
     otu_seq_map = "{data_dataset}/data.otu_seq.map"
   output:
     "{data_dataset}/{conditions_pruned}.otu.shared"
+  group:
+    "prune_otu"
   shell:
     """
     {input.r_script} {input.pc_shared} {input.asv_seq_map} {input.otu_seq_map}
@@ -331,6 +361,10 @@ rule diversity_alpha:
     shared = "{all_the_stuff}.shared"
   output:
     "{all_the_stuff}.alpha"
+  conda:
+    "envs/sing-mothur.yml"
+  group:
+    "alpha"
   shell:
     """
     {input.bash_script} {input.shared}
@@ -342,6 +376,10 @@ rule diversity_alpha_stag:
     random = "{path_dataset}/random.{all_the_stuff}.alpha"
   output:
     staggered = "{path_dataset}/staggered.{all_the_stuff}.alpha"
+  group:
+    "alpha"
+  conda:
+    "envs/sing-mothur.yml"
   shell:
     """
     cp {input.random} {output.staggered}
@@ -354,6 +392,10 @@ rule diversity_beta_matrix:
     shared = "{all_the_stuff}.shared"
   output:
     "{all_the_stuff}.beta_matrix"
+  group:
+    "beta"
+  conda:
+    "envs/sing-mothur.yml"
   shell:
     """
     {input.bash_script} {input.shared}
@@ -365,6 +407,10 @@ rule diversity_beta_martrix_stag:
     random = "{path_dataset}/random.{all_the_stuff}.beta_matrix"
   output:
     staggered = "{path_dataset}/staggered.{all_the_stuff}.beta_matrix"
+  group:
+    "beta"
+  conda:
+    "envs/sing-mothur.yml"
   shell:
     """
     cp {input.random} {output.staggered}
@@ -378,6 +424,10 @@ rule diversity_amova:
     design = "{path_distro}.{seed}.design"
   output:
     "{path_distro}.{seed}.{filter}.{size}.{resolution}.amova"
+  group:
+    "amova"
+  conda:
+    "envs/sing-mothur.yml"
   shell:
     """
     {input.bash_script} {input.beta_matrix} {input.design}
@@ -388,10 +438,12 @@ rule diversity_ralpha_summary:
   input:
     r_script = "workflow/scripts/diversity_alpha_summary.R",
     alphas = expand("data/{env}/random.{seed}.{pruning_combo}.{resolution}.alpha",
-                    seed = seeds, pruning_combo = pruning_combos, resolution = resolutions,
-                    allow_missing=True),
+                    seed = seeds, pruning_combo = pruning_combos,
+                    resolution = resolutions, allow_missing=True),
   output:
     "data/{env}/random.alpha_summary"
+  group:
+    "alpha"
   shell:
     """
    {input.r_script} {input.alphas} {output}
@@ -400,11 +452,13 @@ rule diversity_ralpha_summary:
 rule diversity_oalpha_summary:
   input:
     r_script = "workflow/scripts/diversity_alpha_summary.R",
-    alphas = expand("data/{env}/observed.{seed}.{pruning_combo}.{resolution}.alpha",
-                seed = seeds, pruning_combo = pruning_combos, resolution = resolutions,
+    alphas = expand("data/{env}/observed.{pruning_combo}.{resolution}.alpha",
+                pruning_combo = pruning_combos, resolution = resolutions,
                 allow_missing=True),
   output:
    "data/{env}/observed.alpha_summary"
+  group:
+    "alpha"
   shell:
     """
    {input.r_script} {input.alphas} {output}
@@ -415,8 +469,8 @@ rule diversity_alpha_test_summary:
   input:
     r_script = "workflow/scripts/diversity_alpha_test_summary.R",
     alphas = expand("data/{env}/{distro}.{seed}.{pruning_combo}.{resolution}.alpha",
-                seed = seeds, pruning_combo = pruning_combos, resolution = resolutions,
-                allow_missing=True),
+                seed = seeds, pruning_combo = pruning_combos,
+                resolution = resolutions, allow_missing=True),
     design = expand("data/{env}/{distro}.{seed}.design",
                     seed = seeds,
                     allow_missing=True)
@@ -432,8 +486,8 @@ rule diversity_beta_test_summary:
   input:
     r_script = "workflow/scripts/diversity_beta_test_summary.R",
     amovas = expand("data/{env}/{distro}.{seed}.{pruning_combo}.{resolution}.amova",
-                seed = seeds, pruning_combo = pruning_combos, resolution = resolutions,
-                allow_missing=True),
+                seed = seeds, pruning_combo = pruning_combos,
+                resolution = resolutions, allow_missing=True),
   output:
     "data/{env}/{distro}.beta_test_summary"
   shell:

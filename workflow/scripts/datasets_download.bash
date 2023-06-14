@@ -25,8 +25,8 @@ SRRS=`tail -n +2 $DATA/sra_info.tsv | sed -E 's/.*(.RR[0-9]+).*/\1/'`
 for sample in $SRRS
 do
   echo $sample
-	./bin/prefetch $sample -O $DATA
-  ./bin/fastq-dump --split-files $sample -O $DATA
+	prefetch $sample -O $DATA
+  fastq-dump --split-files $sample -O $DATA
 
 	gzip -f $DATA/${sample}_1.fastq
 	gzip -f $DATA/${sample}_2.fastq
