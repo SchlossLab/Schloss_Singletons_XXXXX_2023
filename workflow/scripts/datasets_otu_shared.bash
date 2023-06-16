@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 DATA=$1
 
 PROCESSORSSPLIT=$2
@@ -13,9 +15,10 @@ then
 					cluster.split(file=current, processors=$PROCESSORSCLUSTER, runsensspec=FALSE);
 					make.shared()"
 
-	mv $DATA/data.opti_mcc.shared $DATA/observed.otu.shared
+	cat $DATA/data.opti_mcc.shared | sed -E "s/^0\.03/1/" > $DATA/observed.otu.shared
+  
 	mv $DATA/data.opti_mcc.list $DATA/data.otu.list
-	rm -f $DATA/data.file $DATA/data.opti_mcc.sabund $DATA/data.opti_mcc.rabund
+	rm -f $DATA/data.opti_mcc.shared $DATA/data.file $DATA/data.opti_mcc.sabund $DATA/data.opti_mcc.rabund
 else
 	mothur "#set.dir(input=$DATA, seed=19760620);
 					remove.groups(fasta=data.fasta, count=data.count_table, taxonomy=data.taxonomy, groups=$REMOVE);
@@ -23,8 +26,8 @@ else
 					cluster.split(file=current, processors=$PROCESSORSCLUSTER, runsensspec=FALSE);
 					make.shared()"
 
-	mv $DATA/data.pick.opti_mcc.shared $DATA/observed.otu.shared
+	cat $DATA/data.pick.opti_mcc.shared | sed -E "s/^0\.03/1/" > $DATA/observed.otu.shared
 	mv $DATA/data.pick.opti_mcc.list $DATA/data.otu.list
-
-	rm -f $DATA/data.pick.fasta $DATA/data.pick.count_table $DATA/data.pick.taxonomy $DATA/data.pick.file $DATA/data.pick.opti_mcc.sabund $DATA/data.pick.opti_mcc.rabund
+  
+	rm -f $DATA/data.pick.fasta $DATA/data.pick.count_table $DATA/data.pick.taxonomy $DATA/data.pick.file $DATA/data.pick.opti_mcc.sabund $DATA/data.pick.opti_mcc.rabund $DATA/data.pick.opti_mcc.shared
 fi

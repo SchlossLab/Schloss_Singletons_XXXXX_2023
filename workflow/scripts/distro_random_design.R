@@ -2,20 +2,30 @@
 
 library(data.table) # for fast reads of wide files
 library(tidyverse)
-library(glue)
 
 input <- commandArgs(trailingOnly = TRUE)
 
-obs_pc_shared_file <- input[1]
-rng_seed <- input[2]
+obs_pc_tidy_file <- input[1]
+n_replicates <- input[2]
 
-set.seed(rng_seed)
+set.seed(19760620)
 
-output_filename <- str_replace(obs_pc_shared_file,
-                               "observed.*",
-                               glue("random.{rng_seed}.design"))
+output_filename <- str_replace(obs_pc_tidy_file, 
+                               "observed\\..*",
+                               "random.design")
 
-fread(obs_pc_shared_file) %>%
+groups <- fread(obs_pc_tidy_file) %>% 
   select(group = Group) %>%
-  mutate(treatment = sample(rep_len(c("A", "B"), length.out = nrow(.)))) %>%
+  distinct()
+
+
+random_design <- function() {
+
+  groups %>%
+    mutate(treatment = sample(rep_len(c("A", "B"), length.out = nrow(.))))
+
+}
+
+
+map_dfr(1:n_replicates, ~random_design(), .id = "label") %>%
   write_tsv(output_filename)

@@ -6,46 +6,32 @@ library(tidyverse)
 library(glue)
 
 input <- commandArgs(trailingOnly = TRUE)
-full_shared <- input[1] # e.g. full_shared <- 'data/marine/observed.pc.shared'
+tidy_file <- input[1] # e.g. full_shared <- 'data/marine/observed.pc.tidy'
 min_class <- as.numeric(input[2]) # e.g. min_class <- 10
 
 min_threshold <- min_class / 1e4
 
-output_file <- str_replace(full_shared,
-													 ".pc",
-													 glue("\\.aggr_cumrelabund.{min_class}\\.pc"))
+output_file <- str_replace(tidy_file,
+                           ".pc.tidy",
+                           glue("\\.aggr_cumrelabund.{min_class}\\.pc.shared"))
 
-if (min_class == 0) {
-	
-	file.copy(full_shared, output_file, overwrite = TRUE)
+# remove cumulative relative abundances below threshold for each group
+# and including ties in abundance
 
-} else {
-	
-	# remove cumulative relative abundances below threshold for each group
-	# and including ties in abundance
-	
-	fread(full_shared) %>%
-		as_tibble() %>%
-		select(-label, -numASVs) %>%
-		pivot_longer(-Group, names_to = "otus", values_to = "counts") %>%
-    group_by(otus) %>%
-    mutate(rel_abund = sum(counts)) %>%
-		ungroup() %>%
-    mutate(rel_abund = rel_abund / sum(rel_abund)) %>%
-		arrange(rel_abund) %>%
-		mutate(cum_relabund = cumsum(rel_abund),
-					 keep = cum_relabund >= min_threshold) %>%
-    ungroup() %>%
-		group_by(rel_abund) %>%
-		mutate(keep = all(keep)) %>%
-		ungroup() %>%
-		filter(keep) %>%
-    select(Group, otus, counts) %>%
-		arrange(Group, otus) %>%
-		pivot_wider(names_from = "otus", values_from = counts, values_fill = 0) %>%
-		mutate(numASVs = ncol(.) - 1,
-						label = "pc") %>%
-		select(label, Group, numASVs, everything()) %>%
-		write_tsv(output_file)
-
-}
+fread(tidy_file) %>%
+  group_by(label, asvs) %>%
+  mutate(rel_abund = sum(n)) %>%
+  group_by(label) %>%
+  mutate(rel_abund = rel_abund / sum(rel_abund)) %>%
+  arrange(rel_abund) %>%
+  mutate(cum_relabund = cumsum(rel_abund),
+          keep = cum_relabund >= min_threshold) %>%
+  group_by(label, rel_abund) %>%
+  mutate(keep = all(keep)) %>%
+  filter(keep) %>%
+  ungroup() %>%
+  select(label, Group, asvs, n) %>%
+  arrange(label, Group, asvs) %>%
+  pivot_wider(names_from = asvs, values_from = n, values_fill = 0) %>%
+  mutate(numASVs = ncol(.) - 2, .after = Group) %>%
+  write_tsv(output_file)
